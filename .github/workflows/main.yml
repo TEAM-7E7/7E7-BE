@@ -9,7 +9,7 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_NAME: MarketClip
+  PROJECT_NAME: marketclip
   S3_BUCKET_NAME: sparta7e7
   CODE_DEPLOY_APP_NAME: AWSCodeDeploy
   DEPLOYMENT_GROUP_NAME: sparta_group
