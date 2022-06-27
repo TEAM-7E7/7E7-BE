@@ -63,11 +63,7 @@ jobs:
         run: aws s3 cp --region ap-northeast-2 ./$PROJECT_NAME.zip s3://$S3_BUCKET_NAME
 
       - name: 코드 배치하기
-        run: aws deploy create-deployment
-          --application-name $CODE_DEPLOY_APP_NAME
-          --deployment-config-name CodeDeployDefault.OneAtATime
-          --deployment-group-name $DEPLOYMENT_GROUP_NAME
-          --s3-location bucket=$S3_BUCKET_NAME, bundleType=zip,key=$PROJECT_NAME.zip
+        run: aws deploy create-deployment --application-name $CODE_DEPLOY_APP_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOYMENT_GROUP_NAME --s3-location bucket=$S3_BUCKET_NAME, bundleType=zip,key=$PROJECT_NAME.zip
 
 
 
