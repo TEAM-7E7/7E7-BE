@@ -20,6 +20,7 @@ public class Account extends Timestamped {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true,nullable = false)
     private String password;
 
     @Column(nullable = false)
