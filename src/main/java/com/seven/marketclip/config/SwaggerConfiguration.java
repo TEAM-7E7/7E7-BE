@@ -1,3 +1,4 @@
+
 package com.seven.marketclip.config;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
