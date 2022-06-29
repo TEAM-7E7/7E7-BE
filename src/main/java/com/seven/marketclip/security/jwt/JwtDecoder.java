@@ -1,10 +1,10 @@
-package com.week2.magazine.security.jwt;
+package com.seven.marketclip.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.week2.magazine.account.AccountRoleEnum;
+import com.seven.marketclip.account.AccountRoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.week2.magazine.security.jwt.JwtTokenUtils.*;
+import static com.seven.marketclip.security.jwt.JwtTokenUtils.*;
 
 
 @Component
@@ -42,7 +42,7 @@ public class JwtDecoder {
 
         return userid;
     }
-    public String decodeUserEmail(String token) {
+    public String decodeUserNickname(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
                 () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
         );
@@ -56,11 +56,11 @@ public class JwtDecoder {
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
         }
 
-        String email = decodedJWT
-                .getClaim(CLAIM_USER_NAME)
+        String nickname = decodedJWT
+                .getClaim(CLAIM_USER_NICKNAME)
                 .asString();
 
-        return email;
+        return nickname;
     }
     public AccountRoleEnum decodeUserRole(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(

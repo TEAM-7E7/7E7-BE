@@ -37,3 +37,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 내꺼
+#src/main/resources/application.properties

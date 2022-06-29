@@ -1,4 +1,4 @@
-package com.week2.magazine.security.jwt;
+package com.seven.marketclip.security.jwt;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

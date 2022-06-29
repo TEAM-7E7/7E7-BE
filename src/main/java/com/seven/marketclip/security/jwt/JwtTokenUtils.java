@@ -1,8 +1,8 @@
-package com.week2.magazine.security.jwt;
+package com.seven.marketclip.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.week2.magazine.security.UserDetailsImpl;
+import com.seven.marketclip.security.UserDetailsImpl;
 
 import java.util.Date;
 
@@ -21,7 +21,7 @@ public final class JwtTokenUtils {
     public static final String CLAIM_EXPIRED_DATE = "EXPIRED_DATE";
 
     public static final String CLAIM_USER_ID = "USER_ID";
-    public static final String CLAIM_USER_NAME = "USER_NAME";
+    public static final String CLAIM_USER_NICKNAME = "USER_NAME";
     public static final String CLAIM_USER_ROLE = "USER_ROLE";
 
     public static final String JWT_SECRET = "jwt_secret_!@#$%";
@@ -37,7 +37,7 @@ public final class JwtTokenUtils {
             token = JWT.create()
                     .withIssuer("sparta")
                     .withClaim(CLAIM_USER_ID, userDetails.getId())
-                    .withClaim(CLAIM_USER_NAME, userDetails.getUsername())
+                    .withClaim(CLAIM_USER_NICKNAME, userDetails.getUsername())
                     .withClaim(CLAIM_USER_ROLE, String.valueOf(userDetails.getRole()))
                      // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
                     .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))

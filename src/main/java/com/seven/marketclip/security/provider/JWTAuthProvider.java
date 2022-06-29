@@ -1,10 +1,10 @@
-package com.week2.magazine.security.provider;
+package com.seven.marketclip.security.provider;
 
-import com.week2.magazine.security.UserDetailsImpl;
-import com.week2.magazine.security.jwt.JwtDecoder;
-import com.week2.magazine.security.jwt.JwtPreProcessingToken;
-import com.week2.magazine.account.AccountRepository;
-import com.week2.magazine.account.AccountRoleEnum;
+import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.AccountRoleEnum;
+import com.seven.marketclip.security.UserDetailsImpl;
+import com.seven.marketclip.security.jwt.JwtDecoder;
+import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,12 +21,12 @@ public class JWTAuthProvider implements AuthenticationProvider {
     private final AccountRepository accountRepository;
 
     @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        System.out.println("전체필터 3");
         String token = (String) authentication.getPrincipal();
 
         Long id = jwtDecoder.decodeUserId(token);
-        String email = jwtDecoder.decodeUserEmail(token);
+        String nickname = jwtDecoder.decodeUserNickname(token);
         AccountRoleEnum role = jwtDecoder.decodeUserRole(token);
 
         // TODO: API 사용시마다 매번 User DB 조회 필요
@@ -34,9 +34,9 @@ public class JWTAuthProvider implements AuthenticationProvider {
         //  ex) UserDetailsImpl 에 userId, username, role 만 저장
         //    -> JWT 에 userId, username, role 정보를 암호화/복호화하여 사용
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(id,email,role);
+        UserDetailsImpl userDetails = new UserDetailsImpl(id,nickname,role);
 
-
+        System.out.println("전체필터 4");
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
