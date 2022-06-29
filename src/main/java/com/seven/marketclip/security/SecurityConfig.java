@@ -1,10 +1,10 @@
-package com.week2.magazine.security;
+package com.seven.marketclip.security;
 
-import com.week2.magazine.security.filter.FormLoginFilter;
-import com.week2.magazine.security.filter.JwtAuthFilter;
-import com.week2.magazine.security.jwt.HeaderTokenExtractor;
-import com.week2.magazine.security.provider.FormLoginAuthProvider;
-import com.week2.magazine.security.provider.JWTAuthProvider;
+import com.seven.marketclip.security.filter.FormLoginFilter;
+import com.seven.marketclip.security.filter.JwtAuthFilter;
+import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
+import com.seven.marketclip.security.provider.FormLoginAuthProvider;
+import com.seven.marketclip.security.provider.JWTAuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,7 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedOrigin("*");
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("X-ACCESSR-TOKEN");
+        configuration.addExposedHeader("X-REFRESH-TOKEN");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -134,8 +135,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
+                .antMatchers("/","/api/sign-up").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
-                .anyRequest().permitAll();
+                .anyRequest().authenticated();
         }
 //        http.authorizeRequests()
 //                .anyRequest()
@@ -181,12 +183,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             // 회원 관리 API 허용
             skipPathList.add("GET,/");
-            skipPathList.add("POST,/api/signup");
-            skipPathList.add("GET,/api/home");
-            skipPathList.add("GET,/swagger-ui/**");
-            skipPathList.add("GET,/swagger-ui");
-            skipPathList.add("GET,/v2/**");
-            skipPathList.add("GET,/v2/**");
+//            skipPathList.add("GET,/api/manager");
+            skipPathList.add("POST,/api/sign-up");
+
 
             //보드게시판 API 허용/swagger-resources/**
             skipPathList.add("GET,/api/boards");

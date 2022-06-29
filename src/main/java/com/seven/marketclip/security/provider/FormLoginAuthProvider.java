@@ -1,6 +1,6 @@
-package com.week2.magazine.security.provider;
+package com.seven.marketclip.security.provider;
 
-import com.week2.magazine.security.UserDetailsImpl;
+import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

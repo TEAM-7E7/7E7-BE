@@ -1,4 +1,4 @@
-package com.week2.magazine.security.filter;
+package com.seven.marketclip.security.filter;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
