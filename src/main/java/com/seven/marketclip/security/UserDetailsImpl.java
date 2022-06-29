@@ -1,6 +1,7 @@
-package com.week2.magazine.security;
+package com.seven.marketclip.security;
 
-import com.week2.magazine.account.AccountRoleEnum;
+
+import com.seven.marketclip.account.AccountRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,22 +15,22 @@ public class UserDetailsImpl implements UserDetails {
 
     private Long id;
 
-    private String email;
+    private String nickname;
 
     private String password;
 
     @Enumerated(value = EnumType.STRING)
     private AccountRoleEnum role;
 
-    public UserDetailsImpl(Long id, String password, String email,AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String password, String nickname,AccountRoleEnum role){
         this.id = id;
-        this.email = email;
+        this.nickname = nickname;
         this.password = password;
         this.role = role;
     }
-    public UserDetailsImpl(Long id, String email, AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String nickname, AccountRoleEnum role){
         this.id = id;
-        this.email = email;
+        this.nickname = nickname;
         this.role = role;
     }
 
@@ -48,7 +49,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return nickname;
     }
 
     @Override

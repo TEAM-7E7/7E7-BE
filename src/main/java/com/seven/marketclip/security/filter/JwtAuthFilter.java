@@ -1,8 +1,8 @@
-package com.week2.magazine.security.filter;
+package com.seven.marketclip.security.filter;
 
-
-import com.week2.magazine.security.jwt.HeaderTokenExtractor;
-import com.week2.magazine.security.jwt.JwtPreProcessingToken;
+import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
+import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -34,7 +34,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         System.out.println("전체필터 1");
         // JWT 값을 담아주는 변수 TokenPayload
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader("X-ACCESSR-TOKEN");
         System.out.println("전체필터 헤더값 : "+ authorization);
         if (authorization == null) {
             return null;
@@ -47,12 +47,9 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     @Override
-    protected void successfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain,
-            Authentication authResult
-    ) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            @NotNull FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        System.out.println("전체필터 5-1");
         /*
          *  SecurityContext 사용자 Token 저장소를 생성합니다.
          *  SecurityContext 에 사용자의 인증된 Token 값을 저장합니다.
@@ -75,6 +72,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             HttpServletResponse response,
             AuthenticationException failed
     ) throws IOException, ServletException {
+        System.out.println("전체필터 5-1");
         /*
          *	로그인을 한 상태에서 Token값을 주고받는 상황에서 잘못된 Token값이라면
          *	인증이 성공하지 못한 단계 이기 때문에 잘못된 Token값을 제거합니다.

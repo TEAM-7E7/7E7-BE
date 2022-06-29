@@ -1,4 +1,4 @@
-package com.week2.magazine.security;
+package com.seven.marketclip.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
