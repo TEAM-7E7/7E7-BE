@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> e243098c7f12910d72a309675d93cd6055a6f403
 package com.seven.marketclip.config;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

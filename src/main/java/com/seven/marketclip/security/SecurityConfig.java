@@ -1,8 +1,10 @@
 package com.seven.marketclip.security;
 
+import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
+import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.provider.FormLoginAuthProvider;
 import com.seven.marketclip.security.provider.JWTAuthProvider;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,17 +34,11 @@ import java.util.List;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final AccountRepository accountRepository;
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
-    private final CorsFilter corsFilter;
 
-
-//    public SecurityConfig(JWTAuthProvider jwtAuthProvider, HeaderTokenExtractor headerTokenExtractor) {
-////            CorsFilter corsFilter
-////        this.corsFilter=corsFilter;
-//        this.jwtAuthProvider = jwtAuthProvider;
-//        this.headerTokenExtractor = headerTokenExtractor;
-//    }
+    private final JwtDecoder jwtDecoder;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -66,16 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**");
-
-//        web.ignoring().antMatchers(
-//                // -- Static resources
-//                "/css/**", "/images/**", "/js/**"
-//                // -- Swagger UI v2
-//                , "/v2/api-docs", "/swagger-resources/**"
-//                , "/swagger-ui.html", "/webjars/**", "/swagger/**"
-//                // -- Swagger UI v3 (Open API)
-//                , "/v3/api-docs/**", "/swagger-ui/**"
-//        );
         web.ignoring().antMatchers(PERMIT_URL_ARRAY);
     }
 
@@ -135,7 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
-                .antMatchers("/","/api/sign-up").permitAll()
+                .antMatchers("/","/api/sign-up","/api/refresh-re").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
         }
@@ -162,14 +147,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         @Bean
         public FormLoginSuccessHandler formLoginSuccessHandler() {
-            return new FormLoginSuccessHandler();
+            return new FormLoginSuccessHandler(accountRepository);
         }
         @Bean
         public FormLoginAuthProvider formLoginAuthProvider() {
             return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
         }
 
-
+        //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
         private JwtAuthFilter jwtFilter() throws Exception {
             List<String> skipPathList = new ArrayList<>();
 
@@ -183,7 +168,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             // 회원 관리 API 허용
             skipPathList.add("GET,/");
-//            skipPathList.add("GET,/api/manager");
+            skipPathList.add("GET,/api/refresh-re");
+            skipPathList.add("POST,/api/refresh-re");
             skipPathList.add("POST,/api/sign-up");
 
 
@@ -203,6 +189,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             JwtAuthFilter filter = new JwtAuthFilter(
                     matcher,
                     headerTokenExtractor
+                    ,jwtDecoder
+                    ,accountRepository
             );
             filter.setAuthenticationManager(super.authenticationManagerBean());
 
