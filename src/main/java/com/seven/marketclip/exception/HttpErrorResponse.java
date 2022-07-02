@@ -1,31 +1,37 @@
 package com.seven.marketclip.exception;
 
-import org.springframework.http.HttpStatus;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/*@RestControllerAdvice
+import java.time.LocalDateTime;
+
+@Getter
 public class HttpErrorResponse {
 
-    @ExceptionHandler(InvalidException.class)
-    ResponseEntity<ErrorRes> handleInvalidException(InvalidException e) {
-        ErrorRes errorRes = ErrorRes.builder().status(400).message(e.getMessage()).build();
+    private final LocalDateTime timestamp = LocalDateTime.now();
+    private final int status;
+    private final String error;
+    private final String code;
+    private final String message;
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRes);
+    @Builder
+    public HttpErrorResponse(int status, String error, String code, String message) {
+        this.status = status;
+        this.error = error;
+        this.code = code;
+        this.message = message;
     }
 
-    @ExceptionHandler(UnAuthorizedException.class)
-    ResponseEntity<ErrorRes> handleUnAuthorizedException(UnAuthorizedException e) {
-        ErrorRes errorRes = ErrorRes.builder().status(401).message(e.getMessage()).build();
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorRes);
+    public static ResponseEntity<HttpErrorResponse> toResponseEntity(ErrorCode errorCode) {
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(HttpErrorResponse.builder()
+                        .status(errorCode.getHttpStatus().value())
+                        .error(errorCode.getHttpStatus().name())
+                        .code(errorCode.name())
+                        .message(errorCode.getMessage())
+                        .build()
+                );
     }
-
-    @ExceptionHandler(NotFoundException.class)
-    ResponseEntity<ErrorRes> handleNotFoundException(NotFoundException e) {
-        ErrorRes errorRes = ErrorRes.builder().status(404).message(e.getMessage()).build();
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorRes);
-    }
-}*/
+}

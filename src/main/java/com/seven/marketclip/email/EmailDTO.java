@@ -3,23 +3,21 @@ package com.seven.marketclip.email;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class EmailDTO {
     private String email;
-    private String token;
+    private String authToken;
 //    private Integer count;
 //    private LocalDateTime createAt;
 //    private LocalDateTime modifiedAt;
 
     @Builder
-    public EmailDTO(String email, String token){
+    public EmailDTO(String email, String authToken) {
         this.email = email;
-        this.token = token;
+        this.authToken = authToken;
     }
 
 }

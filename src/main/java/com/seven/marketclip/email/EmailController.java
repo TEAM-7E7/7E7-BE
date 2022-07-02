@@ -3,7 +3,7 @@ package com.seven.marketclip.email;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth/email-validation")
+@RequestMapping("/api/email-validation")
 public class EmailController {
 
     private final EmailService emailService;
@@ -13,8 +13,9 @@ public class EmailController {
     }
 
     @PostMapping
-    public String emailCheck(@RequestBody EmailDTO emailDTO) {
-        return emailService.checkEmail(emailDTO);
+    @ExceptionHandler
+    public void emailCheck(@RequestBody EmailDTO emailDTO) {
+        emailService.checkEmail(emailDTO);
     }
 
 }
