@@ -14,6 +14,7 @@ import static com.seven.marketclip.exception.ResponseCode.DUPLICATE_RESOURCE;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
     @ExceptionHandler(value = { ConstraintViolationException.class, DataIntegrityViolationException.class})
     protected ResponseEntity<HttpResponse> handleDataException() {
         log.error("handleDataException throw Exception : {}", DUPLICATE_RESOURCE);
