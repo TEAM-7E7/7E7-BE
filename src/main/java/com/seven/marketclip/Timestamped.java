@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -15,8 +16,10 @@ import java.time.LocalDateTime;
 public abstract class Timestamped { // abstract는 상속으로만 사용할 수 있다
 
     @CreatedDate // 생성일자임을 나타냅니다.
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @LastModifiedDate // 마지막 수정일자임을 나타냅니다.
+    @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 }
