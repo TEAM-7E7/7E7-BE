@@ -17,10 +17,10 @@ public class EmailController {
         this.emailService = emailService;
     }
 
-    @ApiOperation(value = "이메일 체크",notes = "이메일을 인증하는 API")
+    @ApiOperation(value = "이메일 체크", notes = "이메일을 인증하는 API")
     @PostMapping
     public ResponseEntity<HttpResponse> emailCheck(@RequestBody EmailDTO emailDTO) {
-        return emailService.checkEmail(emailDTO);
+        return HttpResponse.toResponseEntity(emailService.checkEmail(emailDTO));
     }
 
 //    public void emailCheck(@RequestBody EmailDTO emailDTO) {
