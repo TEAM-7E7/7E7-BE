@@ -1,10 +1,13 @@
 package com.seven.marketclip.account;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.seven.marketclip.account.service.AccountService;
 import com.seven.marketclip.account.validation.AccountReqDtoValidation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
@@ -20,7 +23,6 @@ public class AccountController {
     private final AccountReqDtoValidation accountReqDtoValidation;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
-
     private final AccountService accountService;
 
     @InitBinder("AccountReqDTO")
@@ -31,7 +33,10 @@ public class AccountController {
     @ApiOperation(value = "홈 테스트!",notes = "홈 화면을 출력해주는 API")
     @GetMapping("/")
     ResponseEntity<String> Home(){
-        return ResponseEntity.ok().body("홈");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("asd","fuchkin");
+        headers.add("asdsdsds","fuchkin");
+        return ResponseEntity.ok().headers(headers).body("홈");
     }
 
     @ApiOperation(value = "유저 권한 테스트",notes = "매니저 화면을 출력해주는 API")
@@ -81,6 +86,20 @@ public class AccountController {
         return ResponseEntity.ok().body(account);
     }
 
+    //소셜 로그인
+    //KAKAO Social Login
+    @GetMapping("/api/kakao/callback")
+    public ResponseEntity<?> kakaoLogin(String code) throws JsonProcessingException {
+        System.out.println("카카오 로그인 시작 1");
+        System.out.println("코드 "+code);
+        return accountService.kakaoLogin(code);
+    }
+    //Google
+    @GetMapping("/login/oauth2/code/google")
+    public ResponseEntity<?> googleLogin(String code){
+        System.out.println("카카오 로그인 시작 2");
+        return ResponseEntity.ok().body(code);
+    }
 
 
 

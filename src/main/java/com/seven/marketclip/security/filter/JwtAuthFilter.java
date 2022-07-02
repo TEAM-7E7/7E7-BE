@@ -46,6 +46,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         String authorization = request.getHeader("X-ACCESSR-TOKEN");
         String refreshToken = request.getHeader("X-REFRESH-TOKEN");
 
+        //TODO 여기서 response에 선용님 예외처리 넣기.
         System.out.println("전체필터 헤더값 : "+ authorization);
         if (authorization == null) {
             return null;

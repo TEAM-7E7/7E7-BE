@@ -1,6 +1,8 @@
 package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.service.OatuhHandler;
+import com.seven.marketclip.account.service.PrincipalOauth2UserService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
@@ -34,11 +36,13 @@ import java.util.List;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+//    private final PrincipalOauth2UserService principalOauth2UserService;
     private final AccountRepository accountRepository;
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
-
     private final JwtDecoder jwtDecoder;
+
+    private final OatuhHandler oatuhHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -121,9 +125,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
                 .antMatchers("/","/api/sign-up","/api/refresh-re").permitAll()
+                .antMatchers("/api/kakao/callback","/api/google/callback").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
+
+
+        http.oauth2Login().loginPage("/login").successHandler(oatuhHandler).userInfoEndpoint().userService(principalOauth2UserService());
         }
+        @Bean
+        public PrincipalOauth2UserService principalOauth2UserService() {
+            return new PrincipalOauth2UserService(accountRepository,passwordEncoder());
+        }
+
 //        http.authorizeRequests()
 //                .anyRequest()
 //                .permitAll()
@@ -166,12 +179,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             skipPathList.add("GET,/h2-console/**");
             skipPathList.add("POST,/h2-console/**");
 
+            //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
             // 회원 관리 API 허용
             skipPathList.add("GET,/");
             skipPathList.add("GET,/api/refresh-re");
             skipPathList.add("POST,/api/refresh-re");
             skipPathList.add("POST,/api/sign-up");
 
+            //소셜 콜백 주소
+            //KAKAO
+            skipPathList.add("GET,/api/kakao/callback");
+            skipPathList.add("GET,/login/oauth2/code/google");
 
             //보드게시판 API 허용/swagger-resources/**
             skipPathList.add("GET,/api/boards");
