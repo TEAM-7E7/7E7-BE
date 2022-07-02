@@ -1,19 +1,18 @@
 package com.seven.marketclip.goods.controller;
 
-import com.demo.dto.GoodsForm;
-import com.demo.dto.GoodsResponse;
-import com.demo.exception.CustomException;
-import com.demo.exception.ErrorCode;
-import com.demo.repository.GoodsRepository;
-import com.demo.service.GoodsService;
+import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.GoodsForm;
 import com.seven.marketclip.goods.dto.GoodsResponse;
+import com.seven.marketclip.goods.exception.CustomException;
+import com.seven.marketclip.goods.exception.ErrorCode;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.goods.service.GoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/goods")
 public class GoodsController {
     private final GoodsService goodsService;
+    private final AccountRepository accountRepository;
     private final GoodsRepository goodsRepository;
 
 
@@ -37,24 +37,27 @@ public class GoodsController {
 
     //상품 게시글 작성
     @PostMapping(value = "", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> addGoods(@Valid @ModelAttribute GoodsForm form, String username){
-        goodsService.addNewGoods(form, username);
+    public ResponseEntity<String> addGoods(@Valid @ModelAttribute GoodsForm form, @AuthenticationPrincipal Account account){
+        goodsService.addNewGoods(form, account);
         return ResponseEntity.ok().body("게시글 작성 완료");
     }
 
     // 상품 상세페이지
     @GetMapping("/{goodsId}")
-    public GoodsResponse getGoods(@PathVariable Long goodsId){
+    public GoodsResponse getGoods(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
         goodsService.plusView(goodsId);
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(ErrorCode.GOODS_NOT_EXIST)
+        );
+        Account account1 = accountRepository.findById(account.getId()).orElseThrow(
+                ()-> new CustomException(ErrorCode.USER_NOT_FOUND)
         );
         return new GoodsResponse(goods);
     }
 
     // 상품 게시글 삭제
     @DeleteMapping("/{goodsId}")
-    public ResponseEntity<String> deleteGoods(@PathVariable Long goodsId){
+    public ResponseEntity<String> deleteGoods(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
         goodsRepository.findById(goodsId).orElseThrow(
                 ()-> new CustomException(ErrorCode.GOODS_NOT_EXIST)
         );
@@ -64,8 +67,8 @@ public class GoodsController {
 
     // 상품 게시글 수정
     @PutMapping(value = "/{goodsId}", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> editGoods(@PathVariable Long goodsId, @Valid @ModelAttribute GoodsForm form,String username){
-        goodsService.updateGoodsDetail(goodsId, form, username);
+    public ResponseEntity<String> editGoods(@PathVariable Long goodsId, @Valid @ModelAttribute GoodsForm form,@AuthenticationPrincipal Account account){
+        goodsService.updateGoodsDetail(goodsId, form, account);
         return ResponseEntity.ok().body("수정완료");
     }
 }

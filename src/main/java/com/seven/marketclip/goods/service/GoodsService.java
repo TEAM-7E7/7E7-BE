@@ -1,7 +1,8 @@
 package com.seven.marketclip.goods.service;
 
-import com.demo.exception.CustomException;
-import com.demo.exception.ErrorCode;
+import com.seven.marketclip.account.Account;
+import com.seven.marketclip.goods.exception.CustomException;
+import com.seven.marketclip.goods.exception.ErrorCode;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.GoodsForm;
@@ -21,21 +22,21 @@ public class GoodsService {
 
     //게시글 작성
     @Transactional
-    public void addNewGoods(@Validated GoodsForm form, String username){
-        String imgUrl = form.getFile() == null ? null: s3Uploader.uploadImage(form.getFile());
-        log.error(imgUrl);
-        goodsRepository.save(new Goods(form, imgUrl,username));
+    public void addNewGoods(@Validated GoodsForm form, Account account){
+        String fileUrl = form.getFile() == null ? null: s3Uploader.uploadFile(form.getFile());
+        log.error(fileUrl);
+        goodsRepository.save(new Goods(form, fileUrl ,account));
     }
 
     //게시글 수정
     @Transactional
-    public void updateGoodsDetail(Long id, @Validated GoodsForm form, String username){
+    public void updateGoodsDetail(Long id, @Validated GoodsForm form, Account account){
         Goods goods = goodsRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.GOODS_NOT_EXIST)
         );
-        if (goods.getFileUrl() != null) s3Uploader.deleteImage(goods.getFileUrl());
-        String updateImgUrl = form.getFile() == null? null: s3Uploader.uploadImage(form.getFile());
-        goods.update(form, updateImgUrl);
+        if (goods.getFileUrl() != null) s3Uploader.deleteFile(goods.getFileUrl());
+        String updateFileUrl = form.getFile() == null? null: s3Uploader.uploadFile(form.getFile());
+        goods.update(form, updateFileUrl);
 
         goodsRepository.save(goods);
     }

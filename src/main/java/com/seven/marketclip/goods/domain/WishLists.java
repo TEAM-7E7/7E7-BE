@@ -1,7 +1,8 @@
 package com.seven.marketclip.goods.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.Timestamped;
+import com.seven.marketclip.account.Account;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,15 +22,15 @@ public class WishLists extends Timestamped {
     @JoinColumn(name = "goodsId")
     private Goods goods;
 
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "userId")
-    @Column(nullable = false)
-    private String username;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountId")
+    private Account account;
+
 
     @Builder
-    public WishLists(Goods goods, String username) {
+    public WishLists(Goods goods, Account account) {
         this.goods = goods;
-        this.username = username;
+        this.account = account;
     }
 }

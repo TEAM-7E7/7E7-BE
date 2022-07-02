@@ -1,7 +1,8 @@
 package com.seven.marketclip.goods.domain;
 
-import com.demo.dto.GoodsForm;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.seven.marketclip.Timestamped;
+import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.dto.GoodsForm;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +18,15 @@ import java.util.List;
 @Entity
 @Validated
 @NoArgsConstructor
-public class Goods extends Timestamped{
+public class Goods extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     @Id
     private Long id;
 
-    @Column(nullable = false)
-    private String username; //user 랑 연결하면 sellerId로 변경 예정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountId")
+    private Account account;
 
     @Column(nullable = false, length = 25)
     @NotBlank(message = "제목을 입력하세요")
@@ -52,8 +54,8 @@ public class Goods extends Timestamped{
     private Integer wishCount = 0;//찜수?? 이게 맞음?
 
     @Builder
-    public Goods(String username, String title, String description, String fileUrl, String category, Integer sellPrice){
-        this.username = username;
+    public Goods(Account account, String title, String description, String fileUrl, String category, Integer sellPrice){
+        this.account = account;
         this.title = title;
         this.description = description;
         this.fileUrl = fileUrl;
@@ -70,12 +72,12 @@ public class Goods extends Timestamped{
     }
 
     @Builder
-    public Goods(GoodsForm form, String fileUrl, String username){
+    public Goods(GoodsForm form, String fileUrl, Account account){
         this.title = form.getTitle();
         this.description = form.getDescription();
         this.sellPrice = form.getSellPrice();
         this.fileUrl = fileUrl;
         this.category = form.getCategory();
-        this.username = username;
+        this.account = account;
     }
 }

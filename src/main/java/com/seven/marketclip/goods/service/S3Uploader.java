@@ -5,8 +5,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.demo.exception.CustomException;
-import com.demo.exception.ErrorCode;
+import com.seven.marketclip.goods.exception.CustomException;
+import com.seven.marketclip.goods.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,9 +31,9 @@ public class S3Uploader {
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
-    private final List<String> imgLst = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp",".mp4");
+    private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp",".mp4");
 
-    public String uploadImage(MultipartFile multipartFile) {
+    public String uploadFile(MultipartFile multipartFile) {
         String fileName = UUID.randomUUID().toString().concat(getFileExtension(multipartFile.getOriginalFilename()));
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(multipartFile.getSize());
@@ -49,7 +49,7 @@ public class S3Uploader {
     }
 
 
-    public void deleteImage(String fileName) {
+    public void deleteFile(String fileName) {
         String specFileName = fileName.replaceFirst(bucketName + ".s3.ap-northeast-2.amazonaws.com/", "");
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, specFileName));
     }
@@ -62,7 +62,7 @@ public class S3Uploader {
         } catch (StringIndexOutOfBoundsException e) {
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         }
-        if (imgLst.contains(target)) {
+        if (fileList.contains(target)) {
             return target;
         } else {
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);

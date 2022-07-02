@@ -1,7 +1,7 @@
 package com.seven.marketclip.goods.service;
 
-import com.demo.exception.CustomException;
-import com.demo.exception.ErrorCode;
+import com.seven.marketclip.goods.exception.CustomException;
+import com.seven.marketclip.goods.exception.ErrorCode;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.goods.repository.WishListsRepository;
 import com.seven.marketclip.goods.domain.Goods;
@@ -19,18 +19,18 @@ public class WishListsService {
     private final WishListsRepository wishListsRepository;
 
     @Transactional
-    public void doWishList(WishListsDto wishListsDto, String username){
+    public void doWishList(WishListsDto wishListsDto){
         Goods goods = goodsRepository.findById(wishListsDto.getGoodsId()).orElseThrow(
                 () -> new CustomException(ErrorCode.GOODS_NOT_EXIST)
         );
-        WishLists wishLists = wishListsRepository.findByGoodsAndUsername(goods, username).orElse(null);
+        WishLists wishLists = wishListsRepository.findByGoodsAndAccount(goods, wishListsDto.getAccount()).orElse(null);
         if(wishLists != null){
             wishListsRepository.delete(wishLists);
             goodsRepository.updateWishCount(goods.getId(), -1);
         }else {
             wishListsRepository.save(WishLists.builder()
                     .goods(goods)
-                    .username(username)
+                    .account(wishLists.getAccount())
                     .build());
             goodsRepository.updateWishCount(goods.getId(),1);
         }

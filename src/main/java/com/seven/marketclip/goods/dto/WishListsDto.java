@@ -1,13 +1,19 @@
 package com.seven.marketclip.goods.dto;
 
-import lombok.AllArgsConstructor;
+import com.seven.marketclip.account.Account;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-@AllArgsConstructor
 public class WishListsDto {
-    String username;
+    Account account;
     Long goodsId;
+
+    @Builder
+    public WishListsDto(Account account, Long goodsId) {
+        this.account = account;
+        this.goodsId = goodsId;
+    }
 }

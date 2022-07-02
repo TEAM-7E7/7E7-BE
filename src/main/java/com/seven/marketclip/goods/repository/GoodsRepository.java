@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface GoodsRepository extends JpaRepository<Goods, Long> {
     List<Goods> findAllByOrderByCreatedAtDesc();
+    List<Goods> findAllByOrderByWishCountDesc();
 
     @Modifying
     @Query("UPDATE Goods p SET p.viewCount = p.viewCount + 1 where p.id = :id")

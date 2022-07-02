@@ -11,7 +11,7 @@ public class GoodsResponse {
     private Long id;
     private Integer viewCount;
     private Integer wishCount;
-    private String username;
+    private String account;
     private String title;
     private String category;
     private String description;
@@ -23,7 +23,7 @@ public class GoodsResponse {
     public GoodsResponse(Goods goods){
         this.title = goods.getTitle();
         this.id = goods.getId();
-        this.username = goods.getUsername();
+        this.account = goods.getAccount().getEmail();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.description = goods.getDescription();
