@@ -51,8 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
-
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
         auth
@@ -83,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PUT","DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("X-ACCESSR-TOKEN");
         configuration.addExposedHeader("X-REFRESH-TOKEN");
@@ -135,11 +133,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
-                .antMatchers("/","/api/sign-up").permitAll()
+                .antMatchers("/", "/api/sign-up", "/api/email-validation").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
-        }
-//        http.authorizeRequests()
+    }
+
+    //        http.authorizeRequests()
 //                .anyRequest()
 //                .permitAll()
 //                .and()
@@ -152,67 +151,70 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
-        @Bean
-        public FormLoginFilter formLoginFilter() throws Exception {
-            FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
-            formLoginFilter.setFilterProcessesUrl("/api/login");
-            formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
-            formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
-            return formLoginFilter;
-        }
-        @Bean
-        public FormLoginSuccessHandler formLoginSuccessHandler() {
-            return new FormLoginSuccessHandler();
-        }
-        @Bean
-        public FormLoginAuthProvider formLoginAuthProvider() {
-            return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
-        }
+    @Bean
+    public FormLoginFilter formLoginFilter() throws Exception {
+        FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
+        formLoginFilter.setFilterProcessesUrl("/api/login");
+        formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
+        formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
+        return formLoginFilter;
+    }
+
+    @Bean
+    public FormLoginSuccessHandler formLoginSuccessHandler() {
+        return new FormLoginSuccessHandler();
+    }
+
+    @Bean
+    public FormLoginAuthProvider formLoginAuthProvider() {
+        return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
+    }
 
 
-        private JwtAuthFilter jwtFilter() throws Exception {
-            List<String> skipPathList = new ArrayList<>();
+    private JwtAuthFilter jwtFilter() throws Exception {
+        List<String> skipPathList = new ArrayList<>();
 
-            // Static 정보 접근 허용
-            skipPathList.add("GET,/images/**");
-            skipPathList.add("GET,/css/**");
+        // Static 정보 접근 허용
+        skipPathList.add("GET,/images/**");
+        skipPathList.add("GET,/css/**");
 
-            // h2-console 허용
-            skipPathList.add("GET,/h2-console/**");
-            skipPathList.add("POST,/h2-console/**");
+        // h2-console 허용
+        skipPathList.add("GET,/h2-console/**");
+        skipPathList.add("POST,/h2-console/**");
 
-            // 회원 관리 API 허용
-            skipPathList.add("GET,/");
+        // 회원 관리 API 허용
+        skipPathList.add("GET,/");
 //            skipPathList.add("GET,/api/manager");
-            skipPathList.add("POST,/api/sign-up");
+        skipPathList.add("POST,/api/sign-up");
+        skipPathList.add("POST,/api/email-validation");
 
 
-            //보드게시판 API 허용/swagger-resources/**
-            skipPathList.add("GET,/api/boards");
-            skipPathList.add("GET,/swagger-resources/**");
+        //보드게시판 API 허용/swagger-resources/**
+        skipPathList.add("GET,/api/boards");
+        skipPathList.add("GET,/swagger-resources/**");
 //            skipPathList.add("GET,/");
 //            skipPathList.add("GET,/basic.js");
 //
 //            skipPathList.add("GET,/favicon.ico");
 
-            FilterSkipMatcher matcher = new FilterSkipMatcher(
-                    skipPathList,
-                    "/**"
-            );
+        FilterSkipMatcher matcher = new FilterSkipMatcher(
+                skipPathList,
+                "/**"
+        );
 
-            JwtAuthFilter filter = new JwtAuthFilter(
-                    matcher,
-                    headerTokenExtractor
-            );
-            filter.setAuthenticationManager(super.authenticationManagerBean());
+        JwtAuthFilter filter = new JwtAuthFilter(
+                matcher,
+                headerTokenExtractor
+        );
+        filter.setAuthenticationManager(super.authenticationManagerBean());
 
-            return filter;
-        }
+        return filter;
+    }
 
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            return super.authenticationManagerBean();
-        }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
 }

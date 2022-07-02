@@ -1,10 +1,8 @@
 package com.seven.marketclip.email;
 
-import com.seven.marketclip.Timestamped;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,30 +16,35 @@ public class Email {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "user_email")
     private String userEmail;
 
-    private String authToken;
+    @Column(name = "email_token")
+    private String emailToken;
 
-//    @ColumnDefault("0")
-//    private Integer count;
-
+    @Column(name = "expire_date")
     private LocalDateTime expireDate;
 
     @Builder
-    public Email(String userEmail, String authToken) {
+    public Email(String userEmail, String emailToken) {
         this.userEmail = userEmail;
-        this.authToken = authToken;
+        this.emailToken = emailToken;
         this.expireDate = LocalDateTime.now().plusMinutes(10);
     }
 
     public Email(EmailDTO emailDTO) {
         this.userEmail = emailDTO.getEmail();
-        this.authToken = emailDTO.getAuthToken();
+        this.emailToken = emailDTO.getEmailToken();
     }
 
-//    public void updateCount(){
-//        count += 1;
-//    }
+    // checkExpired가 true면 만료된 것
+    public boolean checkExpired(LocalDateTime now){
+        return this.expireDate.isBefore(now);
+    }
+
+    public void update(LocalDateTime localDateTime, String emailToken){
+        this.emailToken = emailToken;
+        this.expireDate = localDateTime.plusMinutes(10);
+    }
 
 }
