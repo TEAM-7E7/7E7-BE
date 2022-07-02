@@ -42,7 +42,7 @@ public class JwtDecoder {
 
         return userid;
     }
-    public String decodeUserNickname(String token) {
+    public String decodeUserEmail(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
                 () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
         );
@@ -56,11 +56,11 @@ public class JwtDecoder {
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
         }
 
-        String nickname = decodedJWT
-                .getClaim(CLAIM_USER_NICKNAME)
+        String email = decodedJWT
+                .getClaim(CLAIM_USER_EMAIL)
                 .asString();
 
-        return nickname;
+        return email;
     }
     public AccountRoleEnum decodeUserRole(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
@@ -85,7 +85,7 @@ public class JwtDecoder {
     }
 
 
-    private Optional<DecodedJWT> isValidToken(String token) {
+    public Optional<DecodedJWT> isValidToken(String token) {
         DecodedJWT jwt = null;
 
         try {

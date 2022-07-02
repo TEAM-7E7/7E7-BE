@@ -1,8 +1,12 @@
 package com.seven.marketclip.security;
 
+import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.service.OatuhHandler;
+import com.seven.marketclip.account.service.PrincipalOauth2UserService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
+import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.provider.FormLoginAuthProvider;
 import com.seven.marketclip.security.provider.JWTAuthProvider;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,22 +36,20 @@ import java.util.List;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+//    private final PrincipalOauth2UserService principalOauth2UserService;
+    private final AccountRepository accountRepository;
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
-    private final CorsFilter corsFilter;
+    private final JwtDecoder jwtDecoder;
 
-
-//    public SecurityConfig(JWTAuthProvider jwtAuthProvider, HeaderTokenExtractor headerTokenExtractor) {
-////            CorsFilter corsFilter
-////        this.corsFilter=corsFilter;
-//        this.jwtAuthProvider = jwtAuthProvider;
-//        this.headerTokenExtractor = headerTokenExtractor;
-//    }
+    private final OatuhHandler oatuhHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 
 
     @Override
@@ -64,16 +65,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**");
-
-//        web.ignoring().antMatchers(
-//                // -- Static resources
-//                "/css/**", "/images/**", "/js/**"
-//                // -- Swagger UI v2
-//                , "/v2/api-docs", "/swagger-resources/**"
-//                , "/swagger-ui.html", "/webjars/**", "/swagger/**"
-//                // -- Swagger UI v3 (Open API)
-//                , "/v3/api-docs/**", "/swagger-ui/**"
-//        );
         web.ignoring().antMatchers(PERMIT_URL_ARRAY);
     }
 
@@ -81,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("X-ACCESSR-TOKEN");
         configuration.addExposedHeader("X-REFRESH-TOKEN");
@@ -133,12 +124,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
-                .antMatchers("/", "/api/sign-up", "/api/email-validation").permitAll()
+                .antMatchers("/","/api/sign-up","/api/refresh-re").permitAll()
+                .antMatchers("/api/kakao/callback","/api/google/callback").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
-    }
 
-    //        http.authorizeRequests()
+
+        http.oauth2Login().loginPage("/login").successHandler(oatuhHandler).userInfoEndpoint().userService(principalOauth2UserService());
+        }
+        @Bean
+        public PrincipalOauth2UserService principalOauth2UserService() {
+            return new PrincipalOauth2UserService(accountRepository,passwordEncoder());
+        }
+
+//        http.authorizeRequests()
 //                .anyRequest()
 //                .permitAll()
 //                .and()
@@ -151,70 +150,75 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
-    @Bean
-    public FormLoginFilter formLoginFilter() throws Exception {
-        FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
-        formLoginFilter.setFilterProcessesUrl("/api/login");
-        formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
-        formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
-        return formLoginFilter;
-    }
+        @Bean
+        public FormLoginFilter formLoginFilter() throws Exception {
+            FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
+            formLoginFilter.setFilterProcessesUrl("/api/login");
+            formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
+            formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
+            return formLoginFilter;
+        }
+        @Bean
+        public FormLoginSuccessHandler formLoginSuccessHandler() {
+            return new FormLoginSuccessHandler(accountRepository);
+        }
+        @Bean
+        public FormLoginAuthProvider formLoginAuthProvider() {
+            return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
+        }
 
-    @Bean
-    public FormLoginSuccessHandler formLoginSuccessHandler() {
-        return new FormLoginSuccessHandler();
-    }
+        //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
+        private JwtAuthFilter jwtFilter() throws Exception {
+            List<String> skipPathList = new ArrayList<>();
 
-    @Bean
-    public FormLoginAuthProvider formLoginAuthProvider() {
-        return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
-    }
+            // Static 정보 접근 허용
+            skipPathList.add("GET,/images/**");
+            skipPathList.add("GET,/css/**");
 
+            // h2-console 허용
+            skipPathList.add("GET,/h2-console/**");
+            skipPathList.add("POST,/h2-console/**");
 
-    private JwtAuthFilter jwtFilter() throws Exception {
-        List<String> skipPathList = new ArrayList<>();
+            //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
+            // 회원 관리 API 허용
+            skipPathList.add("GET,/");
+            skipPathList.add("GET,/api/refresh-re");
+            skipPathList.add("POST,/api/refresh-re");
+            skipPathList.add("POST,/api/sign-up");
 
-        // Static 정보 접근 허용
-        skipPathList.add("GET,/images/**");
-        skipPathList.add("GET,/css/**");
+            //소셜 콜백 주소
+            //KAKAO
+            skipPathList.add("GET,/api/kakao/callback");
+            skipPathList.add("GET,/login/oauth2/code/google");
 
-        // h2-console 허용
-        skipPathList.add("GET,/h2-console/**");
-        skipPathList.add("POST,/h2-console/**");
-
-        // 회원 관리 API 허용
-        skipPathList.add("GET,/");
-//            skipPathList.add("GET,/api/manager");
-        skipPathList.add("POST,/api/sign-up");
-        skipPathList.add("POST,/api/email-validation");
-
-
-        //보드게시판 API 허용/swagger-resources/**
-        skipPathList.add("GET,/api/boards");
-        skipPathList.add("GET,/swagger-resources/**");
+            //보드게시판 API 허용/swagger-resources/**
+            skipPathList.add("GET,/api/boards");
+            skipPathList.add("GET,/swagger-resources/**");
 //            skipPathList.add("GET,/");
 //            skipPathList.add("GET,/basic.js");
 //
 //            skipPathList.add("GET,/favicon.ico");
 
-        FilterSkipMatcher matcher = new FilterSkipMatcher(
-                skipPathList,
-                "/**"
-        );
+            FilterSkipMatcher matcher = new FilterSkipMatcher(
+                    skipPathList,
+                    "/**"
+            );
 
-        JwtAuthFilter filter = new JwtAuthFilter(
-                matcher,
-                headerTokenExtractor
-        );
-        filter.setAuthenticationManager(super.authenticationManagerBean());
+            JwtAuthFilter filter = new JwtAuthFilter(
+                    matcher,
+                    headerTokenExtractor
+                    ,jwtDecoder
+                    ,accountRepository
+            );
+            filter.setAuthenticationManager(super.authenticationManagerBean());
 
-        return filter;
-    }
+            return filter;
+        }
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
 
 }

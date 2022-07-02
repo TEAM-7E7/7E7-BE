@@ -1,11 +1,14 @@
 package com.seven.marketclip.account;
 
 import com.seven.marketclip.Timestamped;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Entity
 @Getter
 public class Account extends Timestamped {
@@ -37,6 +40,15 @@ public class Account extends Timestamped {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+
+    @Builder
+    public Account(String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type ) {
+        this.nickname =nickname;
+        this.email=email;
+        this.password=password;
+        this.role=role;
+        this.type=type;
+    }
 
     //계정 타입 (일반)
     public void saveAccountType(AccountTypeEnum accountTypeEnum){
