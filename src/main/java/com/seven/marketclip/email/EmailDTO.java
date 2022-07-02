@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmailDTO {
     private String email;
-    private String authToken;
+    private String emailToken;
 //    private Integer count;
 //    private LocalDateTime createAt;
 //    private LocalDateTime modifiedAt;
 
     @Builder
-    public EmailDTO(String email, String authToken) {
+    public EmailDTO(String email, String emailToken) {
         this.email = email;
-        this.authToken = authToken;
+        this.emailToken = emailToken;
     }
 
 }
