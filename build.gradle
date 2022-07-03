@@ -48,6 +48,10 @@ dependencies {
 //    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 //    compileOnly 'com.auth0:java-jwt:3.19.2'
 
+    // S3
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.1'
+
+
 }
 
 tasks.named('test') {
