@@ -31,7 +31,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     private final HeaderTokenExtractor extractor;
     private final AccountRepository accountRepository;
 
-    public JwtAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher, HeaderTokenExtractor extractor,JwtDecoder jwtDecoder,AccountRepository accountRepository) {
+    public JwtAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher, HeaderTokenExtractor extractor, JwtDecoder jwtDecoder, AccountRepository accountRepository) {
         super(requiresAuthenticationRequestMatcher);
         this.extractor = extractor;
         this.jwtDecoder = jwtDecoder;
@@ -43,11 +43,11 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         System.out.println("전체필터 1");
         // JWT 값을 담아주는 변수 TokenPayload
-        String authorization = request.getHeader("X-ACCESSR-TOKEN");
+        String authorization = request.getHeader("X-ACCESS-TOKEN");
         String refreshToken = request.getHeader("X-REFRESH-TOKEN");
 
         //TODO 여기서 response에 선용님 예외처리 넣기.
-        System.out.println("전체필터 헤더값 : "+ authorization);
+        System.out.println("전체필터 헤더값 : " + authorization);
         if (authorization == null) {
             return null;
         }
@@ -69,7 +69,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
         }
 
-        if(!accountRepository.existsByRefreshToken(refresh)){
+        if (!accountRepository.existsByRefreshToken(refresh)) {
             System.out.println(refresh);
             System.out.println("DB에서 확인 불가 - JwtAuthFilter");
             return null;
@@ -80,7 +80,6 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         System.out.println("전체필터 2");
         return super.getAuthenticationManager().authenticate(jwtToken);
     }
-
 
 
     @Override

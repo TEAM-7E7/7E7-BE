@@ -21,7 +21,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -37,7 +36,7 @@ import java.util.List;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    private final PrincipalOauth2UserService principalOauth2UserService;
+    //    private final PrincipalOauth2UserService principalOauth2UserService;
     private final AccountRepository accountRepository;
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
@@ -48,10 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
-
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
@@ -70,15 +65,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PUT","DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.addExposedHeader("X-ACCESSR-TOKEN");
+        configuration.addExposedHeader("X-ACCESS-TOKEN");
         configuration.addExposedHeader("X-REFRESH-TOKEN");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -125,20 +120,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
-                .antMatchers("/","/api/sign-up","/api/refresh-re").permitAll()
-                .antMatchers("/api/kakao/callback","/api/google/callback").permitAll()
+                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
+                .antMatchers("/api/kakao/callback", "/api/google/callback").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
 
 
         http.oauth2Login().loginPage("/login").successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
-        }
-        @Bean
-        public PrincipalOauth2UserService principalOauth2UserService() {
-            return new PrincipalOauth2UserService(accountRepository,passwordEncoder());
-        }
+    }
 
-//        http.authorizeRequests()
+    @Bean
+    public PrincipalOauth2UserService principalOauth2UserService() {
+        return new PrincipalOauth2UserService(accountRepository, passwordEncoder());
+    }
+
+    //        http.authorizeRequests()
 //                .anyRequest()
 //                .permitAll()
 //                .and()
@@ -151,75 +147,79 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
-        @Bean
-        public FormLoginFilter formLoginFilter() throws Exception {
-            FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
-            formLoginFilter.setFilterProcessesUrl("/api/login");
-            formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
-            formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
-            return formLoginFilter;
-        }
-        @Bean
-        public FormLoginSuccessHandler formLoginSuccessHandler() {
-            return new FormLoginSuccessHandler(accountRepository);
-        }
-        @Bean
-        public FormLoginAuthProvider formLoginAuthProvider() {
-            return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
-        }
+    @Bean
+    public FormLoginFilter formLoginFilter() throws Exception {
+        FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
+        formLoginFilter.setFilterProcessesUrl("/api/login");
+        formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
+        formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
+        return formLoginFilter;
+    }
 
-        //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
-        private JwtAuthFilter jwtFilter() throws Exception {
-            List<String> skipPathList = new ArrayList<>();
+    @Bean
+    public FormLoginSuccessHandler formLoginSuccessHandler() {
+        return new FormLoginSuccessHandler(accountRepository);
+    }
 
-            // Static 정보 접근 허용
-            skipPathList.add("GET,/images/**");
-            skipPathList.add("GET,/css/**");
+    @Bean
+    public FormLoginAuthProvider formLoginAuthProvider() {
+        return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
+    }
 
-            // h2-console 허용
-            skipPathList.add("GET,/h2-console/**");
-            skipPathList.add("POST,/h2-console/**");
+    //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
+    private JwtAuthFilter jwtFilter() throws Exception {
+        List<String> skipPathList = new ArrayList<>();
 
-            //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
-            // 회원 관리 API 허용
-            skipPathList.add("GET,/");
-            skipPathList.add("GET,/api/refresh-re");
-            skipPathList.add("POST,/api/refresh-re");
-            skipPathList.add("POST,/api/sign-up");
+        // Static 정보 접근 허용
+        skipPathList.add("GET,/images/**");
+        skipPathList.add("GET,/css/**");
 
-            //소셜 콜백 주소
-            //KAKAO
-            skipPathList.add("GET,/api/kakao/callback");
-            skipPathList.add("GET,/login/oauth2/code/google");
+        // h2-console 허용
+        skipPathList.add("GET,/h2-console/**");
+        skipPathList.add("POST,/h2-console/**");
 
-            //보드게시판 API 허용/swagger-resources/**
-            skipPathList.add("GET,/api/boards");
-            skipPathList.add("GET,/swagger-resources/**");
+        //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
+        // 회원 관리 API 허용
+        skipPathList.add("GET,/");
+        skipPathList.add("GET,/api/refresh-re");
+        skipPathList.add("POST,/api/refresh-re");
+        skipPathList.add("POST,/api/email-validation");
+        skipPathList.add("POST,/api/sign-up");
+
+
+        //소셜 콜백 주소
+        //KAKAO
+        skipPathList.add("GET,/api/kakao/callback");
+        skipPathList.add("GET,/login/oauth2/code/google");
+
+        //보드게시판 API 허용/swagger-resources/**
+        skipPathList.add("GET,/api/boards");
+        skipPathList.add("GET,/swagger-resources/**");
 //            skipPathList.add("GET,/");
 //            skipPathList.add("GET,/basic.js");
 //
 //            skipPathList.add("GET,/favicon.ico");
 
-            FilterSkipMatcher matcher = new FilterSkipMatcher(
-                    skipPathList,
-                    "/**"
-            );
+        FilterSkipMatcher matcher = new FilterSkipMatcher(
+                skipPathList,
+                "/**"
+        );
 
-            JwtAuthFilter filter = new JwtAuthFilter(
-                    matcher,
-                    headerTokenExtractor
-                    ,jwtDecoder
-                    ,accountRepository
-            );
-            filter.setAuthenticationManager(super.authenticationManagerBean());
+        JwtAuthFilter filter = new JwtAuthFilter(
+                matcher,
+                headerTokenExtractor
+                , jwtDecoder
+                , accountRepository
+        );
+        filter.setAuthenticationManager(super.authenticationManagerBean());
 
-            return filter;
-        }
+        return filter;
+    }
 
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            return super.authenticationManagerBean();
-        }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
 }
