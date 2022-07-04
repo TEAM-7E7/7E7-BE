@@ -27,34 +27,15 @@ public class AccountController {
         webDataBinder.addValidators(accountReqDtoValidation);
     }
 
-//    @ApiOperation(value = "회원가입",notes = "회원가입 하는 API")
-//    @PostMapping("/api/sign-up")
-//    ResponseEntity<?> signUp(@Validated @RequestBody AccountReqDTO accountReqDTO, Errors errors){
-//        //회원가입
-//        if(errors.hasErrors()){
-//            return ResponseEntity.badRequest().body("올바른 형식이 아닙니다.");
-//        }
-//
-//        AccountTypeEnum role = AccountTypeEnum.MARKETCLIP;
-//        account.saveAccountType(role);
-//        account.EncodePassword(passwordEncoder);
-//        accountRepository.save(account);
-//
-//        return ResponseEntity.ok().body(account);
-//    }
-
     @ApiOperation(value = "회원가입", notes = "회원가입 하는 API")
     @PostMapping("/api/sign-up")
     public ResponseEntity<HttpResponse> signUp(@RequestBody AccountReqDTO accountReqDTO) {
         return HttpResponse.toResponseEntity(accountService.addUser(accountReqDTO));
     }
 
-    //소셜 로그인
     //KAKAO Social Login
     @GetMapping("/api/kakao/callback")
     public ResponseEntity<HttpResponse> kakaoLogin(String code) throws JsonProcessingException {
-//        System.out.println("카카오 로그인 시작 1");
-//        System.out.println("코드 " + code);
         return HttpResponse.toResponseEntity(accountService.kakaoLogin(code));
     }
 

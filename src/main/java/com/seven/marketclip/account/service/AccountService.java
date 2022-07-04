@@ -15,7 +15,6 @@ import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.security.FormLoginSuccessHandler;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -50,7 +49,7 @@ public class AccountService {
     }
 
     //닉네임 증복체크
-    public ResponseCode nicknameValidation(String nickname) {
+    public ResponseCode nicknameVerification(String nickname) {
         Optional<Account> accountOpt = accountRepository.findByNickname(nickname);
         if (accountOpt.isPresent()) {
             throw new CustomException(NICKNAME_ALREADY_EXISTS);
@@ -89,7 +88,6 @@ public class AccountService {
         // 2. 토큰으로 카카오 API 호출
         KakaoOauthDTO kakaoOauthDto = getKakaoUserInfo(accessToken);
 
-        //이메일과 닉네임을 어떻게 받아올지 확인 안함.
         // 3. 카카오 사용자 회원가입 and 로그인
         Account account = selectLoginType(kakaoOauthDto);
 
