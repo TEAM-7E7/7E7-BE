@@ -5,8 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.seven.marketclip.goods.exception.CustomException;
-import com.seven.marketclip.goods.exception.ErrorCode;
+import com.seven.marketclip.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import static com.seven.marketclip.exception.ResponseCode.FILE_UPLOAD_ERROR;
+import static com.seven.marketclip.exception.ResponseCode.WRONG_FILE_TYPE;
 
 
 @Slf4j
@@ -43,7 +45,7 @@ public class S3Uploader {
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
-            throw new CustomException(ErrorCode.FILE_UPLOAD_ERROR);
+            throw new CustomException(FILE_UPLOAD_ERROR);
         }
         return bucketName + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
     }
@@ -60,12 +62,12 @@ public class S3Uploader {
         try {
             target = fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
-            throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
+            throw new CustomException(WRONG_FILE_TYPE);
         }
         if (fileList.contains(target)) {
             return target;
         } else {
-            throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
+            throw new CustomException(WRONG_FILE_TYPE);
         }
 
     }

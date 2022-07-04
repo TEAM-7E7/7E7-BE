@@ -2,11 +2,10 @@ package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.GoodsForm;
 import com.seven.marketclip.goods.dto.GoodsResponse;
-import com.seven.marketclip.goods.exception.CustomException;
-import com.seven.marketclip.goods.exception.ErrorCode;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.goods.service.GoodsService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static com.seven.marketclip.exception.ResponseCode.GOODS_NOT_FOUND;
+import static com.seven.marketclip.exception.ResponseCode.USER_NOT_FOUND;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,10 +49,10 @@ public class GoodsController {
     public GoodsResponse getGoods(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
         goodsService.plusView(goodsId);
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(ErrorCode.GOODS_NOT_EXIST)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
         Account account1 = accountRepository.findById(account.getId()).orElseThrow(
-                ()-> new CustomException(ErrorCode.USER_NOT_FOUND)
+                ()-> new CustomException(USER_NOT_FOUND)
         );
         return new GoodsResponse(goods);
     }
@@ -59,7 +61,7 @@ public class GoodsController {
     @DeleteMapping("/{goodsId}")
     public ResponseEntity<String> deleteGoods(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
         goodsRepository.findById(goodsId).orElseThrow(
-                ()-> new CustomException(ErrorCode.GOODS_NOT_EXIST)
+                ()-> new CustomException(GOODS_NOT_FOUND)
         );
         goodsRepository.deleteById(goodsId);
         return ResponseEntity.ok().body("삭제완료");
