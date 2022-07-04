@@ -1,7 +1,7 @@
 package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.account.service.OatuhHandler;
+import com.seven.marketclip.account.service.OauthHandler;
 import com.seven.marketclip.account.service.PrincipalOauth2UserService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
 
-    private final OatuhHandler oatuhHandler;
+    private final OauthHandler oauthHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -130,7 +130,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
 
 
-        http.oauth2Login().loginPage("/login").successHandler(oatuhHandler).userInfoEndpoint().userService(principalOauth2UserService());
+        http.oauth2Login().loginPage("/login").successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
         }
         @Bean
         public PrincipalOauth2UserService principalOauth2UserService() {

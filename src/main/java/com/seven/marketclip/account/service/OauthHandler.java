@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class OatuhHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
@@ -26,7 +26,7 @@ public class OatuhHandler extends SimpleUrlAuthenticationSuccessHandler {
         final String token = JwtTokenUtils.generateJwtToken(userDetailsImpl);
         final String refresh = JwtTokenUtils.generateRefreshToken(userDetailsImpl);
 
-        account.refreshTokenChange(refresh);
+        account.changeRefreshToken(refresh);
 
         HttpHeaders headers = new HttpHeaders();
 

@@ -3,6 +3,7 @@ package com.seven.marketclip.account.service;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
+import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,7 +15,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.transaction.Transactional;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+
+import static com.seven.marketclip.exception.ResponseCode.USER_NOT_FOUND;
 
 @Transactional
 @RequiredArgsConstructor
@@ -59,33 +63,38 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             System.out.println("우리는 구글과 네이버만 지원해요 ㅎㅎ");
         }
 
-        //System.out.println("oAuth2UserInfo.getProvider() : " + oAuth2UserInfo.getProvider());
+        // System.out.println("oAuth2UserInfo.getProvider() : " + oAuth2UserInfo.getProvider());
         // System.out.println("oAuth2UserInfo.getProviderId() : " + oAuth2UserInfo.getProviderId());
         //
         //각각의 소셜ID 함수에 앞에 카카오인지
         String randomNickname = RandomStringUtils.random(8, true, true);
-        Account account;
-        if(accountRepository.existsByEmail(oAuth2UserInfo.getEmail()) || accountRepository.existsByNickname(randomNickname)){
+        Optional<Account> accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
+        Optional<Account> accountOptNickname = accountRepository.findByNickname(randomNickname);
 
-            System.out.println("규굴, 네이 버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
+        if(accountOptEmail.isPresent() || accountOptNickname.isPresent()){
+            System.out.println("구글, 네이버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
             //이미 있으니까 바로 로그인인
-            account =  accountRepository.findByEmail(oAuth2UserInfo.getSocialId()).orElseThrow(
-                    ()-> new IllegalArgumentException("존재하는 아이디가 없습니다.")
+            Account account =  accountOptEmail.orElseThrow(
+                    ()-> new CustomException(USER_NOT_FOUND)
             );
+
+            String email = account.getEmail();
+            AccountRoleEnum role = account.getRole();
+            return new UserDetailsImpl(email, role);
+
         }else {//이메일과 닉네임이 둘다 존재하지 않을 때
             String uuidPassword = String.valueOf(UUID.randomUUID());
             AccountRoleEnum roleEnum = AccountRoleEnum.USER;
-            account = Account.builder()
+            Account account = Account.builder()
                     .nickname(randomNickname)
                     .email(oAuth2UserInfo.getEmail())
                     .password(uuidPassword)
                     .type(oAuth2UserInfo.getRole())
                     .role(roleEnum)
                     .build();
-            account.EncodePassword(bCryptPasswordEncoder);
+            account.encodePassword(bCryptPasswordEncoder.encode(uuidPassword));
             accountRepository.save(account);
+            return new UserDetailsImpl(account.getEmail(), account.getRole());
         }
-
-        return new UserDetailsImpl(account.getEmail(), account.getRole());
     }
 }

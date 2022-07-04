@@ -1,5 +1,6 @@
 package com.seven.marketclip.account.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -24,5 +25,12 @@ public class AccountReqDTO {
     @NotBlank
     @Length(min = 8, max = 20)
     private String password;
+
+    @Builder
+    public AccountReqDTO(String nickname, String email, String password){
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+    }
 
 }

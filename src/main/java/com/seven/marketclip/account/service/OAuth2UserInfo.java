@@ -7,6 +7,5 @@ public interface OAuth2UserInfo {
     String getSocial(); //해당 소셜
     String getEmail(); //이메일
     String getName(); //이름
-
     AccountTypeEnum getRole();
 }

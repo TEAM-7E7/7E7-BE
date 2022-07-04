@@ -7,7 +7,11 @@ import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.account.AccountTypeEnum;
-import com.seven.marketclip.account.dto.KakaoOauthDto;
+import com.seven.marketclip.account.dto.AccountReqDTO;
+import com.seven.marketclip.account.dto.KakaoOauthDTO;
+import com.seven.marketclip.email.EmailService;
+import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.security.FormLoginSuccessHandler;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
@@ -27,31 +31,63 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+import static com.seven.marketclip.exception.ResponseCode.*;
+
 @Service
 public class AccountService {
 
+    private final EmailService emailService;
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
+        this.emailService = emailService;
+        this.accountRepository = accountRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
     //닉네임 증복체크
-    public ResponseEntity<?> nicknameValidation(String nickname) {
-        if (!accountRepository.existsByNickname(nickname)) {
-            return ResponseEntity.badRequest().body("이미 존재하는 닉네임 입니다.");
+    public ResponseCode nicknameValidation(String nickname) {
+        Optional<Account> accountOpt = accountRepository.findByNickname(nickname);
+        if (accountOpt.isPresent()) {
+            throw new CustomException(NICKNAME_ALREADY_EXISTS);
         }
-        return ResponseEntity.ok().body(null);
+        return NICKNAME_VALIDATION_SUCCESS;
+    }
+
+    // 회원가입
+    @Transactional
+    public ResponseCode addUser(AccountReqDTO accountReqDTO) throws CustomException {
+        String encodedPassword = bCryptPasswordEncoder.encode(accountReqDTO.getPassword());
+
+        Account account = Account.builder()
+                .email(accountReqDTO.getEmail())
+                .nickname(accountReqDTO.getNickname())
+                .password(encodedPassword)
+                .role(AccountRoleEnum.USER)
+                .type(AccountTypeEnum.MARKETCLIP)
+                .build();
+
+        if(!emailService.checkVerified(accountReqDTO.getEmail())){
+            throw new CustomException(UNVERIFIED_EMAIL);
+        }
+
+        accountRepository.save(account);
+
+        return SIGNUP_SUCCESS;
     }
 
     //카카오 로그인 서비스
     @Transactional
-    public ResponseEntity<?> kakaoLogin(String code) throws JsonProcessingException {
+    public ResponseCode kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
         // 2. 토큰으로 카카오 API 호출
-        KakaoOauthDto kakaoOauthDto = getKakaoUserInfo(accessToken);
+        KakaoOauthDTO kakaoOauthDto = getKakaoUserInfo(accessToken);
 
         //이메일과 닉네임을 어떻게 받아올지 확인 안함.
         // 3. 카카오 사용자 회원가입 and 로그인
@@ -99,7 +135,8 @@ public class AccountService {
 
         return accessToken;
     }
-    private KakaoOauthDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+
+    private KakaoOauthDTO getKakaoUserInfo(String accessToken) throws JsonProcessingException {
 
         HttpHeaders headers = new HttpHeaders();
         // HTTP Header 생성
@@ -129,11 +166,14 @@ public class AccountService {
 
 //        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
         AccountTypeEnum typeEnum = AccountTypeEnum.KAKAO;
-        return new KakaoOauthDto(id, nickname, typeEnum);
+        return new KakaoOauthDTO(id, nickname, typeEnum);
     }
-    private Account selectLoginType(KakaoOauthDto kakaoOauthDto) {
+
+    private Account selectLoginType(KakaoOauthDTO kakaoOauthDto) {
         String randomNickname = RandomStringUtils.random(8, true, true);
-        if(accountRepository.existsByEmail(kakaoOauthDto.getId()) || accountRepository.existsByNickname(randomNickname)){
+        Optional<Account> accountOptEmail = accountRepository.findByEmail(kakaoOauthDto.getId());
+        Optional<Account> accountOptNickname = accountRepository.findByNickname(kakaoOauthDto.getId());
+        if(accountOptEmail.isPresent() || accountOptNickname.isPresent()){
             System.out.println("카카오 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
 
             return accountRepository.findByEmail(kakaoOauthDto.getId()).orElseThrow(
@@ -151,7 +191,7 @@ public class AccountService {
                 .role(roleEnum)
                 .type(kakaoOauthDto.getType())
                 .build();
-        account.EncodePassword(bCryptPasswordEncoder);
+        account.encodePassword(bCryptPasswordEncoder.encode(uuidPassword));
         accountRepository.save(account);
         return account;
     }
@@ -163,17 +203,17 @@ public class AccountService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return userDetailsImpl;
     }
-    private ResponseEntity<String> makeToken(Account account, UserDetailsImpl userDetailsImpl) {
+    private ResponseCode makeToken(Account account, UserDetailsImpl userDetailsImpl) {
         final String token = JwtTokenUtils.generateJwtToken(userDetailsImpl);
         final String refresh = JwtTokenUtils.generateRefreshToken(userDetailsImpl);
 
-        account.refreshTokenChange(refresh);
+        account.changeRefreshToken(refresh);
 
         HttpHeaders headers = new HttpHeaders();
 
         headers.set(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
         headers.set(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
-        return ResponseEntity.ok().headers(headers).body("굿굿");
+        return SIGNUP_SUCCESS;
 //        return ResponseEntity.ok().body(null);
     }
 

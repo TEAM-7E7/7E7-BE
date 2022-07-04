@@ -35,7 +35,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         Account account = accountRepository.findById(userDetails.getId()).orElseThrow(
                 ()-> new IllegalArgumentException("찾는 아이디가 없습니다.")
         );
-        account.refreshTokenChange(refresh);
+        account.changeRefreshToken(refresh);
 
         System.out.println(token);
 
