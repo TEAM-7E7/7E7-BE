@@ -6,7 +6,6 @@ import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.exception.ResponseCode;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -101,9 +100,17 @@ public class EmailService {
             } else if (!email.getEmailToken().equals(receivedToken)) {
                 throw new CustomException(INVALID_EMAIL_TOKEN);
             } else {
+                email.verified();
                 return EMAIL_VALIDATION_SUCCESS;
             }
         }
+    }
+
+    public Boolean checkVerified(String email){
+        Email emailFind = emailRepository.findByUserEmail(email).orElseThrow(
+                ()-> new CustomException(UNVERIFIED_EMAIL)
+        );
+        return emailFind.getEmailVerified();
     }
 
     // 두시간마다 폐기된 이메일 데이터 삭제

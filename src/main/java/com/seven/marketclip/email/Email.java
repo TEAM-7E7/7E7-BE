@@ -22,6 +22,9 @@ public class Email {
     @Column(name = "email_token")
     private String emailToken;
 
+    @Column(name = "email_verified")
+    private Boolean emailVerified = false;
+
     @Column(name = "expire_date")
     private LocalDateTime expireDate;
 
@@ -45,6 +48,10 @@ public class Email {
     public void update(LocalDateTime localDateTime, String emailToken){
         this.emailToken = emailToken;
         this.expireDate = localDateTime.plusMinutes(10);
+    }
+
+    public void verified(){
+        this.emailVerified = true;
     }
 
 }

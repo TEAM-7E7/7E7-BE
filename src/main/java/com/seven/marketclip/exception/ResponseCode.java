@@ -9,10 +9,17 @@ import static org.springframework.http.HttpStatus.*;
 public enum ResponseCode {
 
     /** 200 OK 요청성공 */
+    TEST_SUCCESS(OK, "테스트 결과 확인."),
+
+    // 닉네임 확인
+    NICKNAME_VALIDATION_SUCCESS(OK, "닉네임을 사용할 수 있습니다."),
 
     // 이메일 인증
     EMAIL_VALIDATION_SUCCESS(OK, "이메일 인증이 완료되었습니다."),
     EMAIL_DISPATCH_SUCCESS(OK, "해당 이메일로 인증번호를 발송하였습니다."),
+
+    // 회원가입 완료
+    SIGNUP_SUCCESS(OK, "회원가입이 완료되었습니다."),
 
     /** 400 BAD_REQUEST 잘못된 요청 */
     // 회원가입 + 로그인
@@ -23,9 +30,11 @@ public enum ResponseCode {
 
     INVALID_LOGIN(BAD_REQUEST, "이메일 또는 패스워드를 확인해 주세요."),
 
+
     EMAIL_ALREADY_SENT(BAD_REQUEST, "이미 이메일이 발송되었습니다."),
     EMAIL_ALREADY_EXPIRED(BAD_REQUEST, "이메일 인증시간이 지났습니다, 인증번호를 다시 발급해주세요."),
 
+    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았습니다."),
     INVALID_EMAIL_TOKEN(BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
 
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰이 유효하지 않습니다."),
@@ -51,11 +60,13 @@ public enum ResponseCode {
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 된 사용자입니다."),
 
     /** 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
-    USER_ALREADY_EXISTS(BAD_REQUEST, "이미 존재하는 사용자입니다."),
+    USER_ALREADY_EXISTS(CONFLICT, "이미 존재하는 사용자입니다."),
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다."),
 
+    NICKNAME_ALREADY_EXISTS(CONFLICT, "이미 존재하는 닉네임입니다."),
+
     // 즐겨찾기
-    BOOKMARK_ALREADY_EXIST(BAD_REQUEST, "이미 찜 한 상품입니다.");
+    BOOKMARK_ALREADY_EXIST(CONFLICT, "이미 찜 한 상품입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

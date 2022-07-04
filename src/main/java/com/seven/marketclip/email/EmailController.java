@@ -23,9 +23,4 @@ public class EmailController {
         return HttpResponse.toResponseEntity(emailService.checkEmail(emailDTO));
     }
 
-//    public void emailCheck(@RequestBody EmailDTO emailDTO) {
-//        emailService.checkEmail(emailDTO);
-//    }
-
-
 }
