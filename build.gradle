@@ -43,9 +43,12 @@ dependencies {
     //OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+
+
+
     //jwt -> 배포할 때 되는지 잘 모르겠음
-    implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.3'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1' // jwt
+//    implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.3'
+//    implementation 'io.jsonwebtoken:jjwt:0.9.1' // jwt
 
     //jwt -> 로컬 실행용
 //    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
