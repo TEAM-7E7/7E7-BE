@@ -1,17 +1,20 @@
 package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.Account;
-import com.seven.marketclip.goods.exception.CustomException;
-import com.seven.marketclip.goods.exception.ErrorCode;
-import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.GoodsForm;
+import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.exception.ResponseCode;
+import com.seven.marketclip.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.api.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.transaction.Transactional;
+
+import static com.seven.marketclip.exception.ResponseCode.GOODS_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,7 @@ public class GoodsService {
     @Transactional
     public void updateGoodsDetail(Long id, @Validated GoodsForm form, Account account){
         Goods goods = goodsRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.GOODS_NOT_EXIST)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
         if (goods.getFileUrl() != null) s3Uploader.deleteFile(goods.getFileUrl());
         String updateFileUrl = form.getFile() == null? null: s3Uploader.uploadFile(form.getFile());
@@ -44,7 +47,7 @@ public class GoodsService {
     @Transactional
     public void plusView(Long id) {
         if (!goodsRepository.existsById(id)) {
-            throw new CustomException(ErrorCode.GOODS_NOT_EXIST);
+            throw new CustomException(GOODS_NOT_FOUND);
         }
         goodsRepository.updateView(id);
     }
