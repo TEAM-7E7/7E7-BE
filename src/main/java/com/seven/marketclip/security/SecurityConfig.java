@@ -44,10 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final OatuhHandler oatuhHandler;
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+//    @Bean
+//    public BCryptPasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
 
 
@@ -134,7 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         @Bean
         public PrincipalOauth2UserService principalOauth2UserService() {
-            return new PrincipalOauth2UserService(accountRepository,passwordEncoder());
+            return new PrincipalOauth2UserService(accountRepository,bCryptPasswordEncoder);
         }
 
 //        http.authorizeRequests()
@@ -164,7 +166,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         @Bean
         public FormLoginAuthProvider formLoginAuthProvider() {
-            return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
+            return new FormLoginAuthProvider(bCryptPasswordEncoder);//TODO 이걸 왜 넣지?
         }
 
         //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제

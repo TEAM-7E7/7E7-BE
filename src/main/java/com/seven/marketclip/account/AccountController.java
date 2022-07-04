@@ -86,6 +86,9 @@ public class AccountController {
         return ResponseEntity.ok().body(account);
     }
 
+    //1. 카카오 로그인 버튼 -> 로그인,동의 -> 코드
+    //2. 카카오한테 코드를 보냄 (액세스 토큰을 리턴)
+    //3. 액세스 토큰을 카카오 한테 보냄(사용자 정보를 준다)
     //소셜 로그인
     //KAKAO Social Login
     @GetMapping("/api/kakao/callback")

@@ -86,6 +86,21 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             accountRepository.save(account);
         }
 
+//        UserDetailsImpl userDetailsImpl = new UserDetailsImpl(account.getId(), account.getEmail(), account.getRole());
+////        UserDetails userDetails = userDetailsImpl;
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetailsImpl, null, userDetailsImpl.getAuthorities());
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        final String token = JwtTokenUtils.generateJwtToken(userDetailsImpl);
+//        final String refresh = JwtTokenUtils.generateRefreshToken(userDetailsImpl);
+//
+//        account.refreshTokenChange(refresh);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//
+//        headers.set(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
+//        headers.set(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
+
         return new UserDetailsImpl(account.getEmail(), account.getRole());
     }
 }
