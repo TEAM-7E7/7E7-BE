@@ -3,6 +3,7 @@ package com.seven.marketclip.email;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.exception.ResponseCode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.mail.SimpleMailMessage;
