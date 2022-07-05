@@ -1,4 +1,4 @@
-package com.seven.marketclip.account.service;
+package com.seven.marketclip.account.oauth;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
@@ -19,9 +19,8 @@ import javax.transaction.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @Component
-public class OatuhHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final AccountRepository accountRepository;
-
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
@@ -38,10 +37,12 @@ public class OatuhHandler extends SimpleUrlAuthenticationSuccessHandler {
         final String token = JwtTokenUtils.generateJwtToken(userDetailsImpl);
         final String refresh = JwtTokenUtils.generateRefreshToken(userDetailsImpl);
 
-        Account account = accountRepository.findByEmail(userDetailsImpl.getUsername()).orElseThrow(
+
+        Account account = accountRepository.findByEmail(userDetailsImpl.getEmail()).orElseThrow(
                 () -> new IllegalArgumentException("sdsfdhtm 오스 핸들러ㅜ  아읻 업음")
         );
-        account.refreshTokenChange(refresh);
+
+        account.changeRefreshToken(refresh);
 
         response.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
         response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);

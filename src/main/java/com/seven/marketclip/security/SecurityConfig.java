@@ -1,8 +1,8 @@
 package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.account.service.OatuhHandler;
-import com.seven.marketclip.account.service.PrincipalOauth2UserService;
+import com.seven.marketclip.account.oauth.OauthHandler;
+import com.seven.marketclip.account.oauth.PrincipalOauth2UserService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
@@ -41,8 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
-
-    private final OatuhHandler oatuhHandler;
+    private final OauthHandler oauthHandler;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -50,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    public BCryptPasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder();
 //    }
+
 
 
 
@@ -77,9 +77,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("X-ACCESSR-TOKEN");
-        configuration.addExposedHeader("X-REFRESH-TOKEN");
+        configuration.addExposedHeader("Y-REFRESH-TOKEN");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+//        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -127,12 +127,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
                 .antMatchers("/","/api/sign-up","/api/refresh-re").permitAll()
-                .antMatchers("/api/kakao/callback","/api/google/callback").permitAll()
+                .antMatchers("/login/oauth2/code/google","/login/oauth2/code/naver","/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
 
 
-        http.oauth2Login().loginPage("/login").successHandler(oatuhHandler).userInfoEndpoint().userService(principalOauth2UserService());
+        http.oauth2Login().loginPage("/login").successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
         }
         @Bean
         public PrincipalOauth2UserService principalOauth2UserService() {
@@ -181,8 +181,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             skipPathList.add("GET,/h2-console/**");
             skipPathList.add("POST,/h2-console/**");
 
-            //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
             // 회원 관리 API 허용
+            //TODO 여기 왜 /를 필터에서 제외 시켰는데 왜 들어가지?
+            //한번 지금 index랑 연결 -> 홈을 따로 만들어서 연결 해보기
             skipPathList.add("GET,/");
             skipPathList.add("GET,/api/refresh-re");
             skipPathList.add("POST,/api/refresh-re");
@@ -192,6 +193,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             //KAKAO
             skipPathList.add("GET,/api/kakao/callback");
             skipPathList.add("GET,/login/oauth2/code/google");
+            skipPathList.add("POST,/login/oauth2/code/kakao");
+            skipPathList.add("GET,/login/oauth2/code/naver");
 
             //보드게시판 API 허용/swagger-resources/**
             skipPathList.add("GET,/api/boards");

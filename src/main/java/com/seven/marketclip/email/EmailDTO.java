@@ -3,23 +3,22 @@ package com.seven.marketclip.email;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import javax.validation.constraints.Email;
 
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class EmailDTO {
+
+    @Email
     private String email;
-    private String token;
-//    private Integer count;
-//    private LocalDateTime createAt;
-//    private LocalDateTime modifiedAt;
+    private String emailToken;
 
     @Builder
-    public EmailDTO(String email, String token){
+    public EmailDTO(String email, String emailToken) {
         this.email = email;
-        this.token = token;
+        this.emailToken = emailToken;
     }
 
 }

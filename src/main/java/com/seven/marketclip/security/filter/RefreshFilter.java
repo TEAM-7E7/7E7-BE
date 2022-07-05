@@ -69,7 +69,7 @@ public class RefreshFilter implements Filter {
         //JWT토큰과 Refresh 토큰 재발급
         final String reissuanceJWT = JwtTokenUtils.generateJwtToken(userDetails);
         final String reissuanceRefreshToken = JwtTokenUtils.generateRefreshToken(userDetails);
-        account.refreshTokenChange(reissuanceRefreshToken);
+        account.changeRefreshToken(reissuanceRefreshToken);
 
         httpServletResponse.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceJWT);
         httpServletResponse.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceRefreshToken);

@@ -1,8 +1,9 @@
-package com.seven.marketclip.account.service;
+package com.seven.marketclip.account.oauth;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
+import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,7 +15,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.transaction.Transactional;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+
+import static com.seven.marketclip.exception.ResponseCode.USER_NOT_FOUND;
 
 @Transactional
 @RequiredArgsConstructor
@@ -36,7 +40,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         System.out.println("oAuth2User : " + oAuth2User);
         System.out.println("oAuth2User : " + oAuth2User.getAttributes());
         return processOAuth2User(userRequest, oAuth2User);
-//        return null;
     }
 
     private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
@@ -47,60 +50,73 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         // Attribute를 파싱해서 공통 객체로 묶는다. 관리가 편함.
         OAuth2UserInfo oAuth2UserInfo = null;
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
-            System.out.println("구글 로그인 요청~~");
+            System.out.println("구글 로그인 요청");
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
             System.out.println(oAuth2UserInfo.toString());
             GoogleUserInfo sad = (GoogleUserInfo)oAuth2UserInfo;
             sad.printAttribute();
-        } else if (userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
-            System.out.println("네이버 로그인 요청~~");
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            System.out.println("네이버 로그인 요청");
             oAuth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
-        } else {
-            System.out.println("우리는 구글과 네이버만 지원해요 ㅎㅎ");
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")){
+            System.out.println("카카오 로그인 요청");
+            oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
+            KakaoUserInfo sad = (KakaoUserInfo)oAuth2UserInfo;
+            sad.printAttribute();
+        }else {
+            System.out.println("우리는 구글과 네이버만 지원");
         }
 
-        //System.out.println("oAuth2UserInfo.getProvider() : " + oAuth2UserInfo.getProvider());
+        // System.out.println("oAuth2UserInfo.getProvider() : " + oAuth2UserInfo.getProvider());
         // System.out.println("oAuth2UserInfo.getProviderId() : " + oAuth2UserInfo.getProviderId());
         //
         //각각의 소셜ID 함수에 앞에 카카오인지
+        System.out.println("시작");
+        System.out.println(oAuth2UserInfo.getEmail());
+        String kakaoId = null;
+        Optional<Account> accountOptEmail = null;
+        if(oAuth2UserInfo.getEmail() == null){
+            System.out.println(oAuth2UserInfo.getSocialId());
+            kakaoId = "Kakao "+oAuth2UserInfo.getSocialId();
+            accountOptEmail = accountRepository.findByEmail("kakao@"+kakaoId);
+        }else{
+            accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
+        }
         String randomNickname = RandomStringUtils.random(8, true, true);
-        Account account;
-        if(accountRepository.existsByEmail(oAuth2UserInfo.getEmail()) || accountRepository.existsByNickname(randomNickname)){
 
-            System.out.println("규굴, 네이 버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
+        Optional<Account> accountOptNickname = accountRepository.findByNickname(randomNickname);
+
+        if(accountOptEmail.isPresent() || accountOptNickname.isPresent()){
+            System.out.println("구글, 네이버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
             //이미 있으니까 바로 로그인인
-            account =  accountRepository.findByEmail(oAuth2UserInfo.getSocialId()).orElseThrow(
-                    ()-> new IllegalArgumentException("존재하는 아이디가 없습니다.")
-            );
-        }else {//이메일과 닉네임이 둘다 존재하지 않을 때
+            Account account =  accountOptEmail.orElseThrow(
+                    ()-> new CustomException(USER_NOT_FOUND)
+            ); //여기서 왜 예외처리를 또??
+
+            String email = account.getEmail();
+            AccountRoleEnum role = account.getRole();
+            String nickname = account.getNickname();
+            return new UserDetailsImpl(email, nickname, role);
+
+        }else {//이메일과 닉네임이 둘다 존재하지 않을 때.
+            System.out.println("회원가입 해야할 때");
             String uuidPassword = String.valueOf(UUID.randomUUID());
             AccountRoleEnum roleEnum = AccountRoleEnum.USER;
-            account = Account.builder()
+            Account account = Account.builder()
                     .nickname(randomNickname)
                     .email(oAuth2UserInfo.getEmail())
                     .password(uuidPassword)
                     .type(oAuth2UserInfo.getRole())
                     .role(roleEnum)
                     .build();
-            account.EncodePassword(bCryptPasswordEncoder);
+            if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")){
+                System.out.println("이게 통과가 안되나요?");
+                System.out.println(oAuth2UserInfo.getSocialId());
+                account.changeIdtoEmail("kakao@"+oAuth2UserInfo.getSocialId());
+            }
+            account.encodePassword(bCryptPasswordEncoder.encode(uuidPassword));
             accountRepository.save(account);
+            return new UserDetailsImpl(account.getEmail(), account.getNickname(), account.getRole());
         }
-
-//        UserDetailsImpl userDetailsImpl = new UserDetailsImpl(account.getId(), account.getEmail(), account.getRole());
-////        UserDetails userDetails = userDetailsImpl;
-//        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetailsImpl, null, userDetailsImpl.getAuthorities());
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        final String token = JwtTokenUtils.generateJwtToken(userDetailsImpl);
-//        final String refresh = JwtTokenUtils.generateRefreshToken(userDetailsImpl);
-//
-//        account.refreshTokenChange(refresh);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//
-//        headers.set(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
-//        headers.set(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
-
-        return new UserDetailsImpl(account.getEmail(), account.getRole());
     }
 }
