@@ -99,17 +99,18 @@ public class EmailService {
             } else if (!email.getEmailToken().equals(receivedToken)) {
                 throw new CustomException(INVALID_EMAIL_TOKEN);
             } else {
+                // 이메일 verified를 true로 변경
                 email.verified();
                 return EMAIL_VALIDATION_SUCCESS;
             }
         }
     }
 
-    public Boolean checkVerified(String email){
-        Email emailFind = emailRepository.findByUserEmail(email).orElseThrow(
+    public boolean checkVerified(String email){
+        Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
                 ()-> new CustomException(UNVERIFIED_EMAIL)
         );
-        return emailFind.getEmailVerified();
+        return emailFound.getEmailVerified();
     }
 
     // 두시간마다 폐기된 이메일 데이터 삭제

@@ -29,22 +29,6 @@ public class AccountController {
         webDataBinder.addValidators(accountReqDtoValidation);
     }
 
-//    @ApiOperation(value = "회원가입",notes = "회원가입 하는 API")
-//    @PostMapping("/api/sign-up")
-//    ResponseEntity<?> signUp(@Validated @RequestBody AccountReqDTO accountReqDTO, Errors errors){
-//        //회원가입
-//        if(errors.hasErrors()){
-//            return ResponseEntity.badRequest().body("올바른 형식이 아닙니다.");
-//        }
-//
-//        AccountTypeEnum role = AccountTypeEnum.MARKETCLIP;
-//        account.saveAccountType(role);
-//        account.EncodePassword(passwordEncoder);
-//        accountRepository.save(account);
-//
-//        return ResponseEntity.ok().body(account);
-//    }
-
     @ApiOperation(value = "회원가입", notes = "회원가입 하는 API")
     @PostMapping("/api/sign-up")
     public ResponseEntity<HttpResponse> signUp(@RequestBody AccountReqDTO accountReqDTO) {

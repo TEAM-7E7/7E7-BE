@@ -36,7 +36,7 @@ import java.util.List;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    private final PrincipalOauth2UserService principalOauth2UserService;
+    //    private final PrincipalOauth2UserService principalOauth2UserService;
     private final AccountRepository accountRepository;
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
@@ -49,10 +49,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    public BCryptPasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder();
 //    }
-
-
-
-
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
@@ -71,15 +67,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PUT","DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.addExposedHeader("X-ACCESSR-TOKEN");
-        configuration.addExposedHeader("Y-REFRESH-TOKEN");
+        configuration.addExposedHeader("X-ACCESS-TOKEN");
+        configuration.addExposedHeader("X-REFRESH-TOKEN");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -126,20 +122,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
 //                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
-                .antMatchers("/","/api/sign-up","/api/refresh-re").permitAll()
+                .antMatchers("/","/api/sign-up","/api/refresh-re", "/api/email-validation").permitAll()
                 .antMatchers("/login/oauth2/code/google","/login/oauth2/code/naver","/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
 
 
         http.oauth2Login().loginPage("/login").successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
+
         }
         @Bean
         public PrincipalOauth2UserService principalOauth2UserService() {
             return new PrincipalOauth2UserService(accountRepository,bCryptPasswordEncoder);
         }
 
-//        http.authorizeRequests()
+
+    //        http.authorizeRequests()
 //                .anyRequest()
 //                .permitAll()
 //                .and()
@@ -152,6 +150,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
+
         @Bean
         public FormLoginFilter formLoginFilter() throws Exception {
             FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
@@ -199,31 +198,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             //보드게시판 API 허용/swagger-resources/**
             skipPathList.add("GET,/api/boards");
             skipPathList.add("GET,/swagger-resources/**");
+
 //            skipPathList.add("GET,/");
 //            skipPathList.add("GET,/basic.js");
 //
 //            skipPathList.add("GET,/favicon.ico");
 
-            FilterSkipMatcher matcher = new FilterSkipMatcher(
-                    skipPathList,
-                    "/**"
-            );
+        FilterSkipMatcher matcher = new FilterSkipMatcher(
+                skipPathList,
+                "/**"
+        );
 
-            JwtAuthFilter filter = new JwtAuthFilter(
-                    matcher,
-                    headerTokenExtractor
-                    ,jwtDecoder
-                    ,accountRepository
-            );
-            filter.setAuthenticationManager(super.authenticationManagerBean());
+        JwtAuthFilter filter = new JwtAuthFilter(
+                matcher,
+                headerTokenExtractor
+                , jwtDecoder
+                , accountRepository
+        );
+        filter.setAuthenticationManager(super.authenticationManagerBean());
 
-            return filter;
-        }
+        return filter;
+    }
 
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            return super.authenticationManagerBean();
-        }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
 }

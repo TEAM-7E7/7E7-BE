@@ -8,6 +8,17 @@ import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
+import com.seven.marketclip.security.FormLoginSuccessHandler;
+import com.seven.marketclip.security.UserDetailsImpl;
+import com.seven.marketclip.security.jwt.JwtTokenUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +41,7 @@ public class AccountService {
     }
 
     //닉네임 증복체크
-    public ResponseCode nicknameValidation(String nickname) {
+    public ResponseCode nicknameVerification(String nickname) {
         Optional<Account> accountOpt = accountRepository.findByNickname(nickname);
         if (accountOpt.isPresent()) {
             throw new CustomException(NICKNAME_ALREADY_EXISTS);
