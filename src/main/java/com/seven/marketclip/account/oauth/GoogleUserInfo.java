@@ -1,4 +1,4 @@
-package com.seven.marketclip.account.service;
+package com.seven.marketclip.account.oauth;
 
 import com.seven.marketclip.account.AccountTypeEnum;
 import lombok.Getter;
@@ -41,4 +41,9 @@ public class GoogleUserInfo implements OAuth2UserInfo {
 
     @Override
     public AccountTypeEnum getRole(){return type;}
+
+//    @Override
+//    public void idtoEmail(String id){
+//        System.out.println("올바르지 않은 접근");
+//    };
 }

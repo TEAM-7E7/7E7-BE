@@ -75,4 +75,7 @@ public class Account extends Timestamped {
         this.refreshToken = refreshToken;
     }
 
+    //소셜에서 카카오만 이메일 값을 아이디 값으로 대체
+    public void changeIdtoEmail(String id){this.email = id;}
+
 }

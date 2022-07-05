@@ -17,6 +17,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     private Long id;
 
+    private String nickname;
     private String email;
 
     private String password;
@@ -25,23 +26,26 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     private AccountRoleEnum role;
 
     //로그인 할 때, 필요한
-    public UserDetailsImpl(Long id, String password, String email,AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String password, String nickname,String email,AccountRoleEnum role){
         this.id = id;
         this.email = email;
+        this.nickname = nickname;
         this.password = password;
         this.role = role;
     }
 
     //JWT 토큰 암호화, 복호화 때 필요한.
-    public UserDetailsImpl(Long id, String email, AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String email,String nickname, AccountRoleEnum role){
         this.id = id;
         this.email = email;
+        this.nickname = nickname;
         this.role = role;
     }
 
     //카카오 로그인때 필요한.
-    public UserDetailsImpl(String email,AccountRoleEnum role){
+    public UserDetailsImpl(String email,String nickname,AccountRoleEnum role){
         this.email = email;
+        this.nickname = nickname;
         this.role = role;
     }
 
@@ -51,6 +55,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     public AccountRoleEnum getRole(){
         return this.role;
     }
+    public String getEmail(){return this.email;}
 
 
     @Override
@@ -60,7 +65,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     @Override
     public String getUsername() {
-        return email;
+        return nickname;
     }
 
     @Override
