@@ -26,10 +26,11 @@ public class JWTAuthProvider implements AuthenticationProvider {
         String token = (String) authentication.getPrincipal();
 
         Long id = jwtDecoder.decodeUserId(token);
+        String nickname = jwtDecoder.decodeUserNickname(token);
         String email = jwtDecoder.decodeUserEmail(token);
         AccountRoleEnum role = jwtDecoder.decodeUserRole(token);
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(id,email,role);
+        UserDetailsImpl userDetails = new UserDetailsImpl(id,email,nickname,role);
 
         System.out.println("전체필터 4");
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

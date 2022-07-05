@@ -1,6 +1,5 @@
 package com.seven.marketclip.account;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.service.AccountService;
 import com.seven.marketclip.account.validation.AccountReqDtoValidation;
@@ -11,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @Api(tags = "유저 컨트롤러")
@@ -32,18 +34,5 @@ public class AccountController {
     public ResponseEntity<HttpResponse> signUp(@RequestBody AccountReqDTO accountReqDTO) {
         return HttpResponse.toResponseEntity(accountService.addUser(accountReqDTO));
     }
-
-    //KAKAO Social Login
-    @GetMapping("/api/kakao/callback")
-    public ResponseEntity<HttpResponse> kakaoLogin(String code) throws JsonProcessingException {
-        return HttpResponse.toResponseEntity(accountService.kakaoLogin(code));
-    }
-
-    //Google
-//    @GetMapping("/login/oauth2/code/google")
-//    public ResponseEntity<HttpResponse> googleLogin(String code) {
-//        System.out.println("구글, 네이버 로그인 시작");
-//        return HttpResponse.toResponseEntity(accountService.);
-//    }
 
 }
