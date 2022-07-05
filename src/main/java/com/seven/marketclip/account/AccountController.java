@@ -9,11 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @Api(tags = "유저 컨트롤러")
@@ -23,11 +18,6 @@ public class AccountController {
 
     private final AccountReqDtoValidation accountReqDtoValidation;
     private final AccountService accountService;
-
-    @InitBinder("AccountReqDTO")
-    public void initBinder(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(accountReqDtoValidation);
-    }
 
     @ApiOperation(value = "회원가입", notes = "회원가입 하는 API")
     @PostMapping("/api/sign-up")

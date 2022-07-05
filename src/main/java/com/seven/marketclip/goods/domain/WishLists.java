@@ -19,12 +19,12 @@ public class WishLists extends Timestamped {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goodsId")
+    @JoinColumn(name = "goods_id")
     private Goods goods;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accountId")
+    @JoinColumn(name = "account_id")
     private Account account;
 
 

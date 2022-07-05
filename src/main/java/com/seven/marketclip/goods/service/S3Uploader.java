@@ -18,8 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static com.seven.marketclip.exception.ResponseCode.FILE_UPLOAD_ERROR;
-import static com.seven.marketclip.exception.ResponseCode.WRONG_FILE_TYPE;
+import static com.seven.marketclip.exception.ResponseCode.*;
 
 
 @Slf4j
@@ -29,11 +28,10 @@ public class S3Uploader {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
-    private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp",".mp4");
+    private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp", ".mp4", ".avi");
 
     public String uploadFile(MultipartFile multipartFile) {
         String fileName = UUID.randomUUID().toString().concat(getFileExtension(multipartFile.getOriginalFilename()));
@@ -50,17 +48,16 @@ public class S3Uploader {
         return bucketName + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
     }
 
-
     public void deleteFile(String fileName) {
         String specFileName = fileName.replaceFirst(bucketName + ".s3.ap-northeast-2.amazonaws.com/", "");
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, specFileName));
     }
 
     private String getFileExtension(String fileName) {
-        fileName = fileName.toLowerCase();
+        String lowerCase = fileName.toLowerCase();
         String target;
         try {
-            target = fileName.substring(fileName.lastIndexOf("."));
+            target = lowerCase.substring(lowerCase.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new CustomException(WRONG_FILE_TYPE);
         }

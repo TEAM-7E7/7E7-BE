@@ -98,10 +98,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().configurationSource(corsConfigurationSource());
 
-        http.csrf().disable();
-
-        // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
         http
+                .csrf().disable()
+                // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -121,8 +120,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
-//                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
-                .antMatchers("/","/api/sign-up","/api/refresh-re", "/api/email-validation").permitAll()
+                .mvcMatchers("/**").permitAll()
+                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
                 .antMatchers("/login/oauth2/code/google","/login/oauth2/code/naver","/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
@@ -150,6 +149,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
+
+        // 테스트용
+        skipPathList.add("GET,/**");
+        skipPathList.add("POST,/**");
+        skipPathList.add("PUT,/**");
+        skipPathList.add("DELETE,/**");
 
         @Bean
         public FormLoginFilter formLoginFilter() throws Exception {

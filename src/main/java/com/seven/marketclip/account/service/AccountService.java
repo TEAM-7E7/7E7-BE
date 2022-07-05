@@ -41,7 +41,7 @@ public class AccountService {
     }
 
     //닉네임 증복체크
-    public ResponseCode nicknameVerification(String nickname) {
+    public ResponseCode checkNickname(String nickname) {
         Optional<Account> accountOpt = accountRepository.findByNickname(nickname);
         if (accountOpt.isPresent()) {
             throw new CustomException(NICKNAME_ALREADY_EXISTS);
@@ -49,7 +49,7 @@ public class AccountService {
         return NICKNAME_VALIDATION_SUCCESS;
     }
 
-    // 회원가입
+    // marketClip 회원가입
     @Transactional
     public ResponseCode addUser(AccountReqDTO accountReqDTO) throws CustomException {
         String encodedPassword = bCryptPasswordEncoder.encode(accountReqDTO.getPassword());
