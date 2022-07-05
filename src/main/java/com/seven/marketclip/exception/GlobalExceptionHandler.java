@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolationException;
 
-import static com.seven.marketclip.exception.ResponseCode.DUPLICATE_RESOURCE;
+import static com.seven.marketclip.exception.ResponseCode.WRONG_VALIDATION_INTEGRITY;
 
 @Slf4j
 @RestControllerAdvice
@@ -17,8 +17,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = { ConstraintViolationException.class, DataIntegrityViolationException.class})
     protected ResponseEntity<HttpResponse> handleDataException() {
-        log.error("handleDataException throw Exception : {}", DUPLICATE_RESOURCE);
-        return HttpResponse.toResponseEntity(DUPLICATE_RESOURCE);
+        log.error("handleDataException throw Exception : {}", WRONG_VALIDATION_INTEGRITY);
+        return HttpResponse.toResponseEntity(WRONG_VALIDATION_INTEGRITY);
     }
 
     @ExceptionHandler(value = { CustomException.class })

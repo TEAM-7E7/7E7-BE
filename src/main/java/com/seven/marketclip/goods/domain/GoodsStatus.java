@@ -3,7 +3,6 @@ package com.seven.marketclip.goods.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
 public enum GoodsStatus {
     NEW("새로 등록된 상품입니다."),
@@ -11,4 +10,9 @@ public enum GoodsStatus {
     SOLD_OUT("판매완료된 상품입니다.");
 
     private final String detail;
+
+    GoodsStatus(String detail){
+        this.detail = detail;
+    }
+
 }

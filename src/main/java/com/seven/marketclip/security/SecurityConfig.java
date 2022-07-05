@@ -96,10 +96,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().configurationSource(corsConfigurationSource());
 
-        http.csrf().disable();
-
-        // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
         http
+                .csrf().disable()
+                // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -119,7 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
-//                .mvcMatchers(HttpMethod.GET,"/h2-console/**").permitAll()
+                .mvcMatchers("/**").permitAll()
                 .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
                 .antMatchers("/api/kakao/callback", "/api/google/callback").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
@@ -174,9 +173,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/images/**");
         skipPathList.add("GET,/css/**");
 
-        // h2-console 허용
-        skipPathList.add("GET,/h2-console/**");
-        skipPathList.add("POST,/h2-console/**");
+        // 테스트용
+        skipPathList.add("GET,/**");
+        skipPathList.add("POST,/**");
+        skipPathList.add("PUT,/**");
+        skipPathList.add("DELETE,/**");
+
 
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
         // 회원 관리 API 허용
@@ -185,7 +187,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/sign-up");
-
 
         //소셜 콜백 주소
         //KAKAO

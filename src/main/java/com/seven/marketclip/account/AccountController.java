@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -22,15 +21,16 @@ public class AccountController {
     private final AccountReqDtoValidation accountReqDtoValidation;
     private final AccountService accountService;
 
-    @InitBinder("AccountReqDTO")
-    public void initBinder(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(accountReqDtoValidation);
-    }
-
     @ApiOperation(value = "회원가입", notes = "회원가입 하는 API")
     @PostMapping("/api/sign-up")
     public ResponseEntity<HttpResponse> signUp(@RequestBody AccountReqDTO accountReqDTO) {
         return HttpResponse.toResponseEntity(accountService.addUser(accountReqDTO));
+    }
+
+    @ApiOperation(value = "닉네임 중복 확인", notes = "닉네임 중복 확인하는 API")
+    @PostMapping("/api/check-nickname")
+    public ResponseEntity<HttpResponse> nicknameCheck(@RequestParam("nickname") String nickname) {
+        return HttpResponse.toResponseEntity(accountService.checkNickname(nickname));
     }
 
     //KAKAO Social Login

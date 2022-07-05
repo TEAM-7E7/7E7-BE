@@ -49,7 +49,7 @@ public class AccountService {
     }
 
     //닉네임 증복체크
-    public ResponseCode nicknameVerification(String nickname) {
+    public ResponseCode checkNickname(String nickname) {
         Optional<Account> accountOpt = accountRepository.findByNickname(nickname);
         if (accountOpt.isPresent()) {
             throw new CustomException(NICKNAME_ALREADY_EXISTS);
@@ -57,7 +57,7 @@ public class AccountService {
         return NICKNAME_VALIDATION_SUCCESS;
     }
 
-    // 회원가입
+    // marketClip 회원가입
     @Transactional
     public ResponseCode addUser(AccountReqDTO accountReqDTO) throws CustomException {
         String encodedPassword = bCryptPasswordEncoder.encode(accountReqDTO.getPassword());
@@ -129,9 +129,7 @@ public class AccountService {
         System.out.println("제이슨 노드 - 엑세스 토큰1 "+responseBody);
         JsonNode jsonNode = objectMapper.readTree(responseBody); //get함수로 빼낼 수 있게 하려고
         System.out.println("제이슨 노드 - 엑세스 토큰2 "+jsonNode);
-        String accessToken = jsonNode.get("access_token").asText();
-
-        return accessToken;
+        return jsonNode.get("access_token").asText();
     }
 
     private KakaoOauthDTO getKakaoUserInfo(String accessToken) throws JsonProcessingException {

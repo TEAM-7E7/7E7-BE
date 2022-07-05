@@ -2,11 +2,13 @@ package com.seven.marketclip.account;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.dto.AccountReqDTO;
+import com.seven.marketclip.goods.domain.Goods;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor
 @Entity
@@ -40,6 +42,8 @@ public class Account extends Timestamped {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @OneToMany(mappedBy = "account")
+    private List<Goods> goodsList;
 
     @Builder
     public Account(String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type ) {
