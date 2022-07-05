@@ -4,15 +4,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
+
 
 @Getter
 @NoArgsConstructor
 public class EmailDTO {
+
+    @Email
     private String email;
     private String emailToken;
-//    private Integer count;
-//    private LocalDateTime createAt;
-//    private LocalDateTime modifiedAt;
 
     @Builder
     public EmailDTO(String email, String emailToken) {

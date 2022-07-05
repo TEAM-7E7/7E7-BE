@@ -1,11 +1,14 @@
 package com.seven.marketclip.account;
 
 import com.seven.marketclip.Timestamped;
+import com.seven.marketclip.account.dto.AccountReqDTO;
+import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Entity
 @Getter
 public class Account extends Timestamped {
@@ -28,7 +31,7 @@ public class Account extends Timestamped {
     private AccountRoleEnum role;
 
     @Column(name = "rating_score")
-    private Double ratingScore;
+    private Double ratingScore = 0.0;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -38,19 +41,37 @@ public class Account extends Timestamped {
     private String refreshToken;
 
 
+    @Builder
+    public Account(String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type ) {
+        this.nickname =nickname;
+        this.email=email;
+        this.password=password;
+        this.role=role;
+        this.type=type;
+    }
+
+    public Account(AccountReqDTO accountReqDTO){
+        this.nickname = accountReqDTO.getNickname();
+        this.email = accountReqDTO.getEmail();
+        this.password = accountReqDTO.getPassword();
+    }
+
     //계정 타입 (일반)
     public void saveAccountType(AccountTypeEnum accountTypeEnum){
         this.type = accountTypeEnum;
     }
 
     //패스워드 인코드
-    public void EncodePassword(BCryptPasswordEncoder bCryptPasswordEncoder){
-        this.password = bCryptPasswordEncoder.encode(password);
+    public void encodePassword(String encodedPassword){
+        this.password = encodedPassword;
     }
 
     //리프레쉬 토큰 변경
-    public void refreshTokenChange(String refreshToken){
+    public void changeRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
     }
+
+    //소셜에서 카카오만 이메일 값을 아이디 값으로 대체
+    public void changeIdtoEmail(String id){this.email = id;}
 
 }

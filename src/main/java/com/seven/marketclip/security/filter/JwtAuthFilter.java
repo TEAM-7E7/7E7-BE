@@ -1,6 +1,9 @@
 package com.seven.marketclip.security.filter;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
+import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
@@ -15,18 +18,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
+
+import static com.seven.marketclip.security.jwt.JwtTokenUtils.CLAIM_EXPIRED_DATE;
 
 /**
  * Token 을 내려주는 Filter 가 아닌  client 에서 받아지는 Token 을 서버 사이드에서 검증하는 클레스 SecurityContextHolder 보관소에 해당
  * Token 값의 인증 상태를 보관 하고 필요할때 마다 인증 확인 후 권한 상태 확인 하는 기능
  */
 public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
-
+    private final JwtDecoder jwtDecoder;
     private final HeaderTokenExtractor extractor;
+    private final AccountRepository accountRepository;
 
-    public JwtAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher, HeaderTokenExtractor extractor) {
+    public JwtAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher, HeaderTokenExtractor extractor, JwtDecoder jwtDecoder, AccountRepository accountRepository) {
         super(requiresAuthenticationRequestMatcher);
         this.extractor = extractor;
+        this.jwtDecoder = jwtDecoder;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -34,17 +43,52 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         System.out.println("전체필터 1");
         // JWT 값을 담아주는 변수 TokenPayload
-        String authorization = request.getHeader("X-ACCESSR-TOKEN");
-        System.out.println("전체필터 헤더값 : "+ authorization);
-        if (authorization == null) {
-            return null;
-        }
+        String authorization = request.getHeader("X-ACCESS-TOKEN");
+        String refreshToken = request.getHeader("X-REFRESH-TOKEN");
 
-        JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(extractor.extract(authorization, request));
+        //TODO 여기서 response에 선용님 예외처리 넣기.
+        System.out.println("전체필터 헤더값 : "+ authorization);
+        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
+        if (jwtToken == null) return null;
 
         System.out.println("전체필터 2");
         return super.getAuthenticationManager().authenticate(jwtToken);
     }
+
+
+    private JwtPreProcessingToken checkValidJwtToken(HttpServletRequest request, String authorization, String refreshToken) {
+
+        if (authorization == null) {
+            return null;
+        }
+        if (refreshToken == null) {
+            return null;
+        }
+
+        String refresh = extractor.extract(refreshToken, request);
+        DecodedJWT decodedJWT = jwtDecoder.isValidToken(refresh).orElseThrow(
+                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
+        );
+
+        Date expiredDate = decodedJWT
+                .getClaim(CLAIM_EXPIRED_DATE)
+                .asDate();
+
+        Date now = new Date();
+        if (expiredDate.before(now)) {
+            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+        }
+
+        if (!accountRepository.existsByRefreshToken(refresh)) {
+            System.out.println(refresh);
+            System.out.println("DB에서 확인 불가 - JwtAuthFilter");
+            return null;
+        }
+
+        JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(extractor.extract(authorization, request));
+        return jwtToken;
+    }
+
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,

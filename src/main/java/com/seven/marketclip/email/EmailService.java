@@ -3,9 +3,8 @@ package com.seven.marketclip.email;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.exception.HttpResponse;
+import com.seven.marketclip.exception.ResponseCode;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,7 +30,7 @@ public class EmailService {
     }
 
     @Transactional
-    public ResponseEntity<HttpResponse> checkEmail(EmailDTO emailDTO) throws CustomException {
+    public ResponseCode checkEmail(EmailDTO emailDTO) throws CustomException {
         /**
          * 공통 - Account 테이블에 Email 이 존재 할 경우 - "이미 존재하는 사용자입니다." [ USER_ALREADY_EXISTS ]
          * 공통 - emailDTO 의 형식이 맞지 않는 경우 (정규식 사용)- "이메일 형식이 유효하지 않습니다." [ INVALID_REGISTER_EMAIL ]
@@ -73,7 +72,7 @@ public class EmailService {
 
                 emailRepository.save(email);
 
-                return HttpResponse.toResponseEntity(EMAIL_DISPATCH_SUCCESS);
+                return EMAIL_DISPATCH_SUCCESS;
             } else {
                 Email email = emailOpt.get();
                 if (!email.checkExpired(LocalDateTime.now())) {
@@ -82,7 +81,7 @@ public class EmailService {
                     sendEmail(receivedEmail, emailToken);
                     email.update(LocalDateTime.now(), emailToken);
 
-                    return HttpResponse.toResponseEntity(EMAIL_DISPATCH_SUCCESS);
+                    return EMAIL_DISPATCH_SUCCESS;
                 }
             }
         } else {
@@ -94,15 +93,24 @@ public class EmailService {
                 sendEmail(receivedEmail, emailToken);
                 email.update(LocalDateTime.now(), emailToken);
 
-                return HttpResponse.toResponseEntity(EMAIL_DISPATCH_SUCCESS);
+                return EMAIL_DISPATCH_SUCCESS;
             } else if (email.checkExpired(LocalDateTime.now())) {
                 throw new CustomException(EMAIL_ALREADY_EXPIRED);
             } else if (!email.getEmailToken().equals(receivedToken)) {
                 throw new CustomException(INVALID_EMAIL_TOKEN);
             } else {
-                return HttpResponse.toResponseEntity(EMAIL_VALIDATION_SUCCESS);
+                // 이메일 verified를 true로 변경
+                email.verified();
+                return EMAIL_VALIDATION_SUCCESS;
             }
         }
+    }
+
+    public boolean checkVerified(String email){
+        Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
+                ()-> new CustomException(UNVERIFIED_EMAIL)
+        );
+        return emailFound.getEmailVerified();
     }
 
     // 두시간마다 폐기된 이메일 데이터 삭제

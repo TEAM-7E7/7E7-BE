@@ -5,31 +5,46 @@ import com.seven.marketclip.account.AccountRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-public class UserDetailsImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     private Long id;
 
     private String nickname;
+    private String email;
 
     private String password;
 
     @Enumerated(value = EnumType.STRING)
     private AccountRoleEnum role;
 
-    public UserDetailsImpl(Long id, String password, String nickname,AccountRoleEnum role){
+    //로그인 할 때, 필요한
+    public UserDetailsImpl(Long id, String password, String nickname,String email,AccountRoleEnum role){
         this.id = id;
+        this.email = email;
         this.nickname = nickname;
         this.password = password;
         this.role = role;
     }
-    public UserDetailsImpl(Long id, String nickname, AccountRoleEnum role){
+
+    //JWT 토큰 암호화, 복호화 때 필요한.
+    public UserDetailsImpl(Long id, String email,String nickname, AccountRoleEnum role){
         this.id = id;
+        this.email = email;
+        this.nickname = nickname;
+        this.role = role;
+    }
+
+    //카카오 로그인때 필요한.
+    public UserDetailsImpl(String email,String nickname,AccountRoleEnum role){
+        this.email = email;
         this.nickname = nickname;
         this.role = role;
     }
@@ -40,6 +55,7 @@ public class UserDetailsImpl implements UserDetails {
     public AccountRoleEnum getRole(){
         return this.role;
     }
+    public String getEmail(){return this.email;}
 
 
     @Override
@@ -72,6 +88,7 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         AccountRoleEnum role = this.role;
@@ -82,5 +99,14 @@ public class UserDetailsImpl implements UserDetails {
         authorities.add(simpleGrantedAuthority);
 
         return authorities;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+    @Override
+    public String getName() {
+        return null;
     }
 }
