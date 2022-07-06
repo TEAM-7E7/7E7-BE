@@ -27,7 +27,6 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 //         SecurityContextHolder.getContext().getAuthentication().getPrincipal()
 
-
         UsernamePasswordAuthenticationToken authRequest;
         try {
             JsonNode requestBody = objectMapper.readTree(request.getInputStream());

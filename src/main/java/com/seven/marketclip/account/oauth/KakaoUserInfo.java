@@ -3,6 +3,7 @@ package com.seven.marketclip.account.oauth;
 import com.seven.marketclip.account.AccountTypeEnum;
 import lombok.Getter;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Getter
@@ -36,7 +37,8 @@ public class KakaoUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        LinkedHashMap<String,String> sd = (LinkedHashMap)attributes.get("kakao_account");
+        return  sd.get("email");
     }
 
     @Override

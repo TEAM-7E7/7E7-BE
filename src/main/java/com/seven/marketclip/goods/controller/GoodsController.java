@@ -1,77 +1,66 @@
 package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.dto.GoodsForm;
-import com.seven.marketclip.goods.dto.GoodsResponse;
-import com.seven.marketclip.goods.repository.GoodsRepository;
+import com.seven.marketclip.exception.HttpResponse;
+import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.service.GoodsService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-
-import static com.seven.marketclip.exception.ResponseCode.GOODS_NOT_FOUND;
-import static com.seven.marketclip.exception.ResponseCode.USER_NOT_FOUND;
-
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/goods")
 public class GoodsController {
     private final GoodsService goodsService;
-    private final AccountRepository accountRepository;
-    private final GoodsRepository goodsRepository;
 
+    public GoodsController(GoodsService goodsService) {
+        this.goodsService = goodsService;
+    }
 
-    //메인페이지 조회 -> 생성일자 내림차순
+    // 게시글 전체 조회 -> 생성일자 내림차순
     @GetMapping("")
-    public List<Goods> getGoodsList(){
-        return goodsRepository.findAllByOrderByCreatedAtDesc();
+    public ResponseEntity<HttpResponse> goodsList() {
+        return HttpResponse.toResponseEntity(goodsService.findGoods());
     }
 
 
-    //상품 게시글 작성
-    @PostMapping(value = "", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> addGoods(@Valid @ModelAttribute GoodsForm form, @AuthenticationPrincipal Account account){
-        goodsService.addNewGoods(form, account);
-        return ResponseEntity.ok().body("게시글 작성 완료");
+    // 게시글 작성
+    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute @Validated GoodsReqDTO goodsReqDTO) {
+        return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO));
     }
 
-    // 상품 상세페이지
+    // todo 회원정보를 이용하는 테스트는 아직 못했음
+//    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute @Validated GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal Account account) {
+//        return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, account));
+//    }
+
+
+
+    // 상세페이지
     @GetMapping("/{goodsId}")
-    public GoodsResponse getGoods(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
+    public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId, @AuthenticationPrincipal Account account) {
         goodsService.plusView(goodsId);
-        Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
-        );
-        Account account1 = accountRepository.findById(account.getId()).orElseThrow(
-                ()-> new CustomException(USER_NOT_FOUND)
-        );
-        return new GoodsResponse(goods);
+
+        return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId, account));
     }
 
-    // 상품 게시글 삭제
+    // 게시글 삭제
     @DeleteMapping("/{goodsId}")
-    public ResponseEntity<String> deleteGoods(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
-        goodsRepository.findById(goodsId).orElseThrow(
-                ()-> new CustomException(GOODS_NOT_FOUND)
-        );
-        goodsRepository.deleteById(goodsId);
-        return ResponseEntity.ok().body("삭제완료");
+    public ResponseEntity<HttpResponse> goodsDelete(@PathVariable Long goodsId, @AuthenticationPrincipal Account account) {
+
+        return HttpResponse.toResponseEntity(goodsService.deleteGoods(goodsId, account));
     }
 
-    // 상품 게시글 수정
+    // 게시글 수정
     @PutMapping(value = "/{goodsId}", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> editGoods(@PathVariable Long goodsId, @Valid @ModelAttribute GoodsForm form,@AuthenticationPrincipal Account account){
-        goodsService.updateGoodsDetail(goodsId, form, account);
-        return ResponseEntity.ok().body("수정완료");
+    public ResponseEntity<HttpResponse> goodsUpdate(@PathVariable Long goodsId, @ModelAttribute @Validated GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal Account account) {
+        return HttpResponse.toResponseEntity(goodsService.updateGoods(goodsId, goodsReqDTO, account));
     }
 }
 
