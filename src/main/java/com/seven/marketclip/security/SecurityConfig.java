@@ -118,18 +118,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
                 .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
-                .antMatchers("/login/oauth2/code/google","/login/oauth2/code/naver","/login/oauth2/code/kakao").permitAll()
+                .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
 
 
         http.oauth2Login().loginPage("/login").successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
+    }
 
-        }
-        @Bean
-        public PrincipalOauth2UserService principalOauth2UserService() {
-            return new PrincipalOauth2UserService(accountRepository,bCryptPasswordEncoder);
-        }
+    @Bean
+    public PrincipalOauth2UserService principalOauth2UserService() {
+        return new PrincipalOauth2UserService(accountRepository, bCryptPasswordEncoder);
+    }
 
 
     //        http.authorizeRequests()
@@ -145,54 +145,70 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
+    @Bean
+    public FormLoginFilter formLoginFilter() throws Exception {
+        FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
+        formLoginFilter.setFilterProcessesUrl("/api/login");
+        formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
+        formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
+        return formLoginFilter;
+    }
 
-        @Bean
-        public FormLoginFilter formLoginFilter() throws Exception {
-            FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
-            formLoginFilter.setFilterProcessesUrl("/api/login");
-            formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
-            formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
-            return formLoginFilter;
-        }
-        @Bean
-        public FormLoginSuccessHandler formLoginSuccessHandler() {
-            return new FormLoginSuccessHandler(accountRepository);
-        }
-        @Bean
-        public FormLoginAuthProvider formLoginAuthProvider() {
-            return new FormLoginAuthProvider(bCryptPasswordEncoder);//TODO 이걸 왜 넣지?
-        }
+    @Bean
+    public FormLoginSuccessHandler formLoginSuccessHandler() {
+        return new FormLoginSuccessHandler(accountRepository);
+    }
 
-        //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
-        private JwtAuthFilter jwtFilter() throws Exception {
-            List<String> skipPathList = new ArrayList<>();
+    @Bean
+    public FormLoginAuthProvider formLoginAuthProvider() {
+        return new FormLoginAuthProvider(bCryptPasswordEncoder);//TODO 이걸 왜 넣지?
+    }
 
-            // Static 정보 접근 허용
-            skipPathList.add("GET,/images/**");
-            skipPathList.add("GET,/css/**");
 
-            // h2-console 허용
-            skipPathList.add("GET,/h2-console/**");
-            skipPathList.add("POST,/h2-console/**");
 
-            // 회원 관리 API 허용
-            //TODO 여기 왜 /를 필터에서 제외 시켰는데 왜 들어가지?
-            //한번 지금 index랑 연결 -> 홈을 따로 만들어서 연결 해보기
-            skipPathList.add("GET,/");
-            skipPathList.add("GET,/api/refresh-re");
-            skipPathList.add("POST,/api/refresh-re");
-            skipPathList.add("POST,/api/sign-up");
 
-            //소셜 콜백 주소
-            //KAKAO
-            skipPathList.add("GET,/api/kakao/callback");
-            skipPathList.add("GET,/login/oauth2/code/google");
-            skipPathList.add("POST,/login/oauth2/code/kakao");
-            skipPathList.add("GET,/login/oauth2/code/naver");
 
-            //보드게시판 API 허용/swagger-resources/**
-            skipPathList.add("GET,/api/boards");
-            skipPathList.add("GET,/swagger-resources/**");
+
+    //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
+    private JwtAuthFilter jwtFilter() throws Exception {
+        List<String> skipPathList = new ArrayList<>();
+
+        // Static 정보 접근 허용
+        skipPathList.add("GET,/images/**");
+        skipPathList.add("GET,/css/**");
+        
+
+//        // 테스트용
+//        skipPathList.add("GET,/**");
+//        skipPathList.add("POST,/**");
+//        skipPathList.add("PUT,/**");
+//        skipPathList.add("DELETE,/**");
+
+
+        //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
+        // 회원 관리 API 허용
+        skipPathList.add("GET,/");
+        skipPathList.add("GET,/api/refresh-re");
+        skipPathList.add("GET,/api/goods");
+        skipPathList.add("POST,/api/refresh-re");
+        skipPathList.add("POST,/api/email-validation");
+        skipPathList.add("POST,/api/sign-up");
+        
+        // h2-console 허용
+        skipPathList.add("GET,/h2-console/**");
+        skipPathList.add("POST,/h2-console/**");
+
+        //소셜 콜백 주소
+        //KAKAO
+        skipPathList.add("GET,/api/kakao/callback");
+        skipPathList.add("GET,/login/oauth2/code/google");
+        skipPathList.add("POST,/login/oauth2/code/kakao");
+        skipPathList.add("GET,/login/oauth2/code/naver");
+
+        //보드게시판 API 허용/swagger-resources/**
+        skipPathList.add("GET,/api/boards");
+        skipPathList.add("GET,/swagger-resources/**");
+
 
 //            skipPathList.add("GET,/");
 //            skipPathList.add("GET,/basic.js");
@@ -205,8 +221,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         );
 
         JwtAuthFilter filter = new JwtAuthFilter(
-                matcher,
-                headerTokenExtractor
+                matcher
+                , headerTokenExtractor
                 , jwtDecoder
                 , accountRepository
         );
