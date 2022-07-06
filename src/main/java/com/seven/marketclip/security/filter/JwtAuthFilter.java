@@ -2,6 +2,8 @@ package com.seven.marketclip.security.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
+import static com.seven.marketclip.exception.ResponseCode.HEADER_NOT_FOUND;
 import static com.seven.marketclip.security.jwt.JwtTokenUtils.CLAIM_EXPIRED_DATE;
 
 /**
@@ -59,7 +62,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     private JwtPreProcessingToken checkValidJwtToken(HttpServletRequest request, String authorization, String refreshToken) {
 
         if (authorization == null) {
-            return null;
+//            throw HttpResponse.toResponseEntity(HEADER_NOT_FOUND);
         }
         if (refreshToken == null) {
             return null;

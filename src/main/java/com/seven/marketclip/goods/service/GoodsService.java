@@ -9,12 +9,11 @@ import com.seven.marketclip.goods.domain.Files;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
-import com.seven.marketclip.goods.dto.GoodsResTitleDTO;
+import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
 import com.seven.marketclip.goods.repository.FilesRepository;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -42,12 +41,12 @@ public class GoodsService {
     // todo 테스트 완료 - GoodsResTitleDTO를 새로 만든게 마음에 안들어서 기존의 GoodsResDTO에 메소드를 작성해서 테스트 해봄
     public DataResponseCode findGoods() throws CustomException {
         List<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc();
-        List<GoodsResTitleDTO> goodsResTitleDTOList = new ArrayList<>();
+        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
 
         for (Goods goods : goodsList) {
-            goodsResTitleDTOList.add(new GoodsResTitleDTO(goods));
+            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
         }
-        return new DataResponseCode(GOODS_BOARD_SUCCESS, goodsResTitleDTOList);
+        return new DataResponseCode(GOODS_BOARD_SUCCESS, goodsTitleResDTOList);
     }
 
 //    // todo 테스트 완료 - GoodsResDTO로 return하면 하나의 리스트에 url을 넣어 보내준다

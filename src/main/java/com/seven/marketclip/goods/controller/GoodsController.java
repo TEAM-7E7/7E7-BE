@@ -3,8 +3,6 @@ package com.seven.marketclip.goods.controller;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
-import com.seven.marketclip.goods.dto.GoodsResDTO;
-import com.seven.marketclip.goods.dto.GoodsResTitleDTO;
 import com.seven.marketclip.goods.service.GoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -12,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Slf4j
