@@ -118,8 +118,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
-                .mvcMatchers("/**").permitAll()
-                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
+//                .mvcMatchers("/**").permitAll()
+                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation", "/api/goods").permitAll()
                 .antMatchers("/api/kakao/callback", "/api/google/callback").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
@@ -173,17 +173,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/images/**");
         skipPathList.add("GET,/css/**");
 
-        // 테스트용
-        skipPathList.add("GET,/**");
-        skipPathList.add("POST,/**");
-        skipPathList.add("PUT,/**");
-        skipPathList.add("DELETE,/**");
+//        // 테스트용
+//        skipPathList.add("GET,/**");
+//        skipPathList.add("POST,/**");
+//        skipPathList.add("PUT,/**");
+//        skipPathList.add("DELETE,/**");
 
 
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
         // 회원 관리 API 허용
         skipPathList.add("GET,/");
         skipPathList.add("GET,/api/refresh-re");
+        skipPathList.add("GET,/api/goods");
         skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/sign-up");
@@ -207,8 +208,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         );
 
         JwtAuthFilter filter = new JwtAuthFilter(
-                matcher,
-                headerTokenExtractor
+                matcher
+                , headerTokenExtractor
                 , jwtDecoder
                 , accountRepository
         );

@@ -16,17 +16,17 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class GoodsResDTO {
-    private Long id;
-    private Integer viewCount;
-    private Integer wishCount;
-    private String account;
-    private String title;
-    private GoodsCategory category;
-    private String description;
-    private Integer sellPrice;
-    private List<String> fileUrlList;
-    private GoodsStatus status;
-    private LocalDateTime createdAt;
+    public Long id;
+    public Integer viewCount;
+    public Integer wishCount;
+    public String account;
+    public String title;
+    public GoodsCategory category;
+    public String description;
+    public Integer sellPrice;
+    public List<String> fileUrlList;
+    public GoodsStatus status;
+    public LocalDateTime createdAt;
 
     @Builder
     public GoodsResDTO(Long id, Integer viewCount, Integer wishCount, String account, String title, GoodsCategory category, String description, Integer sellPrice, List<String> fileUrlList, GoodsStatus status, LocalDateTime createdAt) {
@@ -69,7 +69,7 @@ public class GoodsResDTO {
         return GoodsResDTO.builder()
                 .title(goods.getTitle())
                 .id(goods.getId())
-//                .account(goods.getAccount())
+//                .account(goods.getAccount().getEmail())
                 .title(goods.getTitle())
                 .category(goods.getCategory())
                 .description(goods.getDescription())

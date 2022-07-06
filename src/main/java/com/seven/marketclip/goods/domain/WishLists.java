@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.Account;
 import lombok.Builder;
@@ -17,12 +16,10 @@ public class WishLists extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
