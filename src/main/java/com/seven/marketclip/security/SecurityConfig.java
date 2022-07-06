@@ -1,8 +1,8 @@
 package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.account.service.OauthHandler;
-import com.seven.marketclip.account.service.PrincipalOauth2UserService;
+import com.seven.marketclip.account.oauth.OauthHandler;
+import com.seven.marketclip.account.oauth.PrincipalOauth2UserService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
@@ -43,10 +43,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtDecoder jwtDecoder;
     private final OauthHandler oauthHandler;
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+//    @Bean
+//    public BCryptPasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
@@ -118,9 +120,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
-//                .mvcMatchers("/**").permitAll()
-                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation", "/api/goods").permitAll()
-                .antMatchers("/api/kakao/callback", "/api/google/callback").permitAll()
+                .mvcMatchers("/**").permitAll()
+                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
+                .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
 
@@ -130,8 +132,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PrincipalOauth2UserService principalOauth2UserService() {
-        return new PrincipalOauth2UserService(accountRepository, passwordEncoder());
+        return new PrincipalOauth2UserService(accountRepository, bCryptPasswordEncoder);
     }
+
 
     //        http.authorizeRequests()
 //                .anyRequest()
@@ -162,7 +165,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FormLoginAuthProvider formLoginAuthProvider() {
-        return new FormLoginAuthProvider(passwordEncoder());//TODO 이걸 왜 넣지?
+        return new FormLoginAuthProvider(bCryptPasswordEncoder);//TODO 이걸 왜 넣지?
     }
 
     //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
@@ -193,10 +196,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //KAKAO
         skipPathList.add("GET,/api/kakao/callback");
         skipPathList.add("GET,/login/oauth2/code/google");
+        skipPathList.add("POST,/login/oauth2/code/kakao");
+        skipPathList.add("GET,/login/oauth2/code/naver");
 
         //보드게시판 API 허용/swagger-resources/**
         skipPathList.add("GET,/api/boards");
         skipPathList.add("GET,/swagger-resources/**");
+
 //            skipPathList.add("GET,/");
 //            skipPathList.add("GET,/basic.js");
 //

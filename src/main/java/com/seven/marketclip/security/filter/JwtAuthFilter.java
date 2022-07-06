@@ -50,7 +50,17 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         String refreshToken = request.getHeader("X-REFRESH-TOKEN");
 
         //TODO 여기서 response에 선용님 예외처리 넣기.
-        System.out.println("전체필터 헤더값 : " + authorization);
+        System.out.println("전체필터 헤더값 : "+ authorization);
+        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
+        if (jwtToken == null) return null;
+
+        System.out.println("전체필터 2");
+        return super.getAuthenticationManager().authenticate(jwtToken);
+    }
+
+
+    private JwtPreProcessingToken checkValidJwtToken(HttpServletRequest request, String authorization, String refreshToken) {
+
         if (authorization == null) {
 //            throw HttpResponse.toResponseEntity(HEADER_NOT_FOUND);
         }
@@ -79,9 +89,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         }
 
         JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(extractor.extract(authorization, request));
-
-        System.out.println("전체필터 2");
-        return super.getAuthenticationManager().authenticate(jwtToken);
+        return jwtToken;
     }
 
 
