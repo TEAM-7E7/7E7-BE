@@ -62,7 +62,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     private JwtPreProcessingToken checkValidJwtToken(HttpServletRequest request, String authorization, String refreshToken) {
 
         if (authorization == null) {
-//            throw HttpResponse.toResponseEntity(HEADER_NOT_FOUND);
+            return null;
         }
         if (refreshToken == null) {
             return null;
