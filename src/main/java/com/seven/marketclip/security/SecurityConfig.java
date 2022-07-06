@@ -42,13 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
     private final OauthHandler oauthHandler;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-//    @Bean
-//    public BCryptPasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
@@ -149,12 +145,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .exceptionHandling()
 //    // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
-
-        // 테스트용
-        skipPathList.add("GET,/**");
-        skipPathList.add("POST,/**");
-        skipPathList.add("PUT,/**");
-        skipPathList.add("DELETE,/**");
 
         @Bean
         public FormLoginFilter formLoginFilter() throws Exception {

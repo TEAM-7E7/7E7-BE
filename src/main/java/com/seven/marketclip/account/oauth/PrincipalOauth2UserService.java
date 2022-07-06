@@ -73,17 +73,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         //각각의 소셜ID 함수에 앞에 카카오인지
         System.out.println("시작");
         System.out.println(oAuth2UserInfo.getEmail());
-        String kakaoId = null;
-        Optional<Account> accountOptEmail = null;
-        if(oAuth2UserInfo.getEmail() == null){
-            System.out.println(oAuth2UserInfo.getSocialId());
-            kakaoId = "Kakao "+oAuth2UserInfo.getSocialId();
-            accountOptEmail = accountRepository.findByEmail("kakao@"+kakaoId);
-        }else{
-            accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
-        }
-        String randomNickname = RandomStringUtils.random(8, true, true);
+        System.out.println(oAuth2UserInfo.getSocialId());
 
+        String randomNickname = RandomStringUtils.random(8, true, true);
+        Optional<Account> accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
         Optional<Account> accountOptNickname = accountRepository.findByNickname(randomNickname);
 
         if(accountOptEmail.isPresent() || accountOptNickname.isPresent()){
@@ -109,11 +102,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .type(oAuth2UserInfo.getRole())
                     .role(roleEnum)
                     .build();
-            if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")){
-                System.out.println("이게 통과가 안되나요?");
-                System.out.println(oAuth2UserInfo.getSocialId());
-                account.changeIdtoEmail("kakao@"+oAuth2UserInfo.getSocialId());
-            }
             account.encodePassword(bCryptPasswordEncoder.encode(uuidPassword));
             accountRepository.save(account);
             return new UserDetailsImpl(account.getEmail(), account.getNickname(), account.getRole());
