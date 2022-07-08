@@ -16,17 +16,15 @@ import java.util.Map;
 public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     private Long id;
-
     private String nickname;
     private String email;
-
     private String password;
 
     @Enumerated(value = EnumType.STRING)
     private AccountRoleEnum role;
 
     //로그인 할 때, 필요한
-    public UserDetailsImpl(Long id, String password, String nickname,String email,AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String password, String nickname, String email, AccountRoleEnum role) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
@@ -35,7 +33,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     }
 
     //JWT 토큰 암호화, 복호화 때 필요한.
-    public UserDetailsImpl(Long id, String email,String nickname, AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String email, String nickname, AccountRoleEnum role) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
@@ -43,20 +41,23 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     }
 
     //카카오 로그인때 필요한.
-    public UserDetailsImpl(String email,String nickname,AccountRoleEnum role){
+    public UserDetailsImpl(String email, String nickname, AccountRoleEnum role) {
         this.email = email;
         this.nickname = nickname;
         this.role = role;
     }
 
-    public Long getId(){
+    public Long getId() {
         return this.id;
     }
-    public AccountRoleEnum getRole(){
+
+    public AccountRoleEnum getRole() {
         return this.role;
     }
-    public String getEmail(){return this.email;}
 
+    public String getEmail() {
+        return this.email;
+    }
 
     @Override
     public String getPassword() {
@@ -105,6 +106,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     public Map<String, Object> getAttributes() {
         return null;
     }
+
     @Override
     public String getName() {
         return null;

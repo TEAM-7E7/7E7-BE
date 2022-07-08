@@ -9,31 +9,29 @@ import com.seven.marketclip.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class S3Uploader {
+public class S3Service {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Value("${cloud.aws.region.static}")
+    private String region;
     private final AmazonS3 amazonS3;
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
     private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp", ".mp4", ".avi");
 
-    public String uploadFile(MultipartFile multipartFile) {
+    public String uploadFile(MultipartFile multipartFile) throws CustomException {
         String fileName = UUID.randomUUID().toString().concat(getFileExtension(multipartFile.getOriginalFilename()));
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(multipartFile.getSize());
@@ -41,19 +39,25 @@ public class S3Uploader {
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+                    .withCannedAcl(CannedAccessControlList.PublicRead));    // 권한 추가 (publicRead)
         } catch (IOException e) {
             throw new CustomException(FILE_UPLOAD_ERROR);
         }
-        return bucketName + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
+
+//        Map<String, String> fileUrl = new HashMap<>();
+//        fileUrl.put("bucket", bucket);
+//        fileUrl.put("region",region);
+//        fileUrl.put("fileName", fileName);
+
+//        return fileUrl;
+        return bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
     }
 
-    public void deleteFile(String fileName) {
-        String specFileName = fileName.replaceFirst(bucketName + ".s3.ap-northeast-2.amazonaws.com/", "");
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, specFileName));
+    public void deleteFile(String fileKey) {
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
     }
 
-    private String getFileExtension(String fileName) {
+    private String getFileExtension(String fileName) throws CustomException {
         String lowerCase = fileName.toLowerCase();
         String target;
         try {

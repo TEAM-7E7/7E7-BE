@@ -121,7 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
-                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation").permitAll()
+                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation", "/api/nickname-check").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager").hasRole("USER")
                 .anyRequest().authenticated();
@@ -177,10 +177,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/css/**");
 
 //        // 테스트용
-//        skipPathList.add("GET,/**");
-//        skipPathList.add("POST,/**");
-//        skipPathList.add("PUT,/**");
-//        skipPathList.add("DELETE,/**");
+        skipPathList.add("GET,/**");
+        skipPathList.add("POST,/**");
+        skipPathList.add("PUT,/**");
+        skipPathList.add("DELETE,/**");
 
 
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
@@ -191,6 +191,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/sign-up");
+        skipPathList.add("POST,/api/nickname-check");
+
 
         //소셜 콜백 주소
         //KAKAO

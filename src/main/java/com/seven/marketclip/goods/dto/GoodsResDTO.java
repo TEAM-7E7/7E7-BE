@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -46,7 +45,7 @@ public class GoodsResDTO {
     public GoodsResDTO(Goods goods) {
         List<String> filesUrlList = new ArrayList<>();
         for(Files files : goods.getFilesList()){
-            filesUrlList.add(files.getFileURL());
+            filesUrlList.add(files.getFileUrl());
         }
 
         this.title = goods.getTitle();
@@ -61,25 +60,6 @@ public class GoodsResDTO {
         this.sellPrice = goods.getSellPrice();
         this.wishCount = goods.getWishLists().size();
         this.status = goods.getStatus();
-    }
-
-    public GoodsResDTO getFirstTitleDTO(Goods goods) {
-        List<String> fileUrl = Collections.singletonList(goods.getFilesList().get(0).getFileURL());
-
-        return GoodsResDTO.builder()
-                .title(goods.getTitle())
-                .id(goods.getId())
-//                .account(goods.getAccount().getEmail())
-                .title(goods.getTitle())
-                .category(goods.getCategory())
-                .description(goods.getDescription())
-                .createdAt(goods.getCreatedAt())
-                .fileUrlList(fileUrl)
-                .viewCount(goods.getViewCount())
-                .wishCount(goods.getWishCount())
-                .sellPrice(goods.getSellPrice())
-                .status(goods.getStatus())
-                .build();
     }
 
 }
