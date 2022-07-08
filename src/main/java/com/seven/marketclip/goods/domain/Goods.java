@@ -7,15 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
-import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter
 @Entity
-@Validated
 @NoArgsConstructor
 public class Goods extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +25,9 @@ public class Goods extends Timestamped {
     private Account account;
 
     @Column(nullable = false, length = 25)
-//    @NotBlank(message = "제목을 입력하세요")
     private String title;//제목
 
     @Column(nullable = false)
-//    @NotBlank(message = "내용을 입력하세요")
     private String description;//내용
 
     private GoodsCategory category;

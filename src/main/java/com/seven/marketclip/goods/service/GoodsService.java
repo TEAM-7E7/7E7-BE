@@ -12,13 +12,18 @@ import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
 import com.seven.marketclip.goods.repository.FilesRepository;
 import com.seven.marketclip.goods.repository.GoodsRepository;
+import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 
@@ -28,47 +33,42 @@ public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FilesRepository filesRepository;
     private final AccountRepository accountRepository;
-    private final S3Uploader s3Uploader;
+    private final S3Service s3Service;
 
-    public GoodsService(GoodsRepository goodsRepository, FilesRepository filesRepository, AccountRepository accountRepository, S3Uploader s3Uploader) {
+    public GoodsService(GoodsRepository goodsRepository, FilesRepository filesRepository, AccountRepository accountRepository, S3Service s3Service) {
         this.goodsRepository = goodsRepository;
         this.filesRepository = filesRepository;
         this.accountRepository = accountRepository;
-        this.s3Uploader = s3Uploader;
+        this.s3Service = s3Service;
     }
 
     // 게시글 전체 조회 - 대문사진만 보내주기
-    // todo 테스트 완료 - GoodsResTitleDTO를 새로 만든게 마음에 안들어서 기존의 GoodsResDTO에 메소드를 작성해서 테스트 해봄
-    public DataResponseCode findGoods() throws CustomException {
-        List<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc();
-        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
+    public DataResponseCode findGoods(Pageable pageable) throws CustomException {
+        Page<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc(pageable);
+        ArrayList<Object> goodsTitleResDTOList = new ArrayList<>();
+
+        Map<String, Object> resultMap = new HashMap<>();
 
         for (Goods goods : goodsList) {
             goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
         }
-        return new DataResponseCode(GOODS_BOARD_SUCCESS, goodsTitleResDTOList);
-    }
 
-//    // todo 테스트 완료 - GoodsResDTO로 return하면 하나의 리스트에 url을 넣어 보내준다
-//    public DataResponseCode findGoods() throws CustomException {
-//        List<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc();
-//        List<GoodsResDTO> goodsResDTOList = new ArrayList<>();
-//
-//        for(Goods goods : goodsList){
-//            goodsResDTOList.add(new GoodsResDTO().getFirstTitleDTO(goods));
-//        }
-//        return new DataResponseCode(GOODS_BOARD_SUCCESS, goodsResDTOList);
-//    }
+        resultMap.put("endPage", goodsList.isLast());
+        resultMap.put("goodsList", goodsTitleResDTOList);
+
+        return new DataResponseCode(SUCCESS, resultMap);
+    }
 
     // 게시글 작성
     @Transactional
     public ResponseCode addGoods(GoodsReqDTO goodsReqDTO) throws CustomException {
-
-        // todo 회원정보를 이용하는 테스트는 아직 못했음
-//    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, Account account) throws CustomException {
+    // todo 회원정보를 이용하는 테스트는 아직 못했음
+//    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
+//        Account detailsAccount = new Account(account);
 
         Goods goods = Goods.builder()
                 .title(goodsReqDTO.getTitle())
+//                .account(account)
                 .description(goodsReqDTO.getDescription())
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
@@ -76,97 +76,123 @@ public class GoodsService {
 
         goodsRepository.save(goods);
 
-        for (MultipartFile multipartFile : goodsReqDTO.getFiles()) {
-            String fileUrl = multipartFile == null ? null : s3Uploader.uploadFile(multipartFile);
+        for (Object object : goodsReqDTO.getFiles()) {
+            MultipartFile multipartFile = (MultipartFile) object;
+
+//            Map<String, String> mappedFile = s3Service.uploadFile(multipartFile);
+
+            String fileUrl = s3Service.uploadFile(multipartFile);
+
+
+//            String bucket;
+//            String region;
+//            String fileName;
+//            try {
+//                bucket = mappedFile.get("bucket");
+//                region = mappedFile.get("region");
+//                fileName = mappedFile.get("fileName");
+//            } catch (NullPointerException e) {
+//                throw new CustomException(NULL_POINT_EXCEPTION);
+//            }
 
             Files files = Files.builder()
+//                    .account(detailsAccount)
                     .goods(goods)
-                    .fileURL(fileUrl)
+                    .fileUrl(fileUrl)
                     .build();
 
             filesRepository.save(files);
         }
-
-        return GOODS_POST_SUCCESS;
-
+        return SUCCESS;
     }
 
-    /*@Transactional
-    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, Account account) throws CustomException {
-//    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, Account account) throws CustomException {
+    // 상세페이지
+    @Transactional  // plusView 메서드 때문에 필요하다
+    public DataResponseCode findGoodsDetail(Long goodsId, UserDetailsImpl account) throws CustomException {
 
-//        String fileUrl = goodsReqDTO.getFile() == null ? null: s3Uploader.uploadFile(goodsReqDTO.getFile());
-//        log.error(fileUrl);
-
-        Goods goods = Goods.builder()
-                .account(account)
-                .title(goodsReqDTO.getTitle())
-                .description(goodsReqDTO.getDescription())
-                .category(goodsReqDTO.getCategory())
-                .sellPrice(goodsReqDTO.getSellPrice())
-                .build();
-
-        goodsRepository.save(goods);
-
-        for (MultipartFile multipartFile : goodsReqDTO.getFiles()) {
-            String fileUrl = multipartFile == null ? null : s3Uploader.uploadFile(multipartFile);
-
-            Files files = Files.builder()
-                    .account(account)
-                    .goods(goods)
-                    .fileURL(fileUrl)
-                    .build();
-
-            filesRepository.save(files);
+        if (accountRepository.findById(account.getId()).isEmpty()) {
+            throw new CustomException(USER_NOT_FOUND);
         }
 
-        return GOODS_POST_SUCCESS;
-
-//            goodsRepository.save(new Goods(goodsReqDTO, fileUrl, account));
-    }*/
-
-    // 상세페이지
-    public DataResponseCode findGoodsDetail(Long goodsId, Account account) throws CustomException {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
-        );
-        accountRepository.findById(account.getId()).orElseThrow(
-                () -> new CustomException(USER_NOT_FOUND)
         );
 
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
 
-        return new DataResponseCode(GOODS_DETAIL_SUCCESS, goodsResDTO);
+        return new DataResponseCode(SUCCESS, goodsResDTO);
     }
 
     // 게시글 삭제
-    public ResponseCode deleteGoods(Long goodsId, Account account) throws CustomException {
-        Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
-        );
-        if (goods.getAccount().equals(account)) {
-            goodsRepository.deleteById(goodsId);
-        } else {
-            throw new CustomException(NOT_AUTHOR);
+    @Transactional
+    public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl account) throws CustomException {
+        Goods goods = goodsAccountTest(goodsId, account);
+
+        for (Files files : goods.getFilesList()) {
+            s3Service.deleteFile(files.getFileName());
         }
-        return GOODS_DELETE_SUCCESS;
+        goodsRepository.deleteById(goodsId);
+
+        return SUCCESS;
     }
 
     // 게시글 수정
     @Transactional
-    public ResponseCode updateGoods(Long id, GoodsReqDTO goodsReqDTO, Account account) throws CustomException {
-        Goods goods = goodsRepository.findById(id).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
-        );
-//        if (goods.getFileUrl() != null) s3Uploader.deleteFile(goods.getFileUrl());
-//        String updateFileUrl = goodsReqDTO.getFile() == null ? null : s3Uploader.uploadFile(goodsReqDTO.getFile());
-//        goods.update(goodsReqDTO, updateFileUrl);
+    public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
+        Goods goods = goodsAccountTest(goodsId, account);
+        Account detailsAccount = new Account(account);
+
+        List<Files> filesList = goods.getFilesList();
+
+        // 파일 외 데이터 처리
+        goods.update(goodsReqDTO);
+
+        // 파일 처리 - 수정 할 데이터를 받아서 순서대로 처리한다
+        for ( int i = 0; i < goodsReqDTO.getFiles().size(); i++) {
+            Map<String, Object> map = goodsReqDTO.getFiles().get(i);
+
+            String url = (String) map.get("url");
+            MultipartFile multipartFile = (MultipartFile) map.get("file");
+
+            if (url != null) {
+                Files files = filesList.get(i);
+                files.updateFilesUrl(url);
+            }
+            if (multipartFile != null) {
+                String fileUrl = s3Service.uploadFile(multipartFile);
+
+                Files files = Files.builder()
+                        .account(detailsAccount)
+                        .goods(goods)
+                        .fileUrl(fileUrl)
+                        .build();
+
+                filesRepository.save(files);
+            }
+
+        }
 
         goodsRepository.save(goods);
-        return GOODS_UPDATE_SUCCESS;
+        return SUCCESS;
     }
 
+    // 게시글 수정 & 삭제 - 상품 게시판 존재, 작성자 아이디와 접속한 아이디 비교
+    public Goods goodsAccountTest(Long goodsId, UserDetailsImpl account) {
+        Goods goods = goodsRepository.findById(goodsId).orElseThrow(
+                () -> new CustomException(GOODS_NOT_FOUND)
+        );
+//        Account goodsAccount = goods.getAccount();
+//        if (goodsAccount == null) {
+//            throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
+//        }
+//        if (!Objects.equals(goodsAccount.getId(), account.getId())) {
+//            throw new CustomException(NOT_AUTHORED);
+//        }
+        return goods;
+    }
+
+    // 조회수 + 1
     @Transactional
     public void plusView(Long id) throws CustomException {
         if (!goodsRepository.existsById(id)) {

@@ -18,7 +18,6 @@ public class GoodsTitleResDTO {
     private String account;
     private String title;
     private GoodsCategory category;
-//    private String description;
     private Integer sellPrice;
     private GoodsStatus status;
     private LocalDateTime createdAt;
@@ -31,7 +30,6 @@ public class GoodsTitleResDTO {
         this.account = account;
         this.title = title;
         this.category = category;
-//        this.description = description;
         this.sellPrice = sellPrice;
         this.fileUrl = fileUrl;
         this.status = status;
@@ -39,13 +37,12 @@ public class GoodsTitleResDTO {
     }
 
     public GoodsTitleResDTO(Goods goods) {
-        String fileUrl = goods.getFilesList().get(0).getFileURL();
+        String fileUrl = goods.getFilesList().get(0).getFileUrl();
         this.title = goods.getTitle();
         this.id = goods.getId();
 //        this.account = goods.getAccount().getEmail();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
-//        this.description = goods.getDescription();
         this.createdAt = goods.getCreatedAt();
         this.fileUrl = fileUrl;
         this.viewCount = goods.getViewCount();

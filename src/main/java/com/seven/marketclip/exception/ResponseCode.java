@@ -9,25 +9,11 @@ import static org.springframework.http.HttpStatus.*;
 public enum ResponseCode {
 
     /** ( 200 OK / 201 CREATED ) 요청성공 */
-    TEST_SUCCESS(OK, "테스트 결과 확인."),
-
-    // 닉네임 확인
-    NICKNAME_VALIDATION_SUCCESS(OK, "닉네임을 사용할 수 있습니다."),
+    SUCCESS(OK, "성공!"),
 
     // 이메일 인증
     EMAIL_VALIDATION_SUCCESS(OK, "이메일 인증이 완료되었습니다."),
     EMAIL_DISPATCH_SUCCESS(OK, "해당 이메일로 인증번호를 발송하였습니다."),
-
-    // 회원가입 완료
-    SIGNUP_SUCCESS(CREATED, "회원가입이 완료되었습니다."),
-
-    // 게시글
-    GOODS_POST_SUCCESS(CREATED, "게시글 작성이 완료되었습니다."),
-    GOODS_DELETE_SUCCESS(OK, "게시글 삭제가 완료되었습니다."),
-    GOODS_UPDATE_SUCCESS(OK, "게시글 수정이 완료되었습니다."),
-    GOODS_BOARD_SUCCESS(OK, "게시글 전체 조회가 완료되었습니다."),
-    GOODS_DETAIL_SUCCESS(OK, "게시글 상세페이지를 불러왔습니다."),
-
 
     /** 400 BAD_REQUEST 잘못된 요청 */
     // 회원가입 + 로그인
@@ -58,7 +44,7 @@ public enum ResponseCode {
 
     /** 401 UNAUTHORIZED 인증되지 않은 사용자 */
     LOGIN_REQUIRED(UNAUTHORIZED, "로그인이 필요합니다."),
-    NOT_AUTHOR(UNAUTHORIZED, "해당 게시글의 작성자가 아닙니다."),
+    NOT_AUTHORED(UNAUTHORIZED, "해당 게시글의 작성자가 아닙니다."),
 
     INVALID_AUTH_TOKEN(UNAUTHORIZED, "권한 정보가 없는 토큰입니다."),
     UNAUTHORIZED_MEMBER(UNAUTHORIZED, "현재 내 계정 정보가 존재하지 않습니다."),
@@ -66,15 +52,15 @@ public enum ResponseCode {
     /** 403 FORBIDDEN 인증되지 않은 사용자 */
     HEADER_NOT_FOUND(FORBIDDEN, "헤더에 토큰이 존재하지 않습니다."),
 
-
     /** 404 NOT_FOUND  리소스를 찾을 수 없음 */
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),
     FILE_NOT_FOUND(NOT_FOUND, "해당 파일을 찾을 수 없습니다."),
 
+    REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 상태입니다 다시 로그인 해주세요."),
+    NULL_POINT_EXCEPTION(NOT_FOUND, "Null Point Exception 발생."),
 
-    REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 된 사용자입니다."),
 
     /** 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     USER_ALREADY_EXISTS(CONFLICT, "이미 존재하는 사용자입니다."),
