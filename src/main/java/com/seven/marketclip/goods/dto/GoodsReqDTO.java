@@ -10,7 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Validated
 @Getter
@@ -21,12 +23,12 @@ public class GoodsReqDTO {
     private String title;
     @NotBlank(message = "내용에 값을 입력하세요")
     private String description;
-    private List<MultipartFile> files = new ArrayList<>();
+    private List<Map<String,Object>> files = new ArrayList<>();
     private GoodsCategory category;
     private Integer sellPrice;
 
     @Builder
-    public GoodsReqDTO(String title, String description, List<MultipartFile> files, GoodsCategory category, Integer sellPrice) {
+    public GoodsReqDTO(String title, String description, List<Map<String,Object>> files, GoodsCategory category, Integer sellPrice) {
         this.title = title;
         this.description = description;
         this.files = files;

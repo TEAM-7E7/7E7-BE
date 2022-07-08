@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     private final AccountRepository accountRepository;
-    public static final String JWT_HEADER = "X-ACCESSR-TOKEN";
+    public static final String JWT_HEADER = "X-ACCESS-TOKEN";
     public static final String REFRESH_HEADER = "X-REFRESH-TOKEN";
     public static final String TOKEN_TYPE = "BEARER";
 

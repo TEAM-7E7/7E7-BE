@@ -19,8 +19,6 @@ public class FormLoginAuthProvider implements AuthenticationProvider {
     private UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-
-
     @Override
         public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
