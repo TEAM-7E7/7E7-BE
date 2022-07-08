@@ -76,7 +76,13 @@ public class GoodsService {
 
         goodsRepository.save(goods);
 
-        for (Object object : goodsReqDTO.getFiles()) {
+        for (Map<String, Object> map : goodsReqDTO.getFiles()) {
+            Object object = map.get("file");
+            Object object2 = map.get("url");
+            System.out.println(object);
+            System.out.println(object2);
+
+
             MultipartFile multipartFile = (MultipartFile) object;
 
 //            Map<String, String> mappedFile = s3Service.uploadFile(multipartFile);

@@ -41,6 +41,9 @@ public enum ResponseCode {
 
     // validation, integrity 위반
     WRONG_VALIDATION_INTEGRITY(BAD_REQUEST, "validation 또는 무결성 위반."),
+    
+    // 타입 에러
+    CONVERT_STRING_TO_MAP_FAIL(BAD_REQUEST, "문자열이 Map 형식이 아닙니다."),
 
     /** 401 UNAUTHORIZED 인증되지 않은 사용자 */
     LOGIN_REQUIRED(UNAUTHORIZED, "로그인이 필요합니다."),
