@@ -41,6 +41,9 @@ public enum ResponseCode {
 
     // validation, integrity 위반
     WRONG_VALIDATION_INTEGRITY(BAD_REQUEST, "validation 또는 무결성 위반."),
+    
+    // 타입 에러
+    CONVERT_STRING_TO_MAP_FAIL(BAD_REQUEST, "문자열이 Map 형식이 아닙니다."),
 
     /** 401 UNAUTHORIZED 인증되지 않은 사용자 */
     LOGIN_REQUIRED(UNAUTHORIZED, "로그인이 필요합니다."),
@@ -53,6 +56,7 @@ public enum ResponseCode {
     HEADER_NOT_FOUND(FORBIDDEN, "헤더에 토큰이 존재하지 않습니다."),
 
     /** 404 NOT_FOUND  리소스를 찾을 수 없음 */
+    EMAIL_NOT_FOUND(NOT_FOUND, "이메일 인증을 신청하지 않았습니다."),
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),

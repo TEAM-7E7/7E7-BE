@@ -10,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Validated
 @NoArgsConstructor
 @Getter
 @Entity

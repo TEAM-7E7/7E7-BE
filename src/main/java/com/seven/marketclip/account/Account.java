@@ -47,44 +47,46 @@ public class Account extends Timestamped {
     private List<Goods> goodsList;
 
     @Builder
-    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type ) {
+    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {
         this.id = id;
-        this.nickname =nickname;
-        this.email=email;
-        this.password=password;
-        this.role=role;
-        this.type=type;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.type = type;
     }
 
-    public Account(AccountReqDTO accountReqDTO){
+    public Account(AccountReqDTO accountReqDTO) {
         this.nickname = accountReqDTO.getNickname();
         this.email = accountReqDTO.getEmail();
         this.password = accountReqDTO.getPassword();
     }
 
-    public Account(UserDetailsImpl userDetails){
+    public Account(UserDetailsImpl userDetails) {
         this.id = userDetails.getId();
         this.email = userDetails.getEmail();
 //        this.nickname = userDetails
-        this.role = userDetails.getRole();
+//        this.role = userDetails.getRole();
     }
 
     //계정 타입 (일반)
-    public void saveAccountType(AccountTypeEnum accountTypeEnum){
+    public void saveAccountType(AccountTypeEnum accountTypeEnum) {
         this.type = accountTypeEnum;
     }
 
     //패스워드 인코드
-    public void encodePassword(String encodedPassword){
+    public void encodePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
 
     //리프레쉬 토큰 변경
-    public void changeRefreshToken(String refreshToken){
+    public void changeRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
     //소셜에서 카카오만 이메일 값을 아이디 값으로 대체
-    public void changeIdtoEmail(String id){this.email = id;}
+    public void changeIdtoEmail(String id) {
+        this.email = id;
+    }
 
 }
