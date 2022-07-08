@@ -106,11 +106,13 @@ public class EmailService {
         }
     }
 
-    public boolean checkVerified(String email){
+    public void checkVerified(String email) throws CustomException {
         Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
-                ()-> new CustomException(UNVERIFIED_EMAIL)
+                () -> new CustomException(EMAIL_NOT_FOUND)
         );
-        return emailFound.getEmailVerified();
+        if (!emailFound.getEmailVerified()) {
+            throw new CustomException(UNVERIFIED_EMAIL);
+        }
     }
 
     // 두시간마다 폐기된 이메일 데이터 삭제

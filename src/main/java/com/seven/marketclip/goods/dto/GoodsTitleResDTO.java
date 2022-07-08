@@ -40,7 +40,7 @@ public class GoodsTitleResDTO {
         String fileUrl = goods.getFilesList().get(0).getFileUrl();
         this.title = goods.getTitle();
         this.id = goods.getId();
-//        this.account = goods.getAccount().getEmail();
+        this.account = goods.getAccount().getEmail();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.createdAt = goods.getCreatedAt();

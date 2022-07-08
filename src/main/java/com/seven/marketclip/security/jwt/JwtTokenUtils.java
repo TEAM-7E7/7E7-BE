@@ -15,8 +15,8 @@ public final class JwtTokenUtils {
     private static final int DAY = 24 * HOUR;
 
     // JWT 토큰의 유효기간: 3일 (단위: seconds)
-    private static final int JWT_TOKEN_VALID_SEC = MINUTE*3;
-    private static final int REFRESH_TOKEN_VALID_SEC = MINUTE*10;
+    private static final int JWT_TOKEN_VALID_SEC = MINUTE * 60;
+    private static final int REFRESH_TOKEN_VALID_SEC = HOUR * 6;
     // JWT 토큰의 유효기간: 3일 (단위: milliseconds)
     private static final int JWT_TOKEN_VALID_MILLI_SEC = JWT_TOKEN_VALID_SEC * 1000;
     private static final int REFRESH_TOKEN_VALID_MILLI_SEC = REFRESH_TOKEN_VALID_SEC * 1000;
@@ -38,7 +38,7 @@ public final class JwtTokenUtils {
             token = JWT.create()
                     .withIssuer("sparta")
                     .withClaim(CLAIM_USER_ID, userDetails.getId())
-                     // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
+                    // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
                     .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_MILLI_SEC))
                     .sign(generateAlgorithm());
         } catch (Exception e) {
@@ -47,6 +47,7 @@ public final class JwtTokenUtils {
 
         return token;
     }
+
     public static String generateJwtToken(UserDetailsImpl userDetails) {
         System.out.println("로그인 필터 8");
         String token = null;

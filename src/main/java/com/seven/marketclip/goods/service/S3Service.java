@@ -60,16 +60,18 @@ public class S3Service {
     private String getFileExtension(String fileName) throws CustomException {
         String lowerCase = fileName.toLowerCase();
         String target;
+        String shortName;
         try {
             target = lowerCase.substring(lowerCase.lastIndexOf("."));
+            shortName = lowerCase.substring(target.lastIndexOf("."), lowerCase.lastIndexOf("."));
+
         } catch (StringIndexOutOfBoundsException e) {
             throw new CustomException(WRONG_FILE_TYPE);
         }
         if (fileList.contains(target)) {
-            return target;
+            return shortName+target;
         } else {
             throw new CustomException(WRONG_FILE_TYPE);
         }
-
     }
 }

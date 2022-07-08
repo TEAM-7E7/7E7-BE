@@ -50,7 +50,7 @@ public class GoodsResDTO {
 
         this.title = goods.getTitle();
         this.id = goods.getId();
-//        this.account = goods.getAccount().getEmail();
+        this.account = goods.getAccount().getEmail();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.description = goods.getDescription();

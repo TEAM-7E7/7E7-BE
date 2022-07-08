@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

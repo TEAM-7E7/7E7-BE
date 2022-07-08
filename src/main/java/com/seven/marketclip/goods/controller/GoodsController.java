@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.controller;
 
-import com.seven.marketclip.account.Account;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.service.GoodsService;
@@ -37,10 +36,9 @@ public class GoodsController {
     // 게시글 작성
     @ApiOperation(value = "게시글 작성", notes = "게시글 작성 api")
     @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute @Validated GoodsReqDTO goodsReqDTO) {
-//    public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute @Validated GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
-//        return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, account));
-        return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO));
+    public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
+        return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, account));
+
     }
 
     // 상세페이지
@@ -62,7 +60,7 @@ public class GoodsController {
     // 게시글 수정
     @ApiOperation(value = "게시글 수정", notes = "게시글 수정 api")
     @PutMapping(value = "/{goodsId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> goodsUpdate(@PathVariable Long goodsId, @ModelAttribute @Validated GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
+    public ResponseEntity<HttpResponse> goodsUpdate(@PathVariable Long goodsId, @ModelAttribute GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
         return HttpResponse.toResponseEntity(goodsService.updateGoods(goodsId, goodsReqDTO, account));
     }
 }

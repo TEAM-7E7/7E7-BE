@@ -23,7 +23,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
+    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.emailService = emailService;
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -44,7 +44,7 @@ public class AccountService {
         String encodedPassword = bCryptPasswordEncoder.encode(accountReqDTO.getPassword());
 
         Optional<Account> accountOpt = accountRepository.findByEmail(accountReqDTO.getEmail());
-        if(accountOpt.isPresent()){
+        if (accountOpt.isPresent()) {
             throw new CustomException(USER_ALREADY_EXISTS);
         }
 
@@ -56,9 +56,8 @@ public class AccountService {
                 .type(AccountTypeEnum.MARKETCLIP)
                 .build();
 
-        if(!emailService.checkVerified(accountReqDTO.getEmail())){
-            throw new CustomException(UNVERIFIED_EMAIL);
-        }
+        emailService.checkVerified(accountReqDTO.getEmail());
+
         accountRepository.save(account);
 
         return SUCCESS;

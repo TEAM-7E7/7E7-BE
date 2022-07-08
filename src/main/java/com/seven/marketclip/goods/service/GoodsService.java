@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 
@@ -61,14 +58,12 @@ public class GoodsService {
 
     // 게시글 작성
     @Transactional
-    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO) throws CustomException {
-    // todo 회원정보를 이용하는 테스트는 아직 못했음
-//    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
-//        Account detailsAccount = new Account(account);
+    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
+        Account detailsAccount = new Account(account);
 
         Goods goods = Goods.builder()
                 .title(goodsReqDTO.getTitle())
-//                .account(account)
+                .account(detailsAccount)
                 .description(goodsReqDTO.getDescription())
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
@@ -76,33 +71,13 @@ public class GoodsService {
 
         goodsRepository.save(goods);
 
-        for (Map<String, Object> map : goodsReqDTO.getFiles()) {
-            Object object = map.get("file");
-            Object object2 = map.get("url");
-            System.out.println(object);
-            System.out.println(object2);
-
-
+        for (Object object : goodsReqDTO.getFiles()) {
             MultipartFile multipartFile = (MultipartFile) object;
-
-//            Map<String, String> mappedFile = s3Service.uploadFile(multipartFile);
 
             String fileUrl = s3Service.uploadFile(multipartFile);
 
-
-//            String bucket;
-//            String region;
-//            String fileName;
-//            try {
-//                bucket = mappedFile.get("bucket");
-//                region = mappedFile.get("region");
-//                fileName = mappedFile.get("fileName");
-//            } catch (NullPointerException e) {
-//                throw new CustomException(NULL_POINT_EXCEPTION);
-//            }
-
             Files files = Files.builder()
-//                    .account(detailsAccount)
+                    .account(detailsAccount)
                     .goods(goods)
                     .fileUrl(fileUrl)
                     .build();
@@ -144,6 +119,8 @@ public class GoodsService {
     }
 
     // 게시글 수정
+    // todo 수정할 때 url로 순서를 바꾸는 로직은 잘 작동 되지만, 다른 string을 요청해도 그것으로 업데이트 되므로 해당 url이 db에 존재하는 url인지 확인하는 로직이 필요하다
+    // todo 수정 시 없어지는 파일들은 S3에서도 삭제하고 DB에서도 삭제해야 한다 - 사라진 url추적
     @Transactional
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
         Goods goods = goodsAccountTest(goodsId, account);
@@ -155,17 +132,15 @@ public class GoodsService {
         goods.update(goodsReqDTO);
 
         // 파일 처리 - 수정 할 데이터를 받아서 순서대로 처리한다
-        for ( int i = 0; i < goodsReqDTO.getFiles().size(); i++) {
-            Map<String, Object> map = goodsReqDTO.getFiles().get(i);
+        for (int i = 0; i < goodsReqDTO.getFiles().size(); i++) {
+            Object object = goodsReqDTO.getFiles().get(i);
 
-            String url = (String) map.get("url");
-            MultipartFile multipartFile = (MultipartFile) map.get("file");
+            String url;
+            MultipartFile multipartFile;
 
-            if (url != null) {
-                Files files = filesList.get(i);
-                files.updateFilesUrl(url);
-            }
-            if (multipartFile != null) {
+            if (object instanceof MultipartFile) {
+                multipartFile = (MultipartFile) object;
+
                 String fileUrl = s3Service.uploadFile(multipartFile);
 
                 Files files = Files.builder()
@@ -175,26 +150,30 @@ public class GoodsService {
                         .build();
 
                 filesRepository.save(files);
-            }
+            } else {
+                url = (String) object;
 
+                Files files = filesList.get(i);
+                files.updateFilesUrl(url);
+            }
         }
 
         goodsRepository.save(goods);
         return SUCCESS;
     }
 
-    // 게시글 수정 & 삭제 - 상품 게시판 존재, 작성자 아이디와 접속한 아이디 비교
+    // 게시글 수정 & 삭제 - 상품 게시판 존재 여부, 작성자 아이디와 접속한 아이디 비교
     public Goods goodsAccountTest(Long goodsId, UserDetailsImpl account) {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-//        Account goodsAccount = goods.getAccount();
-//        if (goodsAccount == null) {
-//            throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
-//        }
-//        if (!Objects.equals(goodsAccount.getId(), account.getId())) {
-//            throw new CustomException(NOT_AUTHORED);
-//        }
+        Account goodsAccount = goods.getAccount();
+        if (goodsAccount == null) {
+            throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
+        }
+        if (!Objects.equals(goodsAccount.getId(), account.getId())) {
+            throw new CustomException(NOT_AUTHORED);
+        }
         return goods;
     }
 
