@@ -10,6 +10,7 @@ import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
+import com.seven.marketclip.goods.dto.StringMultipart;
 import com.seven.marketclip.goods.repository.FilesRepository;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -71,18 +72,20 @@ public class GoodsService {
 
         goodsRepository.save(goods);
 
-        for (Object object : goodsReqDTO.getFiles()) {
-            MultipartFile multipartFile = (MultipartFile) object;
+        for (StringMultipart stringMultipart : goodsReqDTO.getFiles()) {
+            if (stringMultipart instanceof MultipartFile) {
+                MultipartFile multipartFile = stringMultipart.getMultipartFile();
 
-            String fileUrl = s3Service.uploadFile(multipartFile);
+                String fileUrl = s3Service.uploadFile(multipartFile);
 
-            Files files = Files.builder()
-                    .account(detailsAccount)
-                    .goods(goods)
-                    .fileUrl(fileUrl)
-                    .build();
+                Files files = Files.builder()
+                        .account(detailsAccount)
+                        .goods(goods)
+                        .fileUrl(fileUrl)
+                        .build();
 
-            filesRepository.save(files);
+                filesRepository.save(files);
+            }
         }
         return SUCCESS;
     }
@@ -94,7 +97,6 @@ public class GoodsService {
         if (accountRepository.findById(account.getId()).isEmpty()) {
             throw new CustomException(USER_NOT_FOUND);
         }
-
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
@@ -111,7 +113,7 @@ public class GoodsService {
         Goods goods = goodsAccountTest(goodsId, account);
 
         for (Files files : goods.getFilesList()) {
-            s3Service.deleteFile(files.getFileName());
+            s3Service.deleteFile(files.getFileUrl());
         }
         goodsRepository.deleteById(goodsId);
 
@@ -119,46 +121,67 @@ public class GoodsService {
     }
 
     // 게시글 수정
-    // todo 수정할 때 url로 순서를 바꾸는 로직은 잘 작동 되지만, 다른 string을 요청해도 그것으로 업데이트 되므로 해당 url이 db에 존재하는 url인지 확인하는 로직이 필요하다
-    // todo 수정 시 없어지는 파일들은 S3에서도 삭제하고 DB에서도 삭제해야 한다 - 사라진 url추적
     @Transactional
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
         Goods goods = goodsAccountTest(goodsId, account);
         Account detailsAccount = new Account(account);
 
-        List<Files> filesList = goods.getFilesList();
+        List<Files> filesList = filesRepository.findAllByGoods(goods);   // db의 파일리스트
+//        List<Files> filesList = goods.getFilesList();   // db의 파일리스트
+        Set<String> urlSet = new HashSet<>();   // db의 url은 이제 순서와 상관 없으므로 set 자료구조에 넣는다
+        for (Files files : filesList) {
+            urlSet.add(files.getFileUrl());
+        }
+        System.out.println("db의 모든 파일경로 url" + urlSet);
 
         // 파일 외 데이터 처리
         goods.update(goodsReqDTO);
 
-        // 파일 처리 - 수정 할 데이터를 받아서 순서대로 처리한다
-        for (int i = 0; i < goodsReqDTO.getFiles().size(); i++) {
-            Object object = goodsReqDTO.getFiles().get(i);
+        // DB의 값을 모두 지우고 새로 만들 것
+        filesRepository.deleteAllByGoods(goods);
 
-            String url;
-            MultipartFile multipartFile;
-
-            if (object instanceof MultipartFile) {
-                multipartFile = (MultipartFile) object;
-
+        System.out.println("goodsReqDTO: "+goodsReqDTO.getFiles());
+        for (StringMultipart stringMultipart : goodsReqDTO.getFiles()) {
+            if (stringMultipart instanceof MultipartFile) {
+                System.out.println("multipart: "+stringMultipart.getMultipartFile().getOriginalFilename());
+                MultipartFile multipartFile = stringMultipart.getMultipartFile();
                 String fileUrl = s3Service.uploadFile(multipartFile);
-
                 Files files = Files.builder()
                         .account(detailsAccount)
                         .goods(goods)
                         .fileUrl(fileUrl)
                         .build();
-
                 filesRepository.save(files);
             } else {
-                url = (String) object;
+                System.out.println("String URL: "+stringMultipart.getString());
+                String url = stringMultipart.getString();  // 프론트에서 보낸 파일의 경로
+                // DB에 존재하지 않는 url을 보낼 경우
+                if (!urlSet.contains(url)) {
+                    throw new CustomException(URL_NOT_FOUND);
+                }
+                // 기존의 urlSet 를 삭제될 url 들이 모인 list 로 만든다
+                urlSet.remove(url);
 
-                Files files = filesList.get(i);
-                files.updateFilesUrl(url);
+                System.out.println("DB에 있는 url : " + url);
+
+                Files file = Files.builder()
+                        .account(detailsAccount)
+                        .goods(goods)
+                        .fileUrl(url)
+                        .build();
+                filesRepository.save(file);
             }
         }
 
-        goodsRepository.save(goods);
+        System.out.println("제외된 파일경로 url" + urlSet);
+
+        // 수정된 파일에 포함되지 않는 url (S3삭제)
+        for (String url : urlSet) {
+            s3Service.deleteFile(url);
+            filesRepository.deleteByFileUrl(url);
+        }
+
+//        goodsRepository.save(goods);
         return SUCCESS;
     }
 

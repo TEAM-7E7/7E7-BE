@@ -15,12 +15,12 @@ import java.util.List;
 public class GoodsReqDTO {
     private String title;
     private String description;
-    private List<Object> files = new ArrayList<>();
+    private ArrayList<StringMultipart> files = new ArrayList<>();
     private GoodsCategory category;
     private Integer sellPrice;
 
     @Builder
-    public GoodsReqDTO(String title, String description, List<Object> files, GoodsCategory category, Integer sellPrice) {
+    public GoodsReqDTO(String title, String description, ArrayList<StringMultipart> files, GoodsCategory category, Integer sellPrice) {
         this.title = title;
         this.description = description;
         this.files = files;
