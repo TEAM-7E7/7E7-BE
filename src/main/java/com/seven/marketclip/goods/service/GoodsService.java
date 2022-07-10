@@ -72,20 +72,20 @@ public class GoodsService {
 
         goodsRepository.save(goods);
 
-        for (StringMultipart stringMultipart : goodsReqDTO.getFiles()) {
-            if (stringMultipart instanceof MultipartFile) {
-                MultipartFile multipartFile = stringMultipart.getMultipartFile();
+        Map<Integer, MultipartFile> map = goodsReqDTO.getFiles();
 
-                String fileUrl = s3Service.uploadFile(multipartFile);
+        for (int i = 0; i < map.size(); i++) {
+            MultipartFile multipartFile = map.get(i);
 
-                Files files = Files.builder()
-                        .account(detailsAccount)
-                        .goods(goods)
-                        .fileUrl(fileUrl)
-                        .build();
+            String fileUrl = s3Service.uploadFile(multipartFile);
 
-                filesRepository.save(files);
-            }
+            Files files = Files.builder()
+                    .account(detailsAccount)
+                    .goods(goods)
+                    .fileUrl(fileUrl)
+                    .build();
+
+            filesRepository.save(files);
         }
         return SUCCESS;
     }
@@ -140,22 +140,25 @@ public class GoodsService {
         // DB의 값을 모두 지우고 새로 만들 것
         filesRepository.deleteAllByGoods(goods);
 
-        System.out.println("goodsReqDTO: "+goodsReqDTO.getFiles());
-        for (StringMultipart stringMultipart : goodsReqDTO.getFiles()) {
-            if (stringMultipart instanceof MultipartFile) {
-                System.out.println("multipart: "+stringMultipart.getMultipartFile().getOriginalFilename());
-                MultipartFile multipartFile = stringMultipart.getMultipartFile();
-                String fileUrl = s3Service.uploadFile(multipartFile);
+        System.out.println("goodsReqDTO: " + goodsReqDTO.getFiles());
+
+        Integer length = goodsReqDTO.getFiles().size() + goodsReqDTO.getUrls().size();
+        Map<Integer, MultipartFile> multipartFileMap = goodsReqDTO.getFiles();
+        Map<Integer, String> urlMap = goodsReqDTO.getUrls();
+
+        for (int i = 0; i < length; i++) {
+            if (!multipartFileMap.get(i).isEmpty()) {
+                String fileUrl = s3Service.uploadFile(multipartFileMap.get(i));
                 Files files = Files.builder()
                         .account(detailsAccount)
                         .goods(goods)
                         .fileUrl(fileUrl)
                         .build();
                 filesRepository.save(files);
-            } else {
-                System.out.println("String URL: "+stringMultipart.getString());
-                String url = stringMultipart.getString();  // 프론트에서 보낸 파일의 경로
-                // DB에 존재하지 않는 url을 보낼 경우
+            }
+
+            if (!urlMap.get(i).isEmpty()) {
+                String url = urlMap.get(i);
                 if (!urlSet.contains(url)) {
                     throw new CustomException(URL_NOT_FOUND);
                 }
