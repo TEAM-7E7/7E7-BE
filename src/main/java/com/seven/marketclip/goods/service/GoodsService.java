@@ -56,6 +56,27 @@ public class GoodsService {
         return new DataResponseCode(SUCCESS, resultMap);
     }
 
+    // 이미지 파일 S3 저장
+    public ResponseCode addS3(Long goodsId, MultipartFile multipartFile, UserDetailsImpl account) throws CustomException {
+        Goods goods = goodsRepository.findById(goodsId).orElseThrow(
+                ()-> new CustomException(GOODS_NOT_FOUND)
+        );
+
+        Account detailsAccount = new Account(account);
+
+        String fileUrl = s3Service.uploadFile(multipartFile);
+
+        Files files = Files.builder()
+                .account(detailsAccount)
+                .goods(goods)
+                .fileUrl(fileUrl)
+                .build();
+
+        filesRepository.save(files);
+
+        return SUCCESS;
+    }
+
     // 게시글 작성
     @Transactional
     public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {

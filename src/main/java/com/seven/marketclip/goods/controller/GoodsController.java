@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Api(tags = "물품 게시판 컨트롤러")
@@ -31,6 +32,14 @@ public class GoodsController {
     @GetMapping("")
     public ResponseEntity<HttpResponse> goodsList(@PageableDefault final Pageable pageable) {
         return HttpResponse.toResponseEntity(goodsService.findGoods(pageable));
+    }
+
+    // 게시글 S3 저장
+    @ApiOperation(value = "이미지 파일 저장", notes = "이미지 파일 저장 api")
+    @PostMapping(value = "/{goodsId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpResponse> s3Add(@PathVariable Long goodsId, @RequestParam("file") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl account) {
+        return HttpResponse.toResponseEntity(goodsService.addS3(goodsId, multipartFile, account));
+
     }
 
     // 게시글 작성
