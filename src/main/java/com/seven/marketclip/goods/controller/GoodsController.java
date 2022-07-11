@@ -1,6 +1,7 @@
 package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.exception.HttpResponse;
+import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -35,18 +36,22 @@ public class GoodsController {
 
     // 게시글 S3 저장
     @ApiOperation(value = "이미지 파일 저장", notes = "이미지 파일 저장 api")
-    @PostMapping(value = "/{goodsId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> s3Add(@PathVariable Long goodsId, @RequestParam("file") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl account) {
-        return HttpResponse.toResponseEntity(goodsService.addS3(goodsId, multipartFile, account));
+    @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpResponse> s3Add(@RequestParam("file") MultipartFile multipartFile) {
+        return HttpResponse.toResponseEntity(goodsService.addS3(multipartFile));
 
     }
 
     // 게시글 작성
-    @ApiOperation(value = "게시글 작성", notes = "게시글 작성 api")
+/*    @ApiOperation(value = "게시글 작성", notes = "게시글 작성 api")
     @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
         return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, account));
-
+    }*/
+    @ApiOperation(value = "게시글 작성", notes = "게시글을 작성하는 api")
+    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<HttpResponse> goodsAdd(@RequestBody GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
+        return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, account));
     }
 
     // 상세페이지
@@ -59,16 +64,35 @@ public class GoodsController {
     }
 
     // 게시글 삭제
-    @ApiOperation(value = "게시글 삭제", notes = "게시글 삭제 api")
+    @ApiOperation(value = "게시글 삭제", notes = "게시글을 삭제하는 api")
     @DeleteMapping("/{goodsId}")
     public ResponseEntity<HttpResponse> goodsDelete(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account) {
         return HttpResponse.toResponseEntity(goodsService.deleteGoods(goodsId, account));
     }
 
     // 게시글 수정
-    @ApiOperation(value = "게시글 수정", notes = "게시글 수정 api")
+/*    @ApiOperation(value = "게시글 수정", notes = "게시글 수정 api")
     @PutMapping(value = "/{goodsId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpResponse> goodsUpdate(@PathVariable Long goodsId, @ModelAttribute GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
         return HttpResponse.toResponseEntity(goodsService.updateGoods(goodsId, goodsReqDTO, account));
+    }*/
+    @ApiOperation(value = "게시글 수정", notes = "게시글을 수정하는 api")
+    @PutMapping(value = "/{goodsId}", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<HttpResponse> goodsUpdate(@PathVariable Long goodsId, @RequestBody GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
+        return HttpResponse.toResponseEntity(goodsService.updateGoods(goodsId, goodsReqDTO, account));
+    }
+
+    // 내가 쓴 글 조회
+    @ApiOperation(value = "내가 쓴 게시글 조회", notes = "내가 쓴 게시글을 조회하는 api / 페이징")
+    @GetMapping("/my-page")
+    public ResponseEntity<HttpResponse> myGoodsList(@PageableDefault final Pageable pageable, @AuthenticationPrincipal UserDetailsImpl account) {
+        return HttpResponse.toResponseEntity(goodsService.findMyGoods(account, pageable));
+    }
+
+    // 카테고리별 조회
+    @ApiOperation(value = "내가 쓴 게시글 조회", notes = "내가 쓴 게시글을 조회하는 api / 페이징")
+    @GetMapping("/category/{category}")
+    public ResponseEntity<HttpResponse> categoryGoodsList(@PathVariable GoodsCategory category, @PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.findGoodsCategory(category, pageable));
     }
 }

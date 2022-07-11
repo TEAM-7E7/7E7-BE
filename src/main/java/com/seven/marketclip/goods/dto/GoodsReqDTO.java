@@ -5,10 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,18 +15,15 @@ import java.util.Map;
 public class GoodsReqDTO {
     private String title;
     private String description;
-    private Map<Integer,MultipartFile> files = new HashMap<>();
-    private Map<Integer,String> urls = new HashMap<>();
-
+    private List<String> fileUrls = new ArrayList<>();
     private GoodsCategory category;
     private Integer sellPrice;
 
     @Builder
-    public GoodsReqDTO(String title, String description, Map<Integer,MultipartFile> files, Map<Integer,String> urls, GoodsCategory category, Integer sellPrice) {
+    public GoodsReqDTO(String title, String description, List<String> fileUrls, GoodsCategory category, Integer sellPrice) {
         this.title = title;
         this.description = description;
-        this.files = files;
-        this.urls = urls;
+        this.fileUrls = fileUrls;
         this.category = category;
         this.sellPrice = sellPrice;
     }

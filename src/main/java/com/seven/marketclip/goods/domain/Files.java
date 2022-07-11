@@ -39,4 +39,8 @@ public class Files {
         this.createdAt = LocalDateTime.now();
     }
 
+    public void updateUrl(String url){
+        this.fileUrl = url;
+    }
+
 }
