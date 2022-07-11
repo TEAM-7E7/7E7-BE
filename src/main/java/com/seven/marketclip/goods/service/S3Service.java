@@ -45,9 +45,11 @@ public class S3Service {
         }
 
         return bucket + ".s3." + region + ".amazonaws.com/" + fileName;
+
     }
 
-    public void deleteFile(String fileKey) {
+    public void deleteFile(String fileUrl) {
+        String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/")[1];
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
     }
 

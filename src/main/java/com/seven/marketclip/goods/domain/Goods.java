@@ -40,11 +40,10 @@ public class Goods extends Timestamped {
 
     private Integer wishCount = 0;
 
-    @Column
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishLists> wishLists;
 
-    //    @Column(nullable = false)
+    @Column(nullable = false)
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     private List<Files> filesList;
 

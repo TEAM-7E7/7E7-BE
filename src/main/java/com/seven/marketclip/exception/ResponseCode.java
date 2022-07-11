@@ -39,11 +39,11 @@ public enum ResponseCode {
     WRONG_FILE_TYPE(BAD_REQUEST, "파일의 형식을 확인해 주세요: JPEG, JPG, PNG, BMP, MP4"),
     FILE_UPLOAD_ERROR(BAD_REQUEST, "파일 업로드에 실패했습니다."),
 
+    // 게시글 수정
+    URL_NOT_FOUND(BAD_REQUEST, "DB에 등록된 url 파일이 아닙니다."),
+
     // validation, integrity 위반
     WRONG_VALIDATION_INTEGRITY(BAD_REQUEST, "validation 또는 무결성 위반."),
-    
-    // 타입 에러
-    CONVERT_STRING_TO_MAP_FAIL(BAD_REQUEST, "문자열이 Map 형식이 아닙니다."),
 
     /** 401 UNAUTHORIZED 인증되지 않은 사용자 */
     LOGIN_REQUIRED(UNAUTHORIZED, "로그인이 필요합니다."),
