@@ -44,16 +44,12 @@ public class S3Service {
             throw new CustomException(FILE_UPLOAD_ERROR);
         }
 
-//        Map<String, String> fileUrl = new HashMap<>();
-//        fileUrl.put("bucket", bucket);
-//        fileUrl.put("region",region);
-//        fileUrl.put("fileName", fileName);
+        return bucket + ".s3." + region + ".amazonaws.com/" + fileName;
 
-//        return fileUrl;
-        return bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
     }
 
-    public void deleteFile(String fileKey) {
+    public void deleteFile(String fileUrl) {
+        String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/")[1];
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
     }
 
@@ -69,7 +65,7 @@ public class S3Service {
             throw new CustomException(WRONG_FILE_TYPE);
         }
         if (fileList.contains(target)) {
-            return shortName+target;
+            return shortName + target;
         } else {
             throw new CustomException(WRONG_FILE_TYPE);
         }

@@ -1,6 +1,8 @@
 package com.seven.marketclip.goods.repository;
 
+import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.goods.domain.GoodsCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +13,11 @@ import java.util.List;
 
 public interface GoodsRepository extends JpaRepository<Goods, Long> {
     Page<Goods> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Goods> findAllByAccount(Account account, Pageable pageable);
+    Page<Goods> findAllByCategory(GoodsCategory category, Pageable pageable);
 
     List<Goods> findAllByOrderByWishCountDesc();
+
 
     @Modifying
     @Query("UPDATE Goods p SET p.viewCount = p.viewCount + 1 where p.id = :id")
