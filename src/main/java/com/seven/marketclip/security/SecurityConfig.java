@@ -166,9 +166,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
-
-
     //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
     private JwtAuthFilter jwtFilter() throws Exception {
         List<String> skipPathList = new ArrayList<>();
@@ -179,10 +176,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         
 
 //        // 테스트용
-        skipPathList.add("GET,/**");
-        skipPathList.add("POST,/**");
-        skipPathList.add("PUT,/**");
-        skipPathList.add("DELETE,/**");
+//        skipPathList.add("GET,/**");
+//        skipPathList.add("POST,/**");
+//        skipPathList.add("PUT,/**");
+//        skipPathList.add("DELETE,/**");
 
 
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?

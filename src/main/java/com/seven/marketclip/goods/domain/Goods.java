@@ -21,7 +21,6 @@ public class Goods extends Timestamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
-    @Nullable
     private Account account;
 
     @Column(nullable = false, length = 25)
@@ -40,11 +39,9 @@ public class Goods extends Timestamped {
 
     private Integer wishCount = 0;
 
-    @Column
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishLists> wishLists;
 
-    //    @Column(nullable = false)
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     private List<Files> filesList;
 

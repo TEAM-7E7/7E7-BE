@@ -39,6 +39,9 @@ public enum ResponseCode {
     WRONG_FILE_TYPE(BAD_REQUEST, "파일의 형식을 확인해 주세요: JPEG, JPG, PNG, BMP, MP4"),
     FILE_UPLOAD_ERROR(BAD_REQUEST, "파일 업로드에 실패했습니다."),
 
+    // 게시글 수정
+    URL_NOT_FOUND(BAD_REQUEST, "DB에 등록된 url 파일이 아닙니다."),
+
     // validation, integrity 위반
     WRONG_VALIDATION_INTEGRITY(BAD_REQUEST, "validation 또는 무결성 위반."),
 
@@ -53,6 +56,7 @@ public enum ResponseCode {
     HEADER_NOT_FOUND(FORBIDDEN, "헤더에 토큰이 존재하지 않습니다."),
 
     /** 404 NOT_FOUND  리소스를 찾을 수 없음 */
+    EMAIL_NOT_FOUND(NOT_FOUND, "이메일 인증을 신청하지 않았습니다."),
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),

@@ -36,16 +36,14 @@ public class EmailService {
          * 공통 - emailDTO 의 형식이 맞지 않는 경우 (정규식 사용)- "이메일 형식이 유효하지 않습니다." [ INVALID_REGISTER_EMAIL ]
          *
          * 1. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 없을 때 - 이메일 객체 생성
-         * 2. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 있고 생성 후 10분이 지나지 않았을 때 - "이미 이메일이 발송되었습니다" [ EMAIL_ALREADY_SENT ]
-         * 3. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 있고 생성 후 10분이 지났을 때 - emailToken 만 새로 생성
+         * 2. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 존재 할 때 -> 인증코드 재발송 (emailToken 변경)
          *
-         * 4. 인증코드 재발송 (emailToken 의 값이  reToken 일 경우 ) - emailToken 만 새로 생성
-         * 5. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 없을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
-         * 6. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 토큰이 다를 경우 - "이메일 인증번호가 일치하지 않습니다"  [ INVALID_EMAIL_TOKEN ]
-         * 7. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 10분이 지났을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
-         * 8. (토큰과 이메일 데이터로 API 호출) 이메일 객체의 값과 토큰이 일치할 경우 - HttpResponseStatus 200 : OK
+         * 3. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 없을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
+         * 4. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 토큰이 다를 경우 - "이메일 인증번호가 일치하지 않습니다"  [ INVALID_EMAIL_TOKEN ]
+         * 5. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 10분이 지났을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
+         * 6. (토큰과 이메일 데이터로 API 호출) 이메일 객체의 값과 토큰이 일치할 경우 - HttpResponseStatus 200 : OK
          *
-         * 9. 이메일 객체 생성 후 10분이 지났을 때 X -> 정각 2시간 마다 객체 삭제
+         * 7. 이메일 객체 생성 후 10분이 지났을 때 X -> 정각 2시간 마다 객체 삭제
          */
 
         String emailToken = RandomStringUtils.random(8, true, true);
@@ -62,7 +60,7 @@ public class EmailService {
         /* 이메일의 형식 검사 필요(정규식) */
 
         if (receivedToken.isEmpty()) {
-            // 이메일로만 API 호출 - receivedToken 이 비어있지 않으면 잘못된 호출이 온 것
+            // 이메일로만 API 호출
             if (emailOpt.isEmpty()) {
                 sendEmail(receivedEmail, emailToken);
                 Email email = Email.builder()
@@ -71,30 +69,18 @@ public class EmailService {
                         .build();
 
                 emailRepository.save(email);
-
-                return EMAIL_DISPATCH_SUCCESS;
             } else {
                 Email email = emailOpt.get();
-                if (!email.checkExpired(LocalDateTime.now())) {
-                    throw new CustomException(EMAIL_ALREADY_SENT);
-                } else {
-                    sendEmail(receivedEmail, emailToken);
-                    email.update(LocalDateTime.now(), emailToken);
-
-                    return EMAIL_DISPATCH_SUCCESS;
-                }
+                sendEmail(receivedEmail, emailToken);
+                email.update(LocalDateTime.now(), emailToken);
             }
+            return EMAIL_DISPATCH_SUCCESS;
         } else {
             // 이메일과 이메일 토큰으로 API 호출 - receivedToken 이 DB의 emailToken 과 일치하지 않으면 throw Exception
             Email email = emailOpt.orElseThrow(
                     () -> new CustomException(EMAIL_ALREADY_EXPIRED)
             );
-            if (receivedToken.equals("refreshToken")) {
-                sendEmail(receivedEmail, emailToken);
-                email.update(LocalDateTime.now(), emailToken);
-
-                return EMAIL_DISPATCH_SUCCESS;
-            } else if (email.checkExpired(LocalDateTime.now())) {
+            if (email.checkExpired(LocalDateTime.now())) {
                 throw new CustomException(EMAIL_ALREADY_EXPIRED);
             } else if (!email.getEmailToken().equals(receivedToken)) {
                 throw new CustomException(INVALID_EMAIL_TOKEN);
@@ -106,11 +92,13 @@ public class EmailService {
         }
     }
 
-    public boolean checkVerified(String email){
+    public void checkVerified(String email) throws CustomException {
         Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
-                ()-> new CustomException(UNVERIFIED_EMAIL)
+                () -> new CustomException(EMAIL_NOT_FOUND)
         );
-        return emailFound.getEmailVerified();
+        if (!emailFound.getEmailVerified()) {
+            throw new CustomException(UNVERIFIED_EMAIL);
+        }
     }
 
     // 두시간마다 폐기된 이메일 데이터 삭제
