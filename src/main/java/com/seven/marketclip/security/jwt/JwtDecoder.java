@@ -42,6 +42,29 @@ public class JwtDecoder {
 
         return userid;
     }
+
+    public String decodeImg(String token) {
+        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
+                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
+        );
+
+        Date expiredDate = decodedJWT
+                .getClaim(CLAIM_EXPIRED_DATE)
+                .asDate();
+
+        Date now = new Date();
+        if (expiredDate.before(now)) {
+            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+        }
+
+        String userImg = decodedJWT
+                .getClaim(CLAIM_USER_PROFILEIMG)
+                .asString();
+        System.out.println("Long 파서:" + userImg);
+
+        return userImg;
+    }
+
     public String decodeUserEmail(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
                 () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")

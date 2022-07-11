@@ -41,29 +41,38 @@ public class RefreshFilter implements Filter {
         String refresh = httpServletRequest.getHeader("X-REFRESH-TOKEN");
 
         if(refresh == null){
+            httpServletResponse.getWriter().println("RefreshToken - No Header");
+            httpServletResponse.setStatus(400);
             System.out.println("헤더가 없음");
-            return;
+            throw new IllegalArgumentException("리프레쉬 토큰 - 헤더가 존재하지 않습니다.");
         }
 
         //TODO Decoder에 있는거 같은 함수로 빼기
         //올바른 토큰인지 확인
-        refresh = headerTokenExtractor.extract(refresh, httpServletRequest);
+        refresh = headerTokenExtractor.extract(refresh, httpServletRequest,httpServletResponse);
         System.out.println("리프레쉬 토큰 확인");
         System.out.println("헤더에서 받은 jwt 확인 " + refresh);
 
-
-        //DB에서 확인
-        if(!accountRepository.existsByRefreshToken(refresh)){
-            System.out.println("DB에서 확인 불가 ");
-            return;
-        }
 
         //만료된 토큰인지 확인 -> JWT필터에서도 해줘야함.
         Long id = jwtDecoder.decodeUserId(refresh); //여기 안에서 만료됐는지 확인.
         Account account = accountRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("존재하지 않는 아이디")
         );
-        UserDetailsImpl userDetails= new UserDetailsImpl(account.getId(), account.getPassword(),account.getNickname(),account.getRole());
+        if(!refresh.equals(account.getRefreshToken())){
+            httpServletResponse.getWriter().println("RefreshToken - Not ExistDB");
+            httpServletResponse.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
+        }
+
+        UserDetailsImpl userDetails= UserDetailsImpl.builder()
+                .id(account.getId())
+                .email(account.getEmail())
+                .nickname(account.getNickname())
+                .profileImgUrl(account.getProfileImgUrl())
+                .role(account.getRole())
+                .build();
+
 
 
         //JWT토큰과 Refresh 토큰 재발급
@@ -75,5 +84,5 @@ public class RefreshFilter implements Filter {
         httpServletResponse.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceRefreshToken);
         System.out.println("리프레시 필터 끝");
     }
-    
+
 }
