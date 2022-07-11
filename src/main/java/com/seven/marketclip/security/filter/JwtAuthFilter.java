@@ -2,8 +2,6 @@ package com.seven.marketclip.security.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
@@ -21,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Optional;
 
-import static com.seven.marketclip.exception.ResponseCode.HEADER_NOT_FOUND;
 import static com.seven.marketclip.security.jwt.JwtTokenUtils.CLAIM_EXPIRED_DATE;
 
 /**
@@ -50,48 +48,74 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         String refreshToken = request.getHeader("X-REFRESH-TOKEN");
 
         //TODO 여기서 response에 선용님 예외처리 넣기.
-        System.out.println("전체필터 헤더값 : "+ authorization);
-        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
-        if (jwtToken == null) return null;
+        System.out.println("전체필터 헤더값 : " + authorization);
+        System.out.println(authorization.length());
+        System.out.println(refreshToken.length());
+//        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
 
-        System.out.println("전체필터 2");
-        return super.getAuthenticationManager().authenticate(jwtToken);
-    }
-
-
-    private JwtPreProcessingToken checkValidJwtToken(HttpServletRequest request, String authorization, String refreshToken) {
-
-        if (authorization == null) {
-            return null;
+        if (authorization == null || authorization.length() == 0) {
+            response.getWriter().println("AccessToken - No Header");
+            response.setStatus(400);
+            throw new IllegalArgumentException("AccessToken - No Header");
+//            return null;
         }
-        if (refreshToken == null) {
-            return null;
+        if (refreshToken == null || refreshToken.length() == 0) {
+            response.getWriter().println("RefreshToken - No Header");
+            response.setStatus(400);
+            throw new IllegalArgumentException("RefreshToken - No Header");
+//            return null;
         }
 
-        String refresh = extractor.extract(refreshToken, request);
-        DecodedJWT decodedJWT = jwtDecoder.isValidToken(refresh).orElseThrow(
-                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
-        );
-
+        String refresh = extractor.extract(refreshToken, request,response); //리프레쉬 토큰
+//        DecodedJWT decodedJWT = jwtDecoder.isValidToken(refresh).orElseThrow(
+//                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
+//        );
+        Optional<DecodedJWT> decodedJWTs = jwtDecoder.isValidToken(refresh);
+        if (decodedJWTs.isEmpty()) {
+            response.getWriter().println("RefreshToken - No Valid");
+            response.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - 유효한 토큰이 아닙니다.");
+//            return null;
+        }
+        DecodedJWT decodedJWT = decodedJWTs.get();
         Date expiredDate = decodedJWT
                 .getClaim(CLAIM_EXPIRED_DATE)
                 .asDate();
 
         Date now = new Date();
         if (expiredDate.before(now)) {
-            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+            response.getWriter().println("RefreshToken - ExpiredDate");
+            response.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - 기간 만료.");
+//            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
         }
 
         if (!accountRepository.existsByRefreshToken(refresh)) {
             System.out.println(refresh);
-            System.out.println("DB에서 확인 불가 - JwtAuthFilter");
-            return null;
+            System.out.println("RefreshToken - Not ExistDB");
+            response.getWriter().println("RefreshToken - Not ExistDB");
+            response.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
         }
 
-        JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(extractor.extract(authorization, request));
-        return jwtToken;
+        JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
+//        return jwtToken;
+
+        if (jwtToken == null) {
+            response.getWriter().println("AccessToken - No Valid");
+            response.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
+        }
+
+        System.out.println("전체필터 2");
+        return super.getAuthenticationManager().authenticate(jwtToken);
     }
 
+
+//    private JwtPreProcessingToken checkValidJwtToken(HttpServletRequest request, String authorization, String refreshToken) {
+//
+//
+//    }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
@@ -119,7 +143,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             HttpServletResponse response,
             AuthenticationException failed
     ) throws IOException, ServletException {
-        System.out.println("전체필터 5-1");
+        System.out.println("전체필터 5-1-1");
         /*
          *	로그인을 한 상태에서 Token값을 주고받는 상황에서 잘못된 Token값이라면
          *	인증이 성공하지 못한 단계 이기 때문에 잘못된 Token값을 제거합니다.
