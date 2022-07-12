@@ -50,7 +50,7 @@ public class RefreshFilter implements Filter {
         String refresh = httpServletRequest.getHeader("X-REFRESH-TOKEN");
 
         if (refresh == null) {
-            httpServletResponse.getWriter().println("RefreshToken - No Header");
+            httpServletResponse.getWriter().println("RefreshFilter-Refresh-No_Header");
             httpServletResponse.setStatus(400);
             System.out.println("헤더가 없음");
             throw new IllegalArgumentException("리프레쉬 토큰 - 헤더가 존재하지 않습니다.");
