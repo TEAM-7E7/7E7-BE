@@ -2,8 +2,6 @@ package com.seven.marketclip.security.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
@@ -22,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.seven.marketclip.exception.ResponseCode.HEADER_NOT_FOUND;
 import static com.seven.marketclip.security.jwt.JwtTokenUtils.CLAIM_EXPIRED_DATE;
 
 /**
@@ -49,7 +46,6 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         String authorization = request.getHeader("X-ACCESS-TOKEN");
         String refreshToken = request.getHeader("X-REFRESH-TOKEN");
 
-        //TODO 여기서 response에 선용님 예외처리 넣기.
         System.out.println("전체필터 헤더값 : "+ authorization);
         JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
         if (jwtToken == null) return null;

@@ -29,6 +29,8 @@ public class Account extends Timestamped {
     @Column(nullable = false)
     private String password;
 
+    private String profileImgUrl;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private AccountRoleEnum role;
@@ -47,11 +49,12 @@ public class Account extends Timestamped {
     private List<Goods> goodsList;
 
     @Builder
-    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {
+    public Account(Long id, String nickname, String email, String password, String profileImgUrl, AccountRoleEnum role, AccountTypeEnum type) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
+        this.profileImgUrl = profileImgUrl;
         this.role = role;
         this.type = type;
     }
