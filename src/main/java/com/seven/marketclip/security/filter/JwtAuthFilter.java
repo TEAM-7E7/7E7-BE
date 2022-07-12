@@ -80,8 +80,14 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             JWTVerifier verifier = JWT
                     .require(algorithm)
                     .build();
+            try{
+                jwt = verifier.verify(jwtToken);
+            }catch (Exception e){
+                response.getWriter().println("JwtAuthFilter - Access - Invalid");
+                response.setStatus(400);
+                throw new IllegalArgumentException("JWT 필터 - 형식? 개수 잘못됨 .");
+            }
 
-            jwt = verifier.verify(jwtToken);
 
             Date expiredDates = jwt
                     .getClaim(CLAIM_EXPIRED_DATE)
@@ -91,16 +97,13 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             if (expiredDates.before(nows)) {
                 response.getWriter().println("JwtAuthFilter - Access - expired");
                 response.setStatus(400);
-                throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 만료됨.");
+                throw new IllegalArgumentException("JWT 필터 - 리프레쉬 토큰 만료됨.");
             }
-//            response.getWriter().println("JwtAuthFilter - Access - expired");
-//            response.setStatus(400);
-//            throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 만료됨.");
-
         JwtPreProcessingToken jwtTokens = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
 
 
-        String refresh = extractor.extract(refreshToken, request,response); //리프레쉬 토큰
+        //리프레쉬 토큰
+        String refresh = extractor.extract(refreshToken, request,response);
 //        DecodedJWT decodedJWT = jwtDecoder.isValidToken(refresh).orElseThrow(
 //                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
 //        );
@@ -128,15 +131,6 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             System.out.println(refresh);
             System.out.println("RefreshToken - Not ExistDB");
             response.getWriter().println("RefreshToken - Not ExistDB");
-            response.setStatus(400);
-            throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
-        }
-
-
-//        return jwtToken;
-
-        if (jwtToken == null) {
-            response.getWriter().println("AccessToken - No Valid");
             response.setStatus(400);
             throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
         }

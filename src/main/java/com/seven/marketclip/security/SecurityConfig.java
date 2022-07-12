@@ -119,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/**").permitAll()
                 .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation", "/api/nickname-check").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
-                .antMatchers("/api/manager").hasRole("USER")
+                .antMatchers("/api/manager","/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
 
 
