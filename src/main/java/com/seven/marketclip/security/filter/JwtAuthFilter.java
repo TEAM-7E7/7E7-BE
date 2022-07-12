@@ -1,6 +1,9 @@
 package com.seven.marketclip.security.filter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtDecoder;
@@ -21,7 +24,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.seven.marketclip.security.jwt.JwtTokenUtils.CLAIM_EXPIRED_DATE;
+import static com.seven.marketclip.security.jwt.JwtTokenUtils.*;
 
 /**
  * Token 을 내려주는 Filter 가 아닌  client 에서 받아지는 Token 을 서버 사이드에서 검증하는 클레스 SecurityContextHolder 보관소에 해당
@@ -66,6 +69,38 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 //            return null;
         }
 
+
+        //JWT토큰
+        String jwtToken = extractor.extract(authorization, request, response);
+
+
+        DecodedJWT jwt = null;
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
+            JWTVerifier verifier = JWT
+                    .require(algorithm)
+                    .build();
+
+            jwt = verifier.verify(jwtToken);
+
+            Date expiredDate = jwt
+                    .getClaim(CLAIM_EXPIRED_DATE)
+                    .asDate();
+
+            Date now = new Date();
+            if (expiredDate.before(now)) {
+                response.getWriter().println("JwtAuthFilter - Access - expired");
+                response.setStatus(400);
+                throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 만료됨.");
+            }
+        } catch (Exception e) {
+            response.getWriter().println("wook - Ille");
+            response.setStatus(400);
+            throw new IllegalArgumentException("문법 오류?");
+        }
+        JwtPreProcessingToken jwtTokens = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
+
+
         String refresh = extractor.extract(refreshToken, request,response); //리프레쉬 토큰
 //        DecodedJWT decodedJWT = jwtDecoder.isValidToken(refresh).orElseThrow(
 //                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
@@ -98,7 +133,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
         }
 
-        JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
+
 //        return jwtToken;
 
         if (jwtToken == null) {
@@ -108,7 +143,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         }
 
         System.out.println("전체필터 2");
-        return super.getAuthenticationManager().authenticate(jwtToken);
+        return super.getAuthenticationManager().authenticate(jwtTokens);
     }
 
 
