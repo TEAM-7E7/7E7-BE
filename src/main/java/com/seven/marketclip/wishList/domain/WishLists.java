@@ -1,17 +1,19 @@
-package com.seven.marketclip.goods.domain;
+package com.seven.marketclip.wishList.domain;
 
-import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.goods.domain.Goods;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class WishLists extends Timestamped {
+public class WishLists{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,10 +26,14 @@ public class WishLists extends Timestamped {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Builder
-    public WishLists(Goods goods, Account account) {
-        this.goods = goods;
+    public WishLists(Goods goods, Account account){
         this.account = account;
+        this.goods = goods;
+        this.createdAt = LocalDateTime.now();
     }
+
 }

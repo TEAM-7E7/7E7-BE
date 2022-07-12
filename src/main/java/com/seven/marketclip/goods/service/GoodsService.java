@@ -95,11 +95,8 @@ public class GoodsService {
 
     // 상세페이지
     @Transactional  // plusView 메서드 때문에 필요하다
-    public DataResponseCode findGoodsDetail(Long goodsId, UserDetailsImpl account) throws CustomException {
+    public DataResponseCode findGoodsDetail(Long goodsId) throws CustomException {
 
-        if (accountRepository.findById(account.getId()).isEmpty()) {
-            throw new CustomException(USER_NOT_FOUND);
-        }
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
