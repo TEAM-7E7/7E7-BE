@@ -3,6 +3,7 @@ package com.seven.marketclip.account;
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.wishList.domain.WishLists;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,6 +50,9 @@ public class Account extends Timestamped {
     @OneToMany(mappedBy = "account")
     private List<Goods> goodsList;
 
+    @OneToMany(mappedBy = "account", orphanRemoval = true)
+    private List<WishLists> wishLists;
+
     @Builder
     public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type, String profileImgUrl) {
         this.id = id;
@@ -70,8 +74,6 @@ public class Account extends Timestamped {
     public Account(UserDetailsImpl userDetails) {
         this.id = userDetails.getId();
         this.email = userDetails.getUsername();
-//        this.nickname = userDetails
-//        this.role = userDetails.getRole();
     }
 
     //계정 타입 (일반)

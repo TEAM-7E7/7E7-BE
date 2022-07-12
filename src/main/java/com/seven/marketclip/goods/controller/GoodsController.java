@@ -57,10 +57,10 @@ public class GoodsController {
     // 상세페이지
     @ApiOperation(value = "게시글 상세페이지", notes = "게시글 상세페이지 api")
     @GetMapping("/{goodsId}")
-    public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account) {
+    public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId) {
         goodsService.plusView(goodsId);
 
-        return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId, account));
+        return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId));
     }
 
     // 게시글 삭제
