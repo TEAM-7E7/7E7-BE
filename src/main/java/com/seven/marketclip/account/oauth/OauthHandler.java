@@ -38,7 +38,7 @@ public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
         final String refresh = JwtTokenUtils.generateRefreshToken(userDetailsImpl);
 
 
-        Account account = accountRepository.findByEmail(userDetailsImpl.getEmail()).orElseThrow(
+        Account account = accountRepository.findByEmail(userDetailsImpl.getUsername()).orElseThrow(
                 () -> new IllegalArgumentException("sdsfdhtm 오스 핸들러ㅜ  아읻 업음")
         );
 

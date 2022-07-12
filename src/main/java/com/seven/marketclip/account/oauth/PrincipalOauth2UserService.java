@@ -24,7 +24,7 @@ import static com.seven.marketclip.exception.ResponseCode.USER_NOT_FOUND;
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
-//    private final AccountService accountService;
+    //    private final AccountService accountService;
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -41,6 +41,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         System.out.println("oAuth2User : " + oAuth2User.getAttributes());
         return processOAuth2User(userRequest, oAuth2User);
     }
+
+    //1.저희한테 코드를 줌 -> 그 코드를 다시 카카오한테 줌- > 액세스토큰을 줌 -> 카카오한테 액세스 토큰을 줌 -> 유정정보
+
 
     private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
 
@@ -86,10 +89,18 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     ()-> new CustomException(USER_NOT_FOUND)
             ); //여기서 왜 예외처리를 또??
 
+            Long id = account.getId();
             String email = account.getEmail();
             AccountRoleEnum role = account.getRole();
             String nickname = account.getNickname();
-            return new UserDetailsImpl(email, nickname, role);
+            String imgUrl = account.getProfileImgUrl();
+            return UserDetailsImpl.builder()
+                    .id(id)
+                    .email(email)
+                    .nickname(nickname)
+                    .profileImgUrl(imgUrl)
+                    .role(role)
+                    .build();
 
         }else {//이메일과 닉네임이 둘다 존재하지 않을 때.
             System.out.println("회원가입 해야할 때");
@@ -102,9 +113,15 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .type(oAuth2UserInfo.getRole())
                     .role(roleEnum)
                     .build();
-            account.encodePassword(bCryptPasswordEncoder.encode(uuidPassword));
+            account.encodePassword(bCryptPasswordEncoder);
             accountRepository.save(account);
-            return new UserDetailsImpl(account.getEmail(), account.getNickname(), account.getRole());
+            return UserDetailsImpl.builder()
+                    .id(account.getId())
+                    .email(account.getEmail())
+                    .nickname(account.getNickname())
+                    .profileImgUrl(account.getProfileImgUrl())
+                    .role(account.getRole())
+                    .build();
         }
     }
 }

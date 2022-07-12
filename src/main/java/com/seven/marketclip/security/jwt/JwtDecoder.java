@@ -23,6 +23,28 @@ public class JwtDecoder {
 
     public Long decodeUserId(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
+                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.1")
+        );
+
+        Date expiredDate = decodedJWT
+                .getClaim(CLAIM_EXPIRED_DATE)
+                .asDate();
+
+        Date now = new Date();
+        if (expiredDate.before(now)) {
+            throw new IllegalArgumentException("유효한 토큰이 아닙니다.2");
+        }
+
+        Long userid = decodedJWT
+                .getClaim(CLAIM_USER_ID)
+                .asLong();
+        System.out.println("Long 파서:" + userid);
+
+        return userid;
+    }
+
+    public String decodeImg(String token) {
+        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
                 () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
         );
 
@@ -35,13 +57,14 @@ public class JwtDecoder {
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
         }
 
-        Long userid = decodedJWT
-                .getClaim(CLAIM_USER_ID)
-                .asLong();
-        System.out.println("Long 파서:" + userid);
+        String userImg = decodedJWT
+                .getClaim(CLAIM_USER_PROFILEIMG)
+                .asString();
+        System.out.println("Long 파서:" + userImg);
 
-        return userid;
+        return userImg;
     }
+
     public String decodeUserEmail(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
                 () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
