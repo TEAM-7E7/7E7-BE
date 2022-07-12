@@ -39,7 +39,6 @@ public class GoodsController {
     @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpResponse> s3Add(@RequestParam("file") MultipartFile multipartFile) {
         return HttpResponse.toResponseEntity(goodsService.addS3(multipartFile));
-
     }
 
     // 게시글 작성
@@ -48,6 +47,7 @@ public class GoodsController {
     public ResponseEntity<HttpResponse> goodsAdd(@ModelAttribute GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
         return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, account));
     }*/
+
     @ApiOperation(value = "게시글 작성", notes = "게시글을 작성하는 api")
     @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<HttpResponse> goodsAdd(@RequestBody GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl account) {
@@ -57,10 +57,10 @@ public class GoodsController {
     // 상세페이지
     @ApiOperation(value = "게시글 상세페이지", notes = "게시글 상세페이지 api")
     @GetMapping("/{goodsId}")
-    public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account) {
+    public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId) {
         goodsService.plusView(goodsId);
 
-        return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId, account));
+        return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId));
     }
 
     // 게시글 삭제

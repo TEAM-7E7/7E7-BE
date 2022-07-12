@@ -12,6 +12,7 @@ import com.seven.marketclip.security.provider.JWTAuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -43,7 +44,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtDecoder jwtDecoder;
     private final OauthHandler oauthHandler;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
 
     @Override
@@ -117,9 +117,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/goods/**").permitAll()
                 .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation", "/api/nickname-check").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
-                .antMatchers("/api/manager").hasRole("USER")
+                .antMatchers("/api/manager","/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
 
 
@@ -165,7 +166,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
     //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
     private JwtAuthFilter jwtFilter() throws Exception {
         List<String> skipPathList = new ArrayList<>();
@@ -173,7 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Static 정보 접근 허용
         skipPathList.add("GET,/images/**");
         skipPathList.add("GET,/css/**");
-        
+
 
 //        // 테스트용
 //        skipPathList.add("GET,/**");
@@ -187,11 +187,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/");
         skipPathList.add("GET,/api/refresh-re");
         skipPathList.add("GET,/api/goods");
+        skipPathList.add("GET,/api/goods/**");
         skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/sign-up");
         skipPathList.add("POST,/api/nickname-check");
-        
+
         // h2-console 허용
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");

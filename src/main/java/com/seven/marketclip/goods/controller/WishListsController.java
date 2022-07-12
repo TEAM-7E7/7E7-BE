@@ -1,8 +1,8 @@
 package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.account.Account;
-import com.seven.marketclip.goods.dto.WishListsDto;
-import com.seven.marketclip.goods.service.WishListsService;
+import com.seven.marketclip.wishList.dto.WishListsDTO;
+import com.seven.marketclip.wishList.service.WishListsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +20,7 @@ public class WishListsController {
     // 좋아요 실행 & 취소 묶어 벌임~
     @RequestMapping(value = "/{goodsId}/wish_lists", method = {RequestMethod.POST, RequestMethod.DELETE})
     public ResponseEntity<String> doWishList(@PathVariable Long goodsId, @AuthenticationPrincipal Account account){
-        WishListsDto wishListsDto = WishListsDto.builder()
+        WishListsDTO wishListsDto = WishListsDTO.builder()
                 .goodsId(goodsId)
                 .account(account)
                 .build();

@@ -3,10 +3,10 @@ package com.seven.marketclip.goods.domain;
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
+import com.seven.marketclip.wishList.domain.WishLists;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -39,12 +39,11 @@ public class Goods extends Timestamped {
 
     private Integer wishCount = 0;
 
-    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WishLists> wishLists;
-
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     private List<Files> filesList;
 
+    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishLists> wishLists;
 
     @Builder
     public Goods(Account account, String title, String description, GoodsCategory category, Integer sellPrice) {
@@ -56,19 +55,19 @@ public class Goods extends Timestamped {
     }
 
     @Builder
-    public Goods(GoodsReqDTO form, Account account) {
-        this.title = form.getTitle();
-        this.description = form.getDescription();
-        this.sellPrice = form.getSellPrice();
-        this.category = form.getCategory();
+    public Goods(GoodsReqDTO goodsReqDTO, Account account) {
+        this.title = goodsReqDTO.getTitle();
+        this.description = goodsReqDTO.getDescription();
+        this.sellPrice = goodsReqDTO.getSellPrice();
+        this.category = goodsReqDTO.getCategory();
         this.account = account;
     }
 
-    public void update(GoodsReqDTO form) {
-        this.title = form.getTitle();
-        this.description = form.getDescription();
-        this.sellPrice = form.getSellPrice();
-        this.category = form.getCategory();
+    public void update(GoodsReqDTO goodsReqDTO) {
+        this.title = goodsReqDTO.getTitle();
+        this.description = goodsReqDTO.getDescription();
+        this.sellPrice = goodsReqDTO.getSellPrice();
+        this.category = goodsReqDTO.getCategory();
     }
 
 }

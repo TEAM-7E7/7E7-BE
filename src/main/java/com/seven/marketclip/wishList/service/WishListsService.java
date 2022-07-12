@@ -1,12 +1,12 @@
-package com.seven.marketclip.goods.service;
+package com.seven.marketclip.wishList.service;
 
 
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.domain.WishLists;
-import com.seven.marketclip.goods.dto.WishListsDto;
+import com.seven.marketclip.wishList.domain.WishLists;
+import com.seven.marketclip.wishList.dto.WishListsDTO;
 import com.seven.marketclip.goods.repository.GoodsRepository;
-import com.seven.marketclip.goods.repository.WishListsRepository;
+import com.seven.marketclip.wishList.repository.WishListsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class WishListsService {
     private final WishListsRepository wishListsRepository;
 
     @Transactional
-    public void doWishList(WishListsDto wishListsDto){
+    public void doWishList(WishListsDTO wishListsDto){
         Goods goods = goodsRepository.findById(wishListsDto.getGoodsId()).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
