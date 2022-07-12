@@ -52,7 +52,14 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         //TODO 여기서 response에 선용님 예외처리 넣기.
         System.out.println("전체필터 헤더값 : " + authorization);
-        System.out.println(authorization.length());
+        try{
+            System.out.println(authorization.length());
+        }catch (Exception e){
+            response.getWriter().println("RefreshToken - error - invalid or expired or not existDB");
+            response.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - .");
+        }
+
         System.out.println(refreshToken.length());
 //        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
 
@@ -97,7 +104,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             if (expiredDates.before(nows)) {
                 response.getWriter().println("JwtAuthFilter - Access - expired");
                 response.setStatus(400);
-                throw new IllegalArgumentException("JWT 필터 - 리프레쉬 토큰 만료됨.");
+                throw new IllegalArgumentException("JWT 필터 - JWT 토큰 만료됨.");
             }
         JwtPreProcessingToken jwtTokens = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
 
