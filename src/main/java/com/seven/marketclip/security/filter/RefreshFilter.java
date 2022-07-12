@@ -1,5 +1,9 @@
 package com.seven.marketclip.security.filter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.security.FormLoginSuccessHandler;
@@ -15,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Date;
+
+import static com.seven.marketclip.security.jwt.JwtTokenUtils.*;
 
 
 @RequiredArgsConstructor
@@ -41,29 +48,65 @@ public class RefreshFilter implements Filter {
         String refresh = httpServletRequest.getHeader("X-REFRESH-TOKEN");
 
         if(refresh == null){
+            httpServletResponse.getWriter().println("RefreshToken - No Header");
+            httpServletResponse.setStatus(400);
             System.out.println("헤더가 없음");
-            return;
+            throw new IllegalArgumentException("리프레쉬 토큰 - 헤더가 존재하지 않습니다.");
         }
 
         //TODO Decoder에 있는거 같은 함수로 빼기
         //올바른 토큰인지 확인
-        refresh = headerTokenExtractor.extract(refresh, httpServletRequest);
+        refresh = headerTokenExtractor.extract(refresh, httpServletRequest,httpServletResponse);
         System.out.println("리프레쉬 토큰 확인");
         System.out.println("헤더에서 받은 jwt 확인 " + refresh);
 
 
-        //DB에서 확인
-        if(!accountRepository.existsByRefreshToken(refresh)){
-            System.out.println("DB에서 확인 불가 ");
-            return;
-        }
-
         //만료된 토큰인지 확인 -> JWT필터에서도 해줘야함.
-        Long id = jwtDecoder.decodeUserId(refresh); //여기 안에서 만료됐는지 확인.
+//        Long id = jwtDecoder.decodeUserId(refresh); //여기 안에서 만료됐는지 확인.
+        DecodedJWT jwt = null;
+        Long id = null;
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
+            JWTVerifier verifier = JWT
+                    .require(algorithm)
+                    .build();
+
+            jwt = verifier.verify(refresh);
+
+            Date expiredDate = jwt
+                    .getClaim(CLAIM_EXPIRED_DATE)
+                    .asDate();
+
+            Date now = new Date();
+            if (expiredDate.before(now)) {
+                throw new IllegalArgumentException("유효한 토큰이 아닙니다.2");
+            }
+
+            id = jwt
+                    .getClaim(CLAIM_USER_ID)
+                    .asLong();
+        } catch (Exception e) {
+            httpServletResponse.getWriter().println("RefreshFilter - Refresh - expired");
+            httpServletResponse.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 만료됨.");
+        }
         Account account = accountRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("존재하지 않는 아이디")
         );
-        UserDetailsImpl userDetails= new UserDetailsImpl(account.getId(), account.getPassword(),account.getNickname(),account.getRole());
+        if(!refresh.equals(account.getRefreshToken())){
+            httpServletResponse.getWriter().println("RefreshToken - Not ExistDB");
+            httpServletResponse.setStatus(400);
+            throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
+        }
+
+        UserDetailsImpl userDetails= UserDetailsImpl.builder()
+                .id(account.getId())
+                .email(account.getEmail())
+                .nickname(account.getNickname())
+                .profileImgUrl(account.getProfileImgUrl())
+                .role(account.getRole())
+                .build();
+
 
 
         //JWT토큰과 Refresh 토큰 재발급
@@ -75,5 +118,5 @@ public class RefreshFilter implements Filter {
         httpServletResponse.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceRefreshToken);
         System.out.println("리프레시 필터 끝");
     }
-    
+
 }

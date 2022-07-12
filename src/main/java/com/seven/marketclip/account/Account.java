@@ -7,6 +7,7 @@ import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.util.List;
@@ -49,7 +50,7 @@ public class Account extends Timestamped {
     private List<Goods> goodsList;
 
     @Builder
-    public Account(Long id, String nickname, String email, String password, String profileImgUrl, AccountRoleEnum role, AccountTypeEnum type) {
+    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type, String profileImgUrl) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
@@ -57,6 +58,7 @@ public class Account extends Timestamped {
         this.profileImgUrl = profileImgUrl;
         this.role = role;
         this.type = type;
+        this.profileImgUrl = profileImgUrl;
     }
 
     public Account(AccountReqDTO accountReqDTO) {
@@ -67,7 +69,7 @@ public class Account extends Timestamped {
 
     public Account(UserDetailsImpl userDetails) {
         this.id = userDetails.getId();
-        this.email = userDetails.getEmail();
+        this.email = userDetails.getUsername();
 //        this.nickname = userDetails
 //        this.role = userDetails.getRole();
     }
@@ -78,8 +80,8 @@ public class Account extends Timestamped {
     }
 
     //패스워드 인코드
-    public void encodePassword(String encodedPassword) {
-        this.password = encodedPassword;
+    public void encodePassword(BCryptPasswordEncoder byCryptPasswordEncoder){
+        this.password = byCryptPasswordEncoder.encode(password);
     }
 
     //리프레쉬 토큰 변경
