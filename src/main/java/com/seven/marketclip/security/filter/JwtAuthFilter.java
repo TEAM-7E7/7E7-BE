@@ -75,7 +75,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
 
         DecodedJWT jwt = null;
-        try {
+
             Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
             JWTVerifier verifier = JWT
                     .require(algorithm)
@@ -83,21 +83,20 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
             jwt = verifier.verify(jwtToken);
 
-            Date expiredDate = jwt
+            Date expiredDates = jwt
                     .getClaim(CLAIM_EXPIRED_DATE)
                     .asDate();
 
-            Date now = new Date();
-            if (expiredDate.before(now)) {
+            Date nows = new Date();
+            if (expiredDates.before(nows)) {
                 response.getWriter().println("JwtAuthFilter - Access - expired");
                 response.setStatus(400);
                 throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 만료됨.");
             }
-        } catch (Exception e) {
-            response.getWriter().println("wook - Ille");
-            response.setStatus(400);
-            throw new IllegalArgumentException("문법 오류?");
-        }
+//            response.getWriter().println("JwtAuthFilter - Access - expired");
+//            response.setStatus(400);
+//            throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 만료됨.");
+
         JwtPreProcessingToken jwtTokens = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
 
 
