@@ -11,19 +11,16 @@ import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
-import com.seven.marketclip.goods.dto.StringMultipart;
 import com.seven.marketclip.goods.repository.FilesRepository;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
@@ -46,7 +43,7 @@ public class GoodsService {
     // 게시글 전체 조회 - 대문사진만 보내주기
     public DataResponseCode findGoods(Pageable pageable) throws CustomException {
         Page<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc(pageable);
-        List<Object> goodsTitleResDTOList = new ArrayList<>();
+        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
 
         Map<String, Object> resultMap = new HashMap<>();
 
@@ -142,19 +139,20 @@ public class GoodsService {
         for (Files files : filesList) {
             existUrlSet.add(files.getFileUrl());
         }
-        System.out.println("db의 모든 파일경로 url" + existUrlSet);
+
+        filesRepository.deleteAllByGoods(goods);
 
         List<String> urlList = goodsReqDTO.getFileUrls();
 
-        for (int i = 0; i < urlList.size(); i++) {
-            String url = urlList.get(i);
-            Files files = filesList.get(i);
-            files.updateUrl(url);
-            existUrlSet.remove(url);
-        }
+        for (String url : urlList) {
+            Files files = Files.builder()
+                    .account(detailsAccount)
+                    .goods(goods)
+                    .fileUrl(url)
+                    .build();
 
-        for (String url : existUrlSet) {
-            filesRepository.deleteByFileUrl(url);
+            existUrlSet.remove(url);
+            filesRepository.save(files);
         }
 
         System.out.println("제외된 파일경로 url" + existUrlSet);
@@ -164,7 +162,7 @@ public class GoodsService {
             s3Service.deleteFile(url);
             filesRepository.deleteByFileUrl(url);
         }
-//        goodsRepository.save(goods);
+
         return SUCCESS;
     }
 
@@ -189,7 +187,7 @@ public class GoodsService {
     // 카테고리 별 조회
     public DataResponseCode findGoodsCategory(GoodsCategory category, Pageable pageable) {
         Page<Goods> goodsList = goodsRepository.findAllByCategory(category, pageable);
-        List<Object> goodsTitleResDTOList = new ArrayList<>();
+        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
 
         Map<String, Object> resultMap = new HashMap<>();
 
@@ -218,9 +216,6 @@ public class GoodsService {
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
         Account goodsAccount = goods.getAccount();
-        if (goodsAccount == null) {
-            throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
-        }
         if (!Objects.equals(goodsAccount.getId(), account.getId())) {
             throw new CustomException(NOT_AUTHORED);
         }

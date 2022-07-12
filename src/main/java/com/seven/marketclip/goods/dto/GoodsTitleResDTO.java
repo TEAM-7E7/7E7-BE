@@ -1,5 +1,6 @@
 package com.seven.marketclip.goods.dto;
 
+import com.seven.marketclip.goods.domain.Files;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.domain.GoodsStatus;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class GoodsTitleResDTO {

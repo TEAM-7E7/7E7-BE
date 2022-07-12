@@ -28,8 +28,8 @@ public enum ResponseCode {
     EMAIL_ALREADY_SENT(BAD_REQUEST, "이미 이메일이 발송되었습니다."),
     EMAIL_ALREADY_EXPIRED(BAD_REQUEST, "이메일 인증시간이 지났습니다, 인증번호를 다시 발급해주세요."),
 
-    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았습니다."),
-    INVALID_EMAIL_TOKEN(BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
+    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았니다."),
+    INVALID_EMAIL_TOKEN(BAD_REQUEST, "이메일 인증번호가 일습치하지 않습니다."),
 
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰이 유효하지 않습니다."),
     MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다."),

@@ -55,6 +55,7 @@ public class Account extends Timestamped {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
+        this.profileImgUrl = profileImgUrl;
         this.role = role;
         this.type = type;
         this.profileImgUrl = profileImgUrl;

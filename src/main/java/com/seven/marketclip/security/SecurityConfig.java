@@ -45,7 +45,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
         auth
@@ -165,7 +164,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
     //글쓰기 요청 할 때만 뚫려야 함.with 수정 삭제
     private JwtAuthFilter jwtFilter() throws Exception {
         List<String> skipPathList = new ArrayList<>();
@@ -173,7 +171,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Static 정보 접근 허용
         skipPathList.add("GET,/images/**");
         skipPathList.add("GET,/css/**");
-        
+
 
 //        // 테스트용
 //        skipPathList.add("GET,/**");
@@ -191,7 +189,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/sign-up");
         skipPathList.add("POST,/api/nickname-check");
-        
+
         // h2-console 허용
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
