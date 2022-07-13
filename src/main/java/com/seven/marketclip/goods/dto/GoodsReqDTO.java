@@ -17,10 +17,10 @@ public class GoodsReqDTO {
     private String description;
     private List<String> fileUrls = new ArrayList<>();
     private GoodsCategory category;
-    private Integer sellPrice;
+    private int sellPrice;
 
     @Builder
-    public GoodsReqDTO(String title, String description, List<String> fileUrls, GoodsCategory category, Integer sellPrice) {
+    public GoodsReqDTO(String title, String description, List<String> fileUrls, GoodsCategory category, int sellPrice) {
         this.title = title;
         this.description = description;
         this.fileUrls = fileUrls;

@@ -1,7 +1,6 @@
 package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
@@ -11,7 +10,6 @@ import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
-import com.seven.marketclip.goods.repository.FilesRepository;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -29,45 +27,34 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 @Slf4j
 public class GoodsService {
     private final GoodsRepository goodsRepository;
-    private final FilesRepository filesRepository;
-    private final AccountRepository accountRepository;
-    private final S3Service s3Service;
+    private final FileCloudService fileCloudService;
+    private final FileDBService fileDBService;
 
-    public GoodsService(GoodsRepository goodsRepository, FilesRepository filesRepository, AccountRepository accountRepository, S3Service s3Service) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileDBService fileDBService) {
         this.goodsRepository = goodsRepository;
-        this.filesRepository = filesRepository;
-        this.accountRepository = accountRepository;
-        this.s3Service = s3Service;
+        this.fileCloudService = s3CloudServiceImpl;
+        this.fileDBService = fileDBService;
     }
 
     // 게시글 전체 조회 - 대문사진만 보내주기
     public DataResponseCode findGoods(Pageable pageable) throws CustomException {
         Page<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc(pageable);
-        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
-
-        Map<String, Object> resultMap = new HashMap<>();
-
-        for (Goods goods : goodsList) {
-            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
-        }
-
-        resultMap.put("endPage", goodsList.isLast());
-        resultMap.put("goodsList", goodsTitleResDTOList);
-
-        return new DataResponseCode(SUCCESS, resultMap);
+        return new DataResponseCode(SUCCESS, pageToMap(goodsList));
     }
 
     // 이미지 파일 S3 저장
-    public DataResponseCode addS3(MultipartFile multipartFile) throws CustomException {
-        String fileUrl = s3Service.uploadFile(multipartFile);
-        return new DataResponseCode(SUCCESS, fileUrl);
+    public DataResponseCode addS3(List<MultipartFile> multipartFileList) throws CustomException {
+        List<String> fileUrlList = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFileList) {
+            fileUrlList.add(fileCloudService.uploadFile(multipartFile));
+        }
+        return new DataResponseCode(SUCCESS, fileUrlList);
     }
 
     // 게시글 작성
     @Transactional
-    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
-        Account detailsAccount = new Account(account);
-
+    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
+        Account detailsAccount = new Account(userDetails);
         Goods goods = Goods.builder()
                 .title(goodsReqDTO.getTitle())
                 .account(detailsAccount)
@@ -75,108 +62,49 @@ public class GoodsService {
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
-
         goodsRepository.save(goods);
-
-        // 이미지 url 정리
-        List<String> urlList = goodsReqDTO.getFileUrls();
-
-        for (String url : urlList) {
-            Files files = Files.builder()
-                    .fileUrl(url)
-                    .goods(goods)
-                    .account(detailsAccount)
-                    .build();
-
-            filesRepository.save(files);
-        }
+        fileDBService.saveUrlList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
         return SUCCESS;
     }
 
     // 상세페이지
     @Transactional  // plusView 메서드 때문에 필요하다
     public DataResponseCode findGoodsDetail(Long goodsId) throws CustomException {
-
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-
         plusView(goodsId);
-        GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
-
-        return new DataResponseCode(SUCCESS, goodsResDTO);
+        return new DataResponseCode(SUCCESS, new GoodsResDTO(goods));
     }
 
     // 게시글 삭제
     @Transactional
-    public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl account) throws CustomException {
-        Goods goods = goodsAccountCheck(goodsId, account);
-
+    public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
+        Goods goods = goodsAccountCheck(goodsId, userDetails);
         for (Files files : goods.getFilesList()) {
-            s3Service.deleteFile(files.getFileUrl());
+            fileCloudService.deleteFile(files.getFileUrl());
         }
         goodsRepository.deleteById(goodsId);
-
         return SUCCESS;
     }
 
-    // 게시글 수정
+    // 게시글 수정 - 수정되면서 삭제된 이미지 파일을 S3에서 바로 지워주는 로직 제거함
     @Transactional
-    public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
-        Goods goods = goodsAccountCheck(goodsId, account);
-        Account detailsAccount = new Account(account);
-
-        // 파일 외 데이터 처리
+    public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
+        Goods goods = goodsAccountCheck(goodsId, userDetails);
+        Account detailsAccount = new Account(userDetails);
         goods.update(goodsReqDTO);
-
-        // 이미지 url 정리
 //        List<Files> filesList = goods.getFilesList();   // FetchType.LAZY 여서 작동 안되는 것 같음
-        List<Files> filesList = filesRepository.findAllByGoods(goods);   // db의 파일리스트
-        Set<String> existUrlSet = new HashSet<>();
-        for (Files files : filesList) {
-            existUrlSet.add(files.getFileUrl());
-        }
-
-        filesRepository.deleteAllByGoods(goods);
-
         List<String> urlList = goodsReqDTO.getFileUrls();
-
-        for (String url : urlList) {
-            Files files = Files.builder()
-                    .account(detailsAccount)
-                    .goods(goods)
-                    .fileUrl(url)
-                    .build();
-
-            existUrlSet.remove(url);
-            filesRepository.save(files);
-        }
-
-        System.out.println("제외된 파일경로 url" + existUrlSet);
-
-        // 수정된 파일에 포함되지 않는 url (S3삭제)
-        for (String url : existUrlSet) {
-            s3Service.deleteFile(url);
-            filesRepository.deleteByFileUrl(url);
-        }
-
+        fileDBService.deleteGoodsUrls(goodsId);
+        fileDBService.saveUrlList(urlList, goods, detailsAccount);
         return SUCCESS;
     }
 
     // 내가 쓴 글 보기
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, Pageable pageable) {
-        Account account = new Account(userDetails);
-        Page<Goods> goodsList = goodsRepository.findAllByAccount(account, pageable);
-
-        ArrayList<Object> goodsResDTOList = new ArrayList<>();
-        Map<String, Object> resultMap = new HashMap<>();
-
-        for (Goods goods : goodsList) {
-            goodsResDTOList.add(new GoodsResDTO(goods));
-        }
-
-        resultMap.put("endPage", goodsList.isLast());
-        resultMap.put("goodsList", goodsResDTOList);
+        Page<Goods> goodsList = goodsRepository.findAllByAccountId(userDetails.getId(), pageable);
+        Map<String, Object> resultMap = pageToMap(goodsList);
 
         return new DataResponseCode(SUCCESS, resultMap);
     }
@@ -184,17 +112,7 @@ public class GoodsService {
     // 카테고리 별 조회
     public DataResponseCode findGoodsCategory(GoodsCategory category, Pageable pageable) {
         Page<Goods> goodsList = goodsRepository.findAllByCategory(category, pageable);
-        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
-
-        Map<String, Object> resultMap = new HashMap<>();
-
-        for (Goods goods : goodsList) {
-            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
-        }
-
-        resultMap.put("endPage", goodsList.isLast());
-        resultMap.put("goodsList", goodsTitleResDTOList);
-
+        Map<String, Object> resultMap = pageToMap(goodsList);
         return new DataResponseCode(SUCCESS, resultMap);
     }
 
@@ -207,16 +125,27 @@ public class GoodsService {
         goodsRepository.updateView(id);
     }
 
-    // 게시글 수정 & 삭제 - 상품 게시판 존재 여부, 작성자 아이디와 접속한 아이디 비교
-    private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl account) {
+    // 게시글 수정 & 삭제 - 상품 게시판 존재 여부/ 작성자 아이디와 접속한 아이디 비교/ 둘 다 true 시 Goods 반환
+    private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl userDetails) {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-        Account goodsAccount = goods.getAccount();
-        if (!Objects.equals(goodsAccount.getId(), account.getId())) {
+        if (!Objects.equals(goods.getAccount().getId(), userDetails.getId())) {
             throw new CustomException(NOT_AUTHORED);
         }
         return goods;
+    }
+
+    // 페이징된 결과를 response 형식으로 변환
+    private Map<String, Object> pageToMap(Page<Goods> goodsList) {
+        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
+        Map<String, Object> resultMap = new HashMap<>();
+        for (Goods goods : goodsList) {
+            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
+        }
+        resultMap.put("endPage", goodsList.isLast());
+        resultMap.put("goodsList", goodsTitleResDTOList);
+        return resultMap;
     }
 
 }

@@ -37,9 +37,7 @@ public class Goods extends Timestamped {
 
     private Integer viewCount = 0;
 
-    private Integer wishCount = 0;
-
-    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Files> filesList;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface EmailRepository extends JpaRepository<Email, Long> {
 
     Optional<Email> findByUserEmail(String email);
-
     void deleteAllByExpireDateBefore(LocalDateTime localDateTime);
+
 }
