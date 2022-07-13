@@ -29,7 +29,7 @@ public class FileDBService {
     }
 
     public void deleteGoodsUrls(Long goodsId){
-        filesRepository.deleteAllByGoods_Id(goodsId);
+        filesRepository.deleteAllByGoodsId(goodsId);
     }
 
 }
