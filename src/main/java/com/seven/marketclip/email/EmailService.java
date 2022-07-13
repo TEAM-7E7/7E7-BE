@@ -29,25 +29,25 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
     }
 
+
+    /**
+     * 공통 - Account 테이블에 Email 이 존재 할 경우 - "이미 존재하는 사용자입니다." [ USER_ALREADY_EXISTS ]
+     * 공통 - emailDTO 의 형식이 맞지 않는 경우 (정규식 사용)- "이메일 형식이 유효하지 않습니다." [ INVALID_REGISTER_EMAIL ]
+     * <p>
+     * 1. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 없을 때 - 이메일 객체 생성
+     * 2. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 존재 할 때 -> 인증코드 재발송 (emailToken 변경)
+     * <p>
+     * 3. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 없을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
+     * 4. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 토큰이 다를 경우 - "이메일 인증번호가 일치하지 않습니다"  [ INVALID_EMAIL_TOKEN ]
+     * 5. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 10분이 지났을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
+     * 6. (토큰과 이메일 데이터로 API 호출) 이메일 객체의 값과 토큰이 일치할 경우 - HttpResponseStatus 200 : OK
+     * <p>
+     * 7. 이메일 객체 생성 후 10분이 지났을 때 X -> 정각 2시간 마다 객체 삭제
+     */
     @Transactional
     public ResponseCode checkEmail(EmailDTO emailDTO) throws CustomException {
-        /**
-         * 공통 - Account 테이블에 Email 이 존재 할 경우 - "이미 존재하는 사용자입니다." [ USER_ALREADY_EXISTS ]
-         * 공통 - emailDTO 의 형식이 맞지 않는 경우 (정규식 사용)- "이메일 형식이 유효하지 않습니다." [ INVALID_REGISTER_EMAIL ]
-         *
-         * 1. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 없을 때 - 이메일 객체 생성
-         * 2. (토큰없이 이메일 데이터로만 API 호출) 이메일 객체가 존재 할 때 -> 인증코드 재발송 (emailToken 변경)
-         *
-         * 3. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 없을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
-         * 4. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 토큰이 다를 경우 - "이메일 인증번호가 일치하지 않습니다"  [ INVALID_EMAIL_TOKEN ]
-         * 5. (토큰과 이메일 데이터로 API 호출) 이메일 객체가 있지만 10분이 지났을 때 - "이메일 인증시간이 지났습니다, 다시 인증번호를 발급해주세요" [ EMAIL_ALREADY_EXPIRED ]
-         * 6. (토큰과 이메일 데이터로 API 호출) 이메일 객체의 값과 토큰이 일치할 경우 - HttpResponseStatus 200 : OK
-         *
-         * 7. 이메일 객체 생성 후 10분이 지났을 때 X -> 정각 2시간 마다 객체 삭제
-         */
 
         String emailToken = RandomStringUtils.random(8, true, true);
-
         String receivedEmail = emailDTO.getEmail();
         String receivedToken = emailDTO.getEmailToken();
         Optional<Email> emailOpt = emailRepository.findByUserEmail(receivedEmail);
@@ -67,7 +67,6 @@ public class EmailService {
                         .userEmail(receivedEmail)
                         .emailToken(emailToken)
                         .build();
-
                 emailRepository.save(email);
             } else {
                 Email email = emailOpt.get();
@@ -96,7 +95,7 @@ public class EmailService {
         Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
                 () -> new CustomException(EMAIL_NOT_FOUND)
         );
-        if (!emailFound.getEmailVerified()) {
+        if (!emailFound.isEmailVerified()) {
             throw new CustomException(UNVERIFIED_EMAIL);
         }
     }
@@ -112,7 +111,6 @@ public class EmailService {
         SimpleMailMessage simpleMessage = new SimpleMailMessage();
         simpleMessage.setTo(email);
         simpleMessage.setSubject("marketClip 이메일 인증");
-//        simpleMessage.setText("http://localhost:8080/api/sign/confirm-email?email="+email+"&emailToken="+emailToken);
         simpleMessage.setText("이메일 인증번호=" + emailToken);
         javaMailSender.send(simpleMessage);
     }

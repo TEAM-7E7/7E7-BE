@@ -23,7 +23,7 @@ public class Email {
     private String emailToken;
 
     @Column(name = "email_verified")
-    private Boolean emailVerified = false;
+    private boolean emailVerified = false;
 
     @Column(name = "expire_date")
     private LocalDateTime expireDate;

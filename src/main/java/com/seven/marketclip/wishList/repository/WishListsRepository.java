@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface WishListsRepository extends JpaRepository<WishLists, Long> {
     Optional<WishLists> findByAccount(Account account);
     Optional<WishLists> findByGoodsAndAccount(Goods goods, Account account);
-    //boolean existsWishListsByGoodsAndUsername(Goods goods, String username);
 }

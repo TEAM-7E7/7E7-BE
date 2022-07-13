@@ -9,7 +9,7 @@ import com.seven.marketclip.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,9 +20,9 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class S3Service {
+public class S3CloudServiceImpl implements FileCloudService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -31,6 +31,7 @@ public class S3Service {
     private final AmazonS3 amazonS3;
     private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp", ".mp4", ".avi");
 
+    @Override
     public String uploadFile(MultipartFile multipartFile) throws CustomException {
         String fileName = UUID.randomUUID().toString().concat(getFileExtension(multipartFile.getOriginalFilename()));
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -48,6 +49,7 @@ public class S3Service {
 
     }
 
+    @Override
     public void deleteFile(String fileUrl) {
         String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/")[1];
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
