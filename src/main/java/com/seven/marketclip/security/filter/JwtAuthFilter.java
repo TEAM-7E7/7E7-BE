@@ -54,7 +54,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         try{
             System.out.println(authorization.length());
         }catch (Exception e){
-            response.getWriter().println("RefreshFilter-Refresh-invalid_expired_not_existDB");
+            response.getWriter().print("RefreshFilter-Refresh-invalid_expired_not_existDB");
             response.setStatus(400);
             throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 - 잘못됨");
         }
@@ -63,13 +63,13 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 //        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
 
         if (authorization == null || authorization.length() == 0) {
-            response.getWriter().println("JwtAuthFilter-AccessToken-No_Header");
+            response.getWriter().print("JwtAuthFilter-AccessToken-No_Header");
             response.setStatus(400);
             throw new IllegalArgumentException("AccessToken - No Header");
 //            return null;
         }
         if (refreshToken == null || refreshToken.length() == 0) {
-            response.getWriter().println("JwtAuthFilter-Refresh-No_Header");
+            response.getWriter().print("JwtAuthFilter-Refresh-No_Header");
             response.setStatus(400);
             throw new IllegalArgumentException("RefreshToken - No Header");
 //            return null;
@@ -89,7 +89,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             try{
                 jwt = verifier.verify(jwtToken);
             }catch (Exception e){
-                response.getWriter().println("JwtAuthFilter-Access-Invalid");
+                response.getWriter().print("JwtAuthFilter-Access-Invalid");
                 response.setStatus(400);
                 throw new IllegalArgumentException("JWT 필터 - 형식? 개수 잘못됨 .");
             }
@@ -101,7 +101,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
             Date nows = new Date();
             if (expiredDates.before(nows)) {
-                response.getWriter().println("JwtAuthFilter-Access-expired");
+                response.getWriter().print("JwtAuthFilter-Access-expired");
                 response.setStatus(400);
                 throw new IllegalArgumentException("JWT 필터 - JWT 토큰 만료됨.");
             }
@@ -115,7 +115,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 //        );
         Optional<DecodedJWT> decodedJWTs = jwtDecoder.isValidToken(refresh);
         if (decodedJWTs.isEmpty()) {
-            response.getWriter().println("JwtAuthFilter-Refresh-Invalid");
+            response.getWriter().print("JwtAuthFilter-Refresh-Invalid");
             response.setStatus(400);
             throw new IllegalArgumentException("리프레쉬 토큰 - 유효한 토큰이 아닙니다.");
 //            return null;
@@ -127,7 +127,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         Date now = new Date();
         if (expiredDate.before(now)) {
-            response.getWriter().println("JwtAuthFilter-Refresh-expired");
+            response.getWriter().print("JwtAuthFilter-Refresh-expired");
             response.setStatus(400);
             throw new IllegalArgumentException("리프레쉬 토큰 - 기간 만료.");
 //            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
@@ -136,7 +136,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         if (!accountRepository.existsByRefreshToken(refresh)) {
             System.out.println(refresh);
             System.out.println("RefreshToken - Not ExistDB");
-            response.getWriter().println("JwtAuthFilter-Refresh-Not_existDB");
+            response.getWriter().print("JwtAuthFilter-Refresh-Not_existDB");
             response.setStatus(400);
             throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
         }
