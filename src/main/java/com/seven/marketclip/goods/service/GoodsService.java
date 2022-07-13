@@ -53,8 +53,8 @@ public class GoodsService {
 
     // 게시글 작성
     @Transactional
-    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
-        Account detailsAccount = new Account(account);
+    public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
+        Account detailsAccount = new Account(userDetails);
         Goods goods = Goods.builder()
                 .title(goodsReqDTO.getTitle())
                 .account(detailsAccount)
@@ -79,8 +79,8 @@ public class GoodsService {
 
     // 게시글 삭제
     @Transactional
-    public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl account) throws CustomException {
-        Goods goods = goodsAccountCheck(goodsId, account);
+    public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
+        Goods goods = goodsAccountCheck(goodsId, userDetails);
         for (Files files : goods.getFilesList()) {
             fileCloudService.deleteFile(files.getFileUrl());
         }
@@ -90,9 +90,9 @@ public class GoodsService {
 
     // 게시글 수정 - 수정되면서 삭제된 이미지 파일을 S3에서 바로 지워주는 로직 제거함
     @Transactional
-    public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl account) throws CustomException {
-        Goods goods = goodsAccountCheck(goodsId, account);
-        Account detailsAccount = new Account(account);
+    public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
+        Goods goods = goodsAccountCheck(goodsId, userDetails);
+        Account detailsAccount = new Account(userDetails);
         goods.update(goodsReqDTO);
 //        List<Files> filesList = goods.getFilesList();   // FetchType.LAZY 여서 작동 안되는 것 같음
         List<String> urlList = goodsReqDTO.getFileUrls();
@@ -103,15 +103,9 @@ public class GoodsService {
 
     // 내가 쓴 글 보기
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, Pageable pageable) {
-        Account account = new Account(userDetails);
-        Page<Goods> goodsList = goodsRepository.findAllByAccount(account, pageable);
-        ArrayList<Object> goodsResDTOList = new ArrayList<>();
-        Map<String, Object> resultMap = new HashMap<>();
-        for (Goods goods : goodsList) {
-            goodsResDTOList.add(new GoodsResDTO(goods));
-        }
-        resultMap.put("endPage", goodsList.isLast());
-        resultMap.put("goodsList", goodsResDTOList);
+        Page<Goods> goodsList = goodsRepository.findAllByAccountId(userDetails.getId(), pageable);
+        Map<String, Object> resultMap = pageToMap(goodsList);
+
         return new DataResponseCode(SUCCESS, resultMap);
     }
 
@@ -131,12 +125,12 @@ public class GoodsService {
         goodsRepository.updateView(id);
     }
 
-    // 게시글 수정 & 삭제 - 상품 게시판 존재 여부, 작성자 아이디와 접속한 아이디 비교
-    private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl account) {
+    // 게시글 수정 & 삭제 - 상품 게시판 존재 여부/ 작성자 아이디와 접속한 아이디 비교/ 둘 다 true 시 Goods 반환
+    private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl userDetails) {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-        if (!Objects.equals(goods.getAccount().getId(), account.getId())) {
+        if (!Objects.equals(goods.getAccount().getId(), userDetails.getId())) {
             throw new CustomException(NOT_AUTHORED);
         }
         return goods;
