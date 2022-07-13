@@ -14,7 +14,6 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
     Page<Goods> findAllByAccount(Account account, Pageable pageable);
     Page<Goods> findAllByCategory(GoodsCategory category, Pageable pageable);
 
-
     @Modifying
     @Query("UPDATE Goods p SET p.viewCount = p.viewCount + 1 where p.id = :id")
     void updateView(Long id);
