@@ -96,4 +96,9 @@ public class Account extends Timestamped {
         this.email = id;
     }
 
+    //프로필 이미지 변경
+    public void changeProfileImg(String file){this.profileImgUrl = file;}
+    public void changeNickname(String nickname){this.nickname = nickname;}
+    public void changePassword(String password){this.password = password;}
+
 }
