@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.dto;
 
-import com.seven.marketclip.goods.domain.Files;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.domain.GoodsStatus;
@@ -8,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 public class GoodsTitleResDTO {
@@ -39,7 +37,13 @@ public class GoodsTitleResDTO {
     }
 
     public GoodsTitleResDTO(Goods goods) {
-        String fileUrl = goods.getFilesList().get(0).getFileUrl();
+        String fileUrl;
+        if(goods.getFilesList().isEmpty()){
+            fileUrl = null;
+        } else {
+            fileUrl = goods.getFilesList().get(0).getFileUrl();
+        }
+
         this.title = goods.getTitle();
         this.id = goods.getId();
         this.account = goods.getAccount().getEmail();
