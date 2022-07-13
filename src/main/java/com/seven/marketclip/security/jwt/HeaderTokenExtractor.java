@@ -25,7 +25,7 @@ public class HeaderTokenExtractor {
         if (header == null || header.equals("") || header.length() < HEADER_PREFIX.length()) {
             System.out.println("error request : " + request.getRequestURI());
             try {
-                response.getWriter().println("Extractor-RefreshOrAccess-Invalid");
+                response.getWriter().print("Extractor-RefreshOrAccess-Invalid");
                 response.setStatus(400);
             } catch (IOException e) {
                 throw new RuntimeException(e);
