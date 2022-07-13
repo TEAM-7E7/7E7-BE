@@ -28,6 +28,7 @@ public class S3CloudServiceImpl implements FileCloudService {
     private String bucket;
     @Value("${cloud.aws.region.static}")
     private String region;
+    private final String PROTOCOL = "https://";
     private final AmazonS3 amazonS3;
     private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp", ".mp4", ".avi");
 
@@ -45,7 +46,7 @@ public class S3CloudServiceImpl implements FileCloudService {
             throw new CustomException(FILE_UPLOAD_ERROR);
         }
 
-        return bucket + ".s3." + region + ".amazonaws.com/" + fileName;
+        return PROTOCOL + bucket + ".s3." + region + ".amazonaws.com/" + fileName;
 
     }
 

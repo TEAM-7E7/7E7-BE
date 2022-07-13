@@ -1,4 +1,0 @@
-[2022-07-14 00:11:00:656][restartedMain] INFO  c.s.m.MarketclipApplication - Starting MarketclipApplication using Java 11.0.14 on DESKTOP-01UVN8U with PID 8220 (D:\Development\intellij_spring\marketclip\build\classes\java\main started by imsun in D:\Development\intellij_spring\marketclip)
-[2022-07-14 00:11:00:661][restartedMain] INFO  c.s.m.MarketclipApplication - The following 1 profile is active: "dev"
-[2022-07-14 00:11:06:6194][restartedMain] INFO  c.s.m.MarketclipApplication - Started MarketclipApplication in 5.988 seconds (JVM running for 6.748)
-[2022-07-14 00:12:07:67124][http-nio-4325-exec-10] ERROR c.s.m.e.GlobalExceptionHandler - handleCustomException throw CustomException : GOODS_NOT_FOUND
