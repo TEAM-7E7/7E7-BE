@@ -3,6 +3,7 @@ package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.AccountRoleEnum;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+@NoArgsConstructor
 public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     private Long id;

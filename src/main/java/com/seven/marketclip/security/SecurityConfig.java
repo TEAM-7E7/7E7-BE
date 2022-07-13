@@ -1,6 +1,7 @@
 package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.oauth.OauthFailHandler;
 import com.seven.marketclip.account.oauth.OauthHandler;
 import com.seven.marketclip.account.oauth.PrincipalOauth2UserService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
@@ -44,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtDecoder jwtDecoder;
     private final OauthHandler oauthHandler;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final OauthFailHandler oauthFailHandler;
 
 
     @Override
@@ -124,7 +126,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
 
 
-        http.oauth2Login().loginPage("/login").successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
+        http.oauth2Login().loginPage("/login").failureHandler(oauthFailHandler).successHandler(oauthHandler).userInfoEndpoint().userService(principalOauth2UserService());
     }
 
     @Bean
@@ -184,6 +186,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
         // 회원 관리 API 허용
+        skipPathList.add("GET,https://marketclip.kr");
         skipPathList.add("GET,/");
         skipPathList.add("GET,/api/refresh-re");
         skipPathList.add("GET,/api/goods");
@@ -199,7 +202,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //소셜 콜백 주소
         //KAKAO
-        skipPathList.add("GET,/api/kakao/callback");
+        skipPathList.add("GET,/login/oauth2/code/kakao");
         skipPathList.add("GET,/login/oauth2/code/google");
         skipPathList.add("POST,/login/oauth2/code/kakao");
         skipPathList.add("GET,/login/oauth2/code/naver");
@@ -226,6 +229,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 , accountRepository
         );
         filter.setAuthenticationManager(super.authenticationManagerBean());
+//        filter.setFilterProcessesUrl("");
 
         return filter;
     }

@@ -10,7 +10,7 @@ import java.util.Map;
 public class KakaoUserInfo implements OAuth2UserInfo {
     private Map<String, Object> attributes;
 
-    private final  AccountTypeEnum type=AccountTypeEnum.KAKAO;
+    private final  AccountTypeEnum type = AccountTypeEnum.KAKAO;
 
     public KakaoUserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;

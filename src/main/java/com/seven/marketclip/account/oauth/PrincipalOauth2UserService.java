@@ -3,6 +3,7 @@ package com.seven.marketclip.account.oauth;
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
+import com.seven.marketclip.account.AccountTypeEnum;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.transaction.Transactional;
@@ -45,7 +47,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     //1.저희한테 코드를 줌 -> 그 코드를 다시 카카오한테 줌- > 액세스토큰을 줌 -> 카카오한테 액세스 토큰을 줌 -> 유정정보
 
 
-    private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
+    private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User){
 
         System.out.println("유저 리퀘스트 : " + userRequest);
         System.out.println("오스 유저 : " + oAuth2User);
@@ -56,17 +58,17 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             System.out.println("구글 로그인 요청");
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
             System.out.println(oAuth2UserInfo.toString());
-            GoogleUserInfo sad = (GoogleUserInfo)oAuth2UserInfo;
+            GoogleUserInfo sad = (GoogleUserInfo) oAuth2UserInfo;
             sad.printAttribute();
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
             System.out.println("네이버 로그인 요청");
             oAuth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
-        }else if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")){
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
             System.out.println("카카오 로그인 요청");
             oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
-            KakaoUserInfo sad = (KakaoUserInfo)oAuth2UserInfo;
+            KakaoUserInfo sad = (KakaoUserInfo) oAuth2UserInfo;
             sad.printAttribute();
-        }else {
+        } else {
             System.out.println("우리는 구글과 네이버만 지원");
         }
 
@@ -77,16 +79,40 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         System.out.println("시작");
         System.out.println(oAuth2UserInfo.getEmail());
         System.out.println(oAuth2UserInfo.getSocialId());
+        System.out.println(oAuth2UserInfo.getRole());
 
         String randomNickname = RandomStringUtils.random(8, true, true);
         Optional<Account> accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
         Optional<Account> accountOptNickname = accountRepository.findByNickname(randomNickname);
 
-        if(accountOptEmail.isPresent() || accountOptNickname.isPresent()){
+        AccountTypeEnum typeKakao = AccountTypeEnum.KAKAO;
+        AccountTypeEnum typeGoogle = AccountTypeEnum.GOOGLE;
+        AccountTypeEnum typeNaver = AccountTypeEnum.NAVER;
+
+//        System.out.println(accountOptEmail.get().getType());
+//        if (accountOptEmail.get().getType() == typeKakao) {
+//            System.out.println(typeKakao);
+//        } else if (accountOptEmail.get().getType() == typeGoogle) {
+//            System.out.println(typeGoogle);
+//        } else if (accountOptEmail.get().getType() == typeNaver) {
+//            System.out.println(typeNaver);
+//        } else {
+//            System.out.println("나락");
+//        }
+
+        // 1. 로그인 하는 경우
+        //    이메일이 있는경우 -> 소셜인 경우
+        // 2. 회원가입 하는 경우
+        //    이메일이 없고 -> 소셜인 경우
+        if(accountOptEmail.isPresent()){
+            System.out.println("sdasdas");
+        }
+
+        if (accountOptEmail.isPresent() && (accountOptEmail.get().getType() == typeKakao || accountOptEmail.get().getType() == typeGoogle || accountOptEmail.get().getType() == typeNaver)) {
             System.out.println("구글, 네이버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
             //이미 있으니까 바로 로그인인
-            Account account =  accountOptEmail.orElseThrow(
-                    ()-> new CustomException(USER_NOT_FOUND)
+            Account account = accountOptEmail.orElseThrow(
+                    () -> new CustomException(USER_NOT_FOUND)
             ); //여기서 왜 예외처리를 또??
 
             Long id = account.getId();
@@ -102,7 +128,19 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .role(role)
                     .build();
 
-        }else {//이메일과 닉네임이 둘다 존재하지 않을 때.
+        } else if (accountOptEmail.isPresent()) {//마켓클립일 때 -> 예외처리
+            System.out.println("이메일이 마켓클립 이메일일 때");
+//            UserDetailsImpl userDetails = new UserDetailsImpl();
+            AccountRoleEnum accountRoleEnum = AccountRoleEnum.USER;
+//            return UserDetailsImpl.builder()
+//                    .role(accountRoleEnum)
+//                    .build();
+            OAuth2Error oauth2Error = new OAuth2Error("에러당!",
+                    "Missing required \"user name\" attribute name in UserInfoEndpoint for Client Registration: "
+                            + userRequest.getClientRegistration().getRegistrationId(),
+                    null);
+            throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
+        } else {
             System.out.println("회원가입 해야할 때");
             String uuidPassword = String.valueOf(UUID.randomUUID());
             AccountRoleEnum roleEnum = AccountRoleEnum.USER;
