@@ -9,22 +9,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.IOException;
 
 @Transactional
 @RequiredArgsConstructor
 @Component
-public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class OauthHandler implements AuthenticationSuccessHandler {
     private final AccountRepository accountRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
-        System.out.println("sdds");
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        System.out.println("소셜 로그인 성공했을 때");
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl)authentication.getPrincipal();
         System.out.println(userDetailsImpl);
         System.out.println(userDetailsImpl.getUsername());
@@ -44,8 +45,13 @@ public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         account.changeRefreshToken(refresh);
 
+//        RedirectAttributes re;
+//        re.addAllAttributes("","");
+
         response.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
         response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
+        response.sendRedirect("https://marketclip.kr?X-ACCESS-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
+//        RedirectAttributes redirectAttributes = new
 
     }
 }
