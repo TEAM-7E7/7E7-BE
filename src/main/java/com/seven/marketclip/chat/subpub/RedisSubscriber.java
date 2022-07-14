@@ -20,8 +20,6 @@ public class RedisSubscriber implements MessageListener {
     private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messagingTemplate;
-    private final ChatMessageService chatMessageService;
-    private final ChatRoomService chatRoomService;
 
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 onMessage가 해당 메시지를 받아 처리한다.
@@ -36,7 +34,6 @@ public class RedisSubscriber implements MessageListener {
             // Websocket 구독자에게 채팅 메시지 Send
             String parseString = Long.toString(roomMessage.getChatRoomId());
             messagingTemplate.convertAndSend("/sub/chat/room/" + parseString, roomMessage);
-            chatMessageService.saveChatMessage(roomMessage);    //DB에 저장 API 5번
         } catch (Exception e) {
             log.error(e.getMessage());
         }
