@@ -22,7 +22,7 @@ public class ChatMessages {
     private Long senderId;
     //내용
     private String message;
-    private boolean read = false;  //기본값 false 지정
+    private boolean checkRead = false;  //기본값 false 지정
     //날짜(정렬 기준)
     private Date createdAt;
 
@@ -35,6 +35,6 @@ public class ChatMessages {
     }
 
     public void readMessage(){
-        this.read = true;
+        this.checkRead = true;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public interface ChatMessageRepository extends JpaRepository<ChatMessages, Long> {
     List<ChatMessages> findAllBySenderIdOrSenderIdOrderByCreatedAtDesc(Long userId, Long partnerId);
     List<ChatMessages> findAllBySenderId(Long partnerId);
-    List<ChatMessages> findAllBySenderIdAndRead(Long partnerId, Boolean bool);
+    List<ChatMessages> findAllBySenderIdAndCheckRead(Long partnerId, Boolean bool);
 
-    Long countBySenderIdAndRead(Long partnerId,Boolean bool);
+    Long countBySenderIdAndCheckRead(Long partnerId,Boolean bool);
 }
