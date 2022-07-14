@@ -24,7 +24,7 @@ public class OauthFailHandler extends SimpleUrlAuthenticationFailureHandler {
         response.getWriter().print("SOCIAL_LOGIN_FAIL-ALREADY_EXIST_EMAIL");
         response.setStatus(400);
 //        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-        response.sendRedirect("https://marketclip.kr?social=fail");
+        response.sendRedirect("http://localhost:3000?social=fail");
         return;
     }
 
