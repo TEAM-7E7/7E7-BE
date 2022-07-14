@@ -30,7 +30,8 @@ public class S3CloudServiceImpl implements FileCloudService {
     private String region;
     private final String PROTOCOL = "https://";
     private final AmazonS3 amazonS3;
-    private final List<String> fileList = Arrays.asList(".jpg", ".png", ".jpeg", ".bmp", ".mp4", ".avi");
+    private final List<String> fileList =
+            Arrays.asList(".jpg", ".png", ".jpeg", "gif", ".svg", ".mp4", ".m4v", ".avi", ".wmv", ".mwa", ".asf", ".mpg", ".mpeg", ".mkv");
 
     @Override
     public String uploadFile(MultipartFile multipartFile) throws CustomException {
