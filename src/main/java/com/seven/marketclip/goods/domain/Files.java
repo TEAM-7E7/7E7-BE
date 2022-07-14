@@ -25,6 +25,9 @@ public class Files {
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
+//    @Column(nullable = false)
+//    private String fileType;
+
     @Column(nullable = false)
     private String fileUrl;
 
