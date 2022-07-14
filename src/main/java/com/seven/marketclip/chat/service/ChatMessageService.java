@@ -30,7 +30,7 @@ public class ChatMessageService {
     }
     @Transactional
     public List<ChatMessages> messageList(Long partnerId){
-        List<ChatMessages> li = chatMessageRepository.findAllBySenderIdAndRead(partnerId, false);
+        List<ChatMessages> li = chatMessageRepository.findAllBySenderIdAndCheckRead(partnerId, false);
         for (ChatMessages cm:li) {
             cm.readMessage();
         }
@@ -39,6 +39,6 @@ public class ChatMessageService {
     }
     @Transactional
     public Long findReadOrNot(Long partnerId){
-        return chatMessageRepository.countBySenderIdAndRead(partnerId, false);
+        return chatMessageRepository.countBySenderIdAndCheckRead(partnerId, false);
     }
 }

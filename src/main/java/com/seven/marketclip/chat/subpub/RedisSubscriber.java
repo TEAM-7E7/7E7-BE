@@ -3,7 +3,6 @@ package com.seven.marketclip.chat.subpub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.service.ChatMessageService;
-import com.seven.marketclip.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;

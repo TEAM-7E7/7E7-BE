@@ -48,7 +48,7 @@ public enum ResponseCode {
 
     // 게시글 작성
     INVALID_GOODS_REQ(BAD_REQUEST, "게시글 형식을 확인해 주세요."),
-    WRONG_FILE_TYPE(BAD_REQUEST, "파일의 형식을 확인해 주세요: JPEG, JPG, PNG, BMP, MP4"),
+    WRONG_FILE_TYPE(BAD_REQUEST, "지원되지 않는 형식의 파일입니다."),
     FILE_UPLOAD_ERROR(BAD_REQUEST, "파일 업로드에 실패했습니다."),
 
     // 게시글 수정

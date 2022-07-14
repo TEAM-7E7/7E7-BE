@@ -1,5 +1,6 @@
 package com.seven.marketclip.chat.controller;
 
+import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.dto.ChatRoomReq;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,5 @@ public class ChatRoomController {
     public void chatRoomRemove(@RequestParam List<Long> chatRoomId){
         chatRoomService.removeChatRoom(chatRoomId);
     }
-
-
-
 
 }
