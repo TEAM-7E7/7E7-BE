@@ -3,14 +3,15 @@ package com.seven.marketclip.account;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.service.AccountService;
 import com.seven.marketclip.exception.HttpResponse;
+import com.seven.marketclip.security.UserDetailsImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -34,6 +35,36 @@ public class AccountController {
     public ResponseEntity<HttpResponse> nicknameCheck(@RequestBody Map<String, String> map) {
         String nickname = map.get("nickname");
         return HttpResponse.toResponseEntity(accountService.checkNickname(nickname));
+    }
+
+    //TODO @RequestParam으로 받는게 아니라 @Authentication으로 받는게 좋을 듯?
+    //TODO JWT Provider에서 디코더를 할 때 백에서는 id만? 디코더 해도 좋을 듯?
+    //프로필 사진 수정 -> 이것도 가져오기 JWT에서
+    @ApiOperation(value = "프로필 이미지 수정", notes = "회원 프로필 사진 수정하기")
+    @PostMapping("/api/profile-img")
+    public ResponseEntity<HttpResponse> updateProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("imgUrl") String imgUrl, @RequestPart("userfile") MultipartFile multipartFile) {
+        System.out.println("프로필 이미지 수정 ID= " + userDetails.getId());
+        System.out.println("프로필 이미지 수정 nickname = " + userDetails.getNickname());
+        System.out.println("프로필 이미지 수정 password = " + userDetails.getPassword());
+        System.out.println("프로필 이미지 수정 email = " + userDetails.getUsername());
+        System.out.println("프로필 이미지 수정 role = " + userDetails.getRole());
+        System.out.println("프로필 이미지 수정2  = " + multipartFile);
+        System.out.println("프로필 이미지 수정3  = " + imgUrl);
+        System.out.println("프로필 이미지 수정 img = " + userDetails.getProfileImgUrl());
+        return HttpResponse.toResponseEntity(accountService.updateProfileImg(userDetails.getId(),userDetails.getProfileImgUrl(),multipartFile));
+    }
+    //프로필 닉네임 수정
+    @ApiOperation(value = "프로필 닉네임 수정", notes = "회원 프로필 닉네임 수정하기")
+    @PostMapping("/api/profile-nickname")
+    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestParam String nickname) {
+        return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(),nickname));
+    }
+    //비밀번호 변경
+    @ApiOperation(value = "프로필 비밀번호 수정", notes = "회원 프로필 비밀번호 수정하기")
+    @PostMapping("/api/profile-password")
+    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String password){
+//        SecurityContextHolder.getContext().setAuthentication((Authentication) userDetails);
+        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails.getId(),password));
     }
 
 }
