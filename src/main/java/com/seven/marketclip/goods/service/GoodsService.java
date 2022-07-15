@@ -131,6 +131,13 @@ public class GoodsService {
         return new DataResponseCode(SUCCESS, resultMap);
     }
 
+    // 조회수 순 조회
+    public DataResponseCode goodsListView(Pageable pageable) {
+        Page<Goods> goodsList = goodsRepository.findAllByOrderByViewCountDesc(pageable);
+        Map<String, Object> resultMap = pageToMap(goodsList);
+        return new DataResponseCode(SUCCESS, resultMap);
+    }
+
     // 조회수 + 1
     @Transactional
     public void plusView(Long id) throws CustomException {

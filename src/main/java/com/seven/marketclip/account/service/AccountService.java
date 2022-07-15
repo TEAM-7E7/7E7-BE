@@ -85,7 +85,6 @@ public class AccountService {
     //프로필 이미지 수정
     @Transactional
     public ResponseCode updateProfileImg(Long accountId, String imgUrl) throws CustomException {
-//        Account account = accountVerification.checkVerificationId(accountId);        // todo : account에 대한 검증을 또 해야하나...?
         AccountImage accountImage = fileService.findAccountImage(accountId);
 
         if (accountImage.getImageUrl().equals("default")) {
