@@ -31,7 +31,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     private AccountRoleEnum role;
 
     @Builder
-    public UserDetailsImpl(Long id, String password, String nickname,String email,String profileImgUrl,AccountRoleEnum role){
+    public UserDetailsImpl(Long id, String password, String nickname, String email, String profileImgUrl, AccountRoleEnum role) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
@@ -66,14 +66,21 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
 //        this.role = role;
 //    }
 
-    public Long getId(){
+    public Long getId() {
         return this.id;
     }
-    public AccountRoleEnum getRole(){
+
+    public AccountRoleEnum getRole() {
         return this.role;
     }
-    public String getNickname(){return this.nickname;}
-    public String getProfileImgUrl(){return this.profileImgUrl;}
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public String getProfileImgUrl() {
+        return this.profileImgUrl;
+    }
 
 
     @Override
@@ -123,6 +130,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     public Map<String, Object> getAttributes() {
         return null;
     }
+
     @Override
     public String getName() {
         return null;

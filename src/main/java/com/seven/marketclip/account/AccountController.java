@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -42,16 +44,14 @@ public class AccountController {
     //프로필 사진 수정 -> 이것도 가져오기 JWT에서
     @ApiOperation(value = "프로필 이미지 수정", notes = "회원 프로필 사진 수정하기")
     @PostMapping("/api/profile-img")
-    public ResponseEntity<HttpResponse> updateProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("imgUrl") String imgUrl, @RequestPart("userfile") MultipartFile multipartFile) {
+    public ResponseEntity<HttpResponse> updateProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> imageMap) {
         System.out.println("프로필 이미지 수정 ID= " + userDetails.getId());
         System.out.println("프로필 이미지 수정 nickname = " + userDetails.getNickname());
         System.out.println("프로필 이미지 수정 password = " + userDetails.getPassword());
         System.out.println("프로필 이미지 수정 email = " + userDetails.getUsername());
         System.out.println("프로필 이미지 수정 role = " + userDetails.getRole());
-        System.out.println("프로필 이미지 수정2  = " + multipartFile);
-        System.out.println("프로필 이미지 수정3  = " + imgUrl);
-        System.out.println("프로필 이미지 수정 img = " + userDetails.getProfileImgUrl());
-        return HttpResponse.toResponseEntity(accountService.updateProfileImg(userDetails.getId(),userDetails.getProfileImgUrl(),multipartFile));
+        System.out.println("프로필 이미지 수정2  = " + imageMap.get("profileImage"));
+        return HttpResponse.toResponseEntity(accountService.updateProfileImg(userDetails.getId(), imageMap.get("profileImage")));
     }
     //프로필 닉네임 수정
     @ApiOperation(value = "프로필 닉네임 수정", notes = "회원 프로필 닉네임 수정하기")

@@ -1,4 +1,4 @@
-package com.seven.marketclip.goods.service;
+package com.seven.marketclip.cloudServer.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;

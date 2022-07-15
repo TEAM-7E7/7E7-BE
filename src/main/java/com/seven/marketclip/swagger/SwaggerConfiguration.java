@@ -1,4 +1,4 @@
-package com.seven.marketclip.config;
+package com.seven.marketclip.swagger;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
