@@ -182,8 +182,18 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     () -> new IllegalArgumentException("asasd")
             );
 
+            Account account2 = accountRepository.findByEmail(oAuth2UserInfo.getEmail()).orElseThrow(
+                    () -> new IllegalArgumentException("아이디를 찾을 수 없읍니다.")
+            );
+
+
             System.out.println("김채원의 어카운트 이미지 :" + accountImage.getImageUrl());
             System.out.println(account1.getProfileImgUrl());
+            System.out.println(account2.getEmail());
+            System.out.println(account2.getProfileImgUrl());
+
+            System.out.println(account2.getProfileImgUrl().getImageUrl());
+
 
             return UserDetailsImpl.builder()
                     .id(account1.getId())
