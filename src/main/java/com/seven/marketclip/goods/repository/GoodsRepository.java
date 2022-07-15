@@ -17,6 +17,6 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
     @Query("UPDATE Goods p SET p.viewCount = p.viewCount + 1 where p.id = :id")
     void updateView(Long id);
 
-    @Query(value = "SELECT g FROM Goods g left join WishLists w on g = w.goods order by count(w) desc")
-    Page<Goods> findAllByOrderByWishListCount(Pageable pageable);
+    @Query(value = "SELECT g FROM Goods g left join WishLists w on g = w.goods group by g.id order by count(w) desc")
+    Page<Goods> findAllByOrderByWishListsCount(Pageable pageable);
 }
