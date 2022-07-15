@@ -15,24 +15,26 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class GoodsResDTO {
-    public Long id;
-    public Integer viewCount;
-    public Integer wishCount;
-    public String account;
-    public String title;
-    public GoodsCategory category;
-    public String description;
-    public Integer sellPrice;
-    public List<String> fileUrlList;
-    public GoodsStatus status;
-    public LocalDateTime createdAt;
+    private Long id;
+    private Integer viewCount;
+    private Integer wishCount;
+    private String nickname;
+    private String accountImageUrl;
+    private String title;
+    private GoodsCategory category;
+    private String description;
+    private Integer sellPrice;
+    private List<String> fileUrlList;
+    private GoodsStatus status;
+    private LocalDateTime createdAt;
 
     @Builder
-    public GoodsResDTO(Long id, Integer viewCount, Integer wishCount, String account, String title, GoodsCategory category, String description, Integer sellPrice, List<String> fileUrlList, GoodsStatus status, LocalDateTime createdAt) {
+    public GoodsResDTO(Long id, Integer viewCount, Integer wishCount, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<String> fileUrlList, GoodsStatus status, LocalDateTime createdAt) {
         this.id = id;
         this.viewCount = viewCount;
         this.wishCount = wishCount;
-        this.account = account;
+        this.nickname = nickname;
+        this.accountImageUrl = accountImageUrl;
         this.title = title;
         this.category = category;
         this.description = description;
@@ -48,9 +50,8 @@ public class GoodsResDTO {
             filesUrlList.add(goodsImage.getImageUrl());
         }
 
-        this.title = goods.getTitle();
         this.id = goods.getId();
-        this.account = goods.getAccount().getEmail();
+        this.nickname = goods.getAccount().getNickname();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.description = goods.getDescription();
@@ -58,8 +59,15 @@ public class GoodsResDTO {
         this.fileUrlList = filesUrlList;
         this.viewCount = goods.getViewCount();
         this.sellPrice = goods.getSellPrice();
-        this.wishCount = goods.getWishLists().size();
         this.status = goods.getStatus();
+    }
+
+    public void setAccountImageUrl(String accountImageUrl){
+        this.accountImageUrl = accountImageUrl;
+    }
+
+    public void setWishCount(int wishCount){
+        this.wishCount = wishCount;
     }
 
 }

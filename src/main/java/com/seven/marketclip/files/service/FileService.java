@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.seven.marketclip.exception.ResponseCode.ACCOUNT_IMAGE_NOT_FOUND;
+
 @Service
 public class FileService {
     private final GoodsImageRepository goodsImageRepository;
@@ -38,10 +40,9 @@ public class FileService {
     }
 
     public AccountImage findAccountImage(Long accountId) throws CustomException {
-//        return accountImageRepository.findById(accountId).orElseThrow(
-//                () -> new CustomException(ACCOUNT_IMAGE_NOT_FOUND)
-//        );
-        return accountImageRepository.findByAccountId(accountId).orElseThrow();
+        return accountImageRepository.findByAccountId(accountId).orElseThrow(
+                () -> new CustomException(ACCOUNT_IMAGE_NOT_FOUND)
+        );
     }
 
     public void saveAccountImage(String url, Account account) {
@@ -52,6 +53,7 @@ public class FileService {
     }
 
     public void deleteAccountImage(Long accountId) {
-        accountImageRepository.deleteById(accountId);
+        AccountImage accountImage = findAccountImage(accountId);
+        accountImage.updateUrl("default");
     }
 }
