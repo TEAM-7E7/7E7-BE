@@ -192,7 +192,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             System.out.println(account2.getEmail());
             System.out.println(account2.getProfileImgUrl());
 
-            System.out.println(account2.getProfileImgUrl().getImageUrl());
+//            System.out.println(account2.getProfileImgUrl().getImageUrl());
 
 
             return UserDetailsImpl.builder()
