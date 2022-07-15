@@ -4,7 +4,6 @@ import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.oauth.OauthFailHandler;
 import com.seven.marketclip.account.oauth.OauthHandler;
 import com.seven.marketclip.account.oauth.PrincipalOauth2UserService;
-import com.seven.marketclip.files.service.FileService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
@@ -121,7 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/goods/**").permitAll()
-                .antMatchers("/", "/api/sign-up", "/api/refresh-re", "/api/email-validation", "/api/nickname-check").permitAll()
+                .antMatchers("/", "/api/user/sign-up", "/api/refresh-re", "/api/email-validation", "/api/user/nickname-check", "api/goods/favorite").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager","/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
@@ -152,7 +151,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public FormLoginFilter formLoginFilter() throws Exception {
         FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
-        formLoginFilter.setFilterProcessesUrl("/api/login");
+        formLoginFilter.setFilterProcessesUrl("/api/user/login");
         formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
         formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
         return formLoginFilter;
@@ -192,10 +191,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/api/refresh-re");
         skipPathList.add("GET,/api/goods");
         skipPathList.add("GET,/api/goods/**");
+        skipPathList.add("GET,/api/goods/favorite");
         skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
-        skipPathList.add("POST,/api/sign-up");
-        skipPathList.add("POST,/api/nickname-check");
+        skipPathList.add("POST,/api/user/sign-up");
+        skipPathList.add("POST,/api/user/nickname-check");
 
         // h2-console 허용
         skipPathList.add("GET,/h2-console/**");

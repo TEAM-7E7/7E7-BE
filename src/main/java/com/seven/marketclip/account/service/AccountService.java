@@ -10,11 +10,13 @@ import com.seven.marketclip.cloudServer.service.FileCloudService;
 import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
 import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.files.domain.AccountImage;
 import com.seven.marketclip.files.service.FileService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -75,16 +77,21 @@ public class AccountService {
         return SUCCESS;
     }
 
+    // 유저 프로필 S3 업로드
+    public DataResponseCode addS3UserImage(MultipartFile multipartFile) throws CustomException {
+        return new DataResponseCode(SUCCESS, fileCloudService.uploadFile(multipartFile));
+    }
+
     //프로필 이미지 수정
     @Transactional
     public ResponseCode updateProfileImg(Long accountId, String imgUrl) throws CustomException {
-        Account account = accountVerification.checkVerificationId(accountId);        // todo : account에 대한 검증을 또 해야하나...?
+//        Account account = accountVerification.checkVerificationId(accountId);        // todo : account에 대한 검증을 또 해야하나...?
         AccountImage accountImage = fileService.findAccountImage(accountId);
 
         if (accountImage.getImageUrl().equals("default")) {
             accountImage.updateUrl(imgUrl);
         } else {
-            fileService.saveAccountImage(imgUrl, account);
+            accountImage.updateUrl(imgUrl);
             fileCloudService.deleteFile(accountImage.getImageUrl());
         }
         return SUCCESS;

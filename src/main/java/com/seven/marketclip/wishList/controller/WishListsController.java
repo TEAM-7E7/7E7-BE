@@ -24,15 +24,9 @@ public class WishListsController {
     }
 
     @ApiOperation(value = "게시글 찜하기 (토글)", notes = "게시글 찜하기 / 취소를 수행하는 토글 api")
-    @RequestMapping(value = "/{goodsId}/wish_lists", method = {RequestMethod.POST, RequestMethod.DELETE})
+    @RequestMapping(value = "/{goodsId}", method = {RequestMethod.POST, RequestMethod.DELETE})
     public ResponseEntity<HttpResponse> wishListToggle(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account, HttpServletRequest httpServletRequest) {
         return HttpResponse.toResponseEntity(wishListsService.doWishList(goodsId, account, httpServletRequest.getMethod()));
     }
-//
-//    @ApiOperation(value = "게시글 찜하기 (토글)", notes = "게시글 찜하기 / 취소를 수행하는 토글 api")
-//    @DeleteMapping(value = "/{goodsId}/wish_lists", method = {RequestMethod.DELETE})
-//    public ResponseEntity<HttpResponse> wishListToggle(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account) {
-//
-//        return HttpResponse.toResponseEntity(wishListsService.doWishList(goodsId, account));
-//    }
+
 }
