@@ -2,6 +2,7 @@ package com.seven.marketclip.goods.domain;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.files.domain.GoodsImage;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.wishList.domain.WishLists;
 import lombok.Builder;
@@ -38,7 +39,7 @@ public class Goods extends Timestamped {
     private Integer viewCount = 0;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Files> filesList;
+    private List<GoodsImage> goodsImages;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishLists> wishLists;

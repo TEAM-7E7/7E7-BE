@@ -1,10 +1,13 @@
 package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.cloudServer.service.FileCloudService;
+import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.goods.domain.Files;
+import com.seven.marketclip.files.service.FileService;
+import com.seven.marketclip.files.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
@@ -28,12 +31,12 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
-    private final FileDBService fileDBService;
+    private final FileService fileService;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileDBService fileDBService) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileService fileService) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
-        this.fileDBService = fileDBService;
+        this.fileService = fileService;
     }
 
     // 게시글 전체 조회 - 대문사진만 보내주기
@@ -63,7 +66,7 @@ public class GoodsService {
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
         goodsRepository.save(goods);
-        fileDBService.saveUrlList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
+        fileService.saveGoodsImageList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
         return SUCCESS;
     }
 
@@ -81,8 +84,8 @@ public class GoodsService {
     @Transactional
     public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
-        for (Files files : goods.getFilesList()) {
-            fileCloudService.deleteFile(files.getFileUrl());
+        for (GoodsImage goodsImage : goods.getGoodsImages()) {
+            fileCloudService.deleteFile(goodsImage.getImageUrl());
         }
         goodsRepository.deleteById(goodsId);
         return SUCCESS;
@@ -94,10 +97,10 @@ public class GoodsService {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
         goods.update(goodsReqDTO);
-//        List<Files> filesList = goods.getFilesList();   // FetchType.LAZY 여서 작동 안되는 것 같음
+//        List<GoodsImage> filesList = goods.getGoodsImages();   // FetchType.LAZY 여서 작동 안되는 것 같음
         List<String> urlList = goodsReqDTO.getFileUrls();
-        fileDBService.deleteGoodsUrls(goodsId);
-        fileDBService.saveUrlList(urlList, goods, detailsAccount);
+        fileService.deleteGoodsImages(goodsId);
+        fileService.saveGoodsImageList(urlList, goods, detailsAccount);
         return SUCCESS;
     }
 

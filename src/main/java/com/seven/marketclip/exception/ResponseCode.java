@@ -72,7 +72,9 @@ public enum ResponseCode {
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),
-    FILE_NOT_FOUND(NOT_FOUND, "해당 파일을 찾을 수 없습니다."),
+    GOODS_IMAGE_NOT_FOUND(NOT_FOUND, "게시글의 이미지를 찾을 수 없습니다."),
+    ACCOUNT_IMAGE_NOT_FOUND(NOT_FOUND, "사용자의 프로필 사진을 찾을 수 없습니다."),
+
 
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 상태입니다 다시 로그인 해주세요."),
     NULL_POINT_EXCEPTION(NOT_FOUND, "Null Point Exception 발생."),

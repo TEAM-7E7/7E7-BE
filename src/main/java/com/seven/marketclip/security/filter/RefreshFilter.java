@@ -104,11 +104,13 @@ public class RefreshFilter implements Filter {
             throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
         }
 
+        System.out.println("유저 디테일스 : " + account.getProfileImgUrl().getImageUrl());
+
         UserDetailsImpl userDetails = UserDetailsImpl.builder()
                 .id(account.getId())
                 .email(account.getEmail())
                 .nickname(account.getNickname())
-                .profileImgUrl(account.getProfileImgUrl())
+                .profileImgUrl(account.getProfileImgUrl().getImageUrl())
                 .role(account.getRole())
                 .build();
 

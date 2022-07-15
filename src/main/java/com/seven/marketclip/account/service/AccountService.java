@@ -6,13 +6,15 @@ import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.account.AccountTypeEnum;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.validation.AccountVerification;
+import com.seven.marketclip.cloudServer.service.FileCloudService;
+import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
 import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.goods.service.S3CloudServiceImpl;
+import com.seven.marketclip.files.domain.AccountImage;
+import com.seven.marketclip.files.service.FileService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -26,14 +28,16 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AccountVerification accountVerification;
-    private final S3CloudServiceImpl s3CloudService;
+    private final FileCloudService fileCloudService;
+    private final FileService fileService;
 
-    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService) {
+    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, FileService fileService, S3CloudServiceImpl fileCloudService) {
         this.emailService = emailService;
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.accountVerification = accountVerification;
-        this.s3CloudService = s3CloudService;
+        this.fileCloudService = fileCloudService;
+        this.fileService = fileService;
     }
 
     //닉네임 증복체크
@@ -66,34 +70,33 @@ public class AccountService {
         emailService.checkVerified(accountReqDTO.getEmail());
 
         accountRepository.save(account);
+        fileService.saveAccountImage("",account);
 
         return SUCCESS;
     }
 
     //프로필 이미지 수정
     @Transactional
-    public ResponseCode updateProfileImg(Long id, String imgUrl, MultipartFile multipartFile) throws CustomException{
-
+    public ResponseCode updateProfileImg(Long id, String imgUrl) throws CustomException {
         Account account = accountVerification.checkVerificationId(id);
-        //USER_NOT_FOUND로 해야하나?
+        // todo : account에 대한 검증을 또 해야하나...?
+        AccountImage accountImage = fileService.findAccountImage(account.getId());
 
-        //이미지 넣기
-        String fileUrl = s3CloudService.uploadFile(multipartFile);
-        account.changeProfileImg(fileUrl);
-
-        System.out.println("이미지 유알엘" + imgUrl);
         //기존 이미지 s3에서 삭제
 //        if(imgUrl!=null || !imgUrl.isEmpty() || imgUrl.length() != 0 || imgUrl.equals("")){
-        if(imgUrl!=null){
-            s3CloudService.deleteFile(imgUrl);
+
+        if (accountImage.getImageUrl().equals("")) {
+            accountImage.updateUrl(imgUrl);
+        } else {
+            fileService.saveAccountImage(imgUrl, account);
         }
-//        throw new CustomException(LOGIN_FILTER_NULL);
+
         return PROFILEIMG_UPDATE_SUCCESS;
     }
 
     //프로필 닉네임 수정
     @Transactional
-    public ResponseCode updateNickname(Long id, String nickname){
+    public ResponseCode updateNickname(Long id, String nickname) {
         Account account = accountVerification.checkVerificationId(id);
         account.changeNickname(nickname);
 
@@ -101,6 +104,7 @@ public class AccountService {
 
         return NICKNAME_UPDATE_SUCCESS;
     }
+
     //프로필 비밀번호 수정
     @Transactional
     public ResponseCode updatePassword(Long id, String password) {

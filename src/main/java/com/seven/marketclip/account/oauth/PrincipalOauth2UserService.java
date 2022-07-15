@@ -4,7 +4,9 @@ import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.account.AccountTypeEnum;
+import com.seven.marketclip.account.service.AccountService;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.files.service.FileService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -119,7 +121,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             String email = account.getEmail();
             AccountRoleEnum role = account.getRole();
             String nickname = account.getNickname();
-            String imgUrl = account.getProfileImgUrl();
+            String imgUrl = account.getProfileImgUrl().getImageUrl();
             return UserDetailsImpl.builder()
                     .id(id)
                     .email(email)
@@ -157,7 +159,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .id(account.getId())
                     .email(account.getEmail())
                     .nickname(account.getNickname())
-                    .profileImgUrl(account.getProfileImgUrl())
+                    .profileImgUrl(account.getProfileImgUrl().getImageUrl())
                     .role(account.getRole())
                     .build();
         }
