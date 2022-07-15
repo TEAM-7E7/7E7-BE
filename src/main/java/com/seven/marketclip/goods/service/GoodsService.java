@@ -1,10 +1,13 @@
 package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.cloudServer.service.FileCloudService;
+import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.goods.domain.Files;
+import com.seven.marketclip.files.service.FileService;
+import com.seven.marketclip.files.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
@@ -12,6 +15,7 @@ import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
+import com.seven.marketclip.wishList.service.WishListsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,12 +32,14 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
-    private final FileDBService fileDBService;
+    private final FileService fileService;
+    private final WishListsService wishListsService;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileDBService fileDBService) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileService fileService, WishListsService wishListsService) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
-        this.fileDBService = fileDBService;
+        this.fileService = fileService;
+        this.wishListsService = wishListsService;
     }
 
     // 게시글 전체 조회 - 대문사진만 보내주기
@@ -42,7 +48,7 @@ public class GoodsService {
         return new DataResponseCode(SUCCESS, pageToMap(goodsList));
     }
 
-    // 이미지 파일 S3 저장
+    // 게시물 이미지 파일 S3 저장
     public DataResponseCode addS3(List<MultipartFile> multipartFileList) throws CustomException {
         List<String> fileUrlList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFileList) {
@@ -63,47 +69,49 @@ public class GoodsService {
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
         goodsRepository.save(goods);
-        fileDBService.saveUrlList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
+        fileService.saveGoodsImageList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
         return SUCCESS;
     }
 
     // 상세페이지
-    @Transactional  // plusView 메서드 때문에 필요하다
+    @Transactional
     public DataResponseCode findGoodsDetail(Long goodsId) throws CustomException {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
         plusView(goodsId);
-        return new DataResponseCode(SUCCESS, new GoodsResDTO(goods));
+        GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
+        goodsResDTO.setWishCount(wishListsService.wishListCount(goodsId));
+        goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
+        return new DataResponseCode(SUCCESS, goodsResDTO);
     }
 
     // 게시글 삭제
     @Transactional
     public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
-        for (Files files : goods.getFilesList()) {
-            fileCloudService.deleteFile(files.getFileUrl());
+        for (GoodsImage goodsImage : goods.getGoodsImages()) {
+            fileCloudService.deleteFile(goodsImage.getImageUrl());
         }
         goodsRepository.deleteById(goodsId);
         return SUCCESS;
     }
 
-    // 게시글 수정 - 수정되면서 삭제된 이미지 파일을 S3에서 바로 지워주는 로직 제거함
+    // 게시글 수정 - 수정되면서 삭제된 이미지 파일을 S3에서 바로 지워주는 로직 제거함 (scheduler 로 해결)
     @Transactional
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
         goods.update(goodsReqDTO);
-//        List<Files> filesList = goods.getFilesList();   // FetchType.LAZY 여서 작동 안되는 것 같음
         List<String> urlList = goodsReqDTO.getFileUrls();
-        fileDBService.deleteGoodsUrls(goodsId);
-        fileDBService.saveUrlList(urlList, goods, detailsAccount);
+        fileService.deleteGoodsImages(goodsId);
+        fileService.saveGoodsImageList(urlList, goods, detailsAccount);
         return SUCCESS;
     }
 
     // 내가 쓴 글 보기
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByAccountId(userDetails.getId(), pageable);
+        Page<Goods> goodsList = goodsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
         return new DataResponseCode(SUCCESS, resultMap);
@@ -111,7 +119,14 @@ public class GoodsService {
 
     // 카테고리 별 조회
     public DataResponseCode findGoodsCategory(GoodsCategory category, Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByCategory(category, pageable);
+        Page<Goods> goodsList = goodsRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+        Map<String, Object> resultMap = pageToMap(goodsList);
+        return new DataResponseCode(SUCCESS, resultMap);
+    }
+
+    // 즐겨찾기 갯수 순 조회
+    public DataResponseCode goodsListFavorite(Pageable pageable) {
+        Page<Goods> goodsList = goodsRepository.findAllByOrderByWishListsCount(pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
         return new DataResponseCode(SUCCESS, resultMap);
     }
@@ -141,7 +156,10 @@ public class GoodsService {
         List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
         Map<String, Object> resultMap = new HashMap<>();
         for (Goods goods : goodsList) {
-            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
+            GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
+            goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
+            goodsTitleResDTO.setWishCount(wishListsService.wishListCount(goods.getId()));
+            goodsTitleResDTOList.add(goodsTitleResDTO);
         }
         resultMap.put("endPage", goodsList.isLast());
         resultMap.put("goodsList", goodsTitleResDTOList);

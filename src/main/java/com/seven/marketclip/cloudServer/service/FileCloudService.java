@@ -1,4 +1,4 @@
-package com.seven.marketclip.goods.service;
+package com.seven.marketclip.cloudServer.service;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

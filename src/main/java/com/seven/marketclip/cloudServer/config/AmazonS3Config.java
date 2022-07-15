@@ -1,4 +1,4 @@
-package com.seven.marketclip.goods.config;
+package com.seven.marketclip.cloudServer.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -20,10 +20,10 @@ public class AmazonS3Config {
 
     @Bean
     public AmazonS3Client amazonS3Client() {
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         return (AmazonS3Client) AmazonS3ClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
 

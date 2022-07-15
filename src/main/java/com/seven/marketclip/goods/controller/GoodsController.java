@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.controller;
 
-import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
@@ -34,13 +33,13 @@ public class GoodsController {
     @ApiOperation(value = "게시글 전체 조회", notes = "상세설명을 제외하고, 첫 번째 사진(대문 사진)만을 포함한 물품 데이터 / 페이징")
     @GetMapping("")
     public ResponseEntity<HttpResponse> goodsList(@PageableDefault final Pageable pageable) {
-        String accountRoleEnum = AccountRoleEnum.USER.getAuthority();
+//        String accountRoleEnum = AccountRoleEnum.USER.getAuthority();
         return HttpResponse.toResponseEntity(goodsService.findGoods(pageable));
     }
 
-    @ApiOperation(value = "이미지 파일 저장", notes = "이미지 파일 저장 api")
-    @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> s3Add(@RequestParam("file") List<MultipartFile> multipartFileList) {
+    @ApiOperation(value = "게시글 이미지 파일 저장", notes = "게시글 이미지 파일 저장 api")
+    @PostMapping(value = "/image-upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpResponse> s3Add(@RequestParam("goodsImage") List<MultipartFile> multipartFileList) {
         return HttpResponse.toResponseEntity(goodsService.addS3(multipartFileList));
     }
 
@@ -53,7 +52,6 @@ public class GoodsController {
     @ApiOperation(value = "게시글 상세페이지", notes = "게시글 상세페이지 api")
     @GetMapping("/{goodsId}")
     public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId) {
-        goodsService.plusView(goodsId);
         return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId));
     }
 
@@ -80,4 +78,11 @@ public class GoodsController {
     public ResponseEntity<HttpResponse> categoryGoodsList(@PathVariable GoodsCategory category, @PageableDefault final Pageable pageable) {
         return HttpResponse.toResponseEntity(goodsService.findGoodsCategory(category, pageable));
     }
+
+    @ApiOperation(value = "즐겨찾기순 정렬 조회", notes = "카테고리별 조회 api / 페이징")
+    @GetMapping("/favorite")
+    public ResponseEntity<HttpResponse> favoriteGoodsList(@PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.goodsListFavorite(pageable));
+    }
+
 }
