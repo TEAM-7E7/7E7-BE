@@ -48,7 +48,7 @@ public class GoodsService {
         return new DataResponseCode(SUCCESS, pageToMap(goodsList));
     }
 
-    // 이미지 파일 S3 저장
+    // 게시물 이미지 파일 S3 저장
     public DataResponseCode addS3(List<MultipartFile> multipartFileList) throws CustomException {
         List<String> fileUrlList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFileList) {
@@ -126,7 +126,7 @@ public class GoodsService {
 
     // 즐겨찾기 갯수 순 조회
     public DataResponseCode goodsListFavorite(Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByOrderByWishListCount(pageable);
+        Page<Goods> goodsList = goodsRepository.findAllByOrderByWishListsCount(pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
         return new DataResponseCode(SUCCESS, resultMap);
     }

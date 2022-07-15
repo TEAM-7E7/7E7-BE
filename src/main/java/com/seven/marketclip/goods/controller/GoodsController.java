@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.controller;
 
-import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
@@ -38,9 +37,9 @@ public class GoodsController {
         return HttpResponse.toResponseEntity(goodsService.findGoods(pageable));
     }
 
-    @ApiOperation(value = "이미지 파일 저장", notes = "이미지 파일 저장 api")
-    @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> s3Add(@RequestParam("file") List<MultipartFile> multipartFileList) {
+    @ApiOperation(value = "게시글 이미지 파일 저장", notes = "게시글 이미지 파일 저장 api")
+    @PostMapping(value = "/image-upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpResponse> s3Add(@RequestParam("goodsImage") List<MultipartFile> multipartFileList) {
         return HttpResponse.toResponseEntity(goodsService.addS3(multipartFileList));
     }
 
