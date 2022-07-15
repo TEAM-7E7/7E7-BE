@@ -4,6 +4,8 @@ import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.oauth.OauthFailHandler;
 import com.seven.marketclip.account.oauth.OauthHandler;
 import com.seven.marketclip.account.oauth.PrincipalOauth2UserService;
+import com.seven.marketclip.files.repository.AccountImageRepository;
+import com.seven.marketclip.files.service.FileService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
@@ -46,6 +48,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final OauthHandler oauthHandler;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final OauthFailHandler oauthFailHandler;
+
+    private final FileService fileService;
+    private final AccountImageRepository accountImageRepository;
 
 
     @Override
@@ -131,7 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PrincipalOauth2UserService principalOauth2UserService() {
-        return new PrincipalOauth2UserService(accountRepository, bCryptPasswordEncoder);
+        return new PrincipalOauth2UserService(accountRepository, bCryptPasswordEncoder,fileService,accountImageRepository);
     }
 
 
