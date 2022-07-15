@@ -52,6 +52,7 @@ public class OauthHandler implements AuthenticationSuccessHandler {
         response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
         response.sendRedirect("http://localhost:3000?X-ACCESS-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
 //        RedirectAttributes redirectAttributes = new
+//        getR
 
     }
 }
