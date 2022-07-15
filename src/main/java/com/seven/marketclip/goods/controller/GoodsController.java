@@ -85,4 +85,10 @@ public class GoodsController {
         return HttpResponse.toResponseEntity(goodsService.goodsListFavorite(pageable));
     }
 
+    @ApiOperation(value = "조회순 정렬 조회", notes = "조회순 정렬 api / 페이징")
+    @GetMapping("/view")
+    public ResponseEntity<HttpResponse> viewGoodsList(@PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.goodsListView(pageable));
+    }
+
 }
