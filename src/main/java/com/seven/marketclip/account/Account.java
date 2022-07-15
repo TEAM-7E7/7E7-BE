@@ -2,6 +2,8 @@ package com.seven.marketclip.account;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.dto.AccountReqDTO;
+import com.seven.marketclip.files.domain.AccountImage;
+import com.seven.marketclip.files.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.wishList.domain.WishLists;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -31,7 +33,9 @@ public class Account extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    private String profileImgUrl;
+    @OneToOne(mappedBy = "account")
+    @JoinColumn(name = "profile_image")
+    private AccountImage profileImgUrl;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -54,14 +58,13 @@ public class Account extends Timestamped {
     private List<WishLists> wishLists;
 
     @Builder
-    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type, String profileImgUrl) {
+    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.role = role;
         this.type = type;
-        this.profileImgUrl = profileImgUrl;
     }
 
     public Account(AccountReqDTO accountReqDTO) {
@@ -96,7 +99,6 @@ public class Account extends Timestamped {
     }
 
     //프로필 이미지 변경
-    public void changeProfileImg(String file){this.profileImgUrl = file;}
     public void changeNickname(String nickname){this.nickname = nickname;}
     public void changePassword(String password){this.password = password;}
 

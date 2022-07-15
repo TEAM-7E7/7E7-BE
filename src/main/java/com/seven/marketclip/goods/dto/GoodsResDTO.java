@@ -1,6 +1,6 @@
 package com.seven.marketclip.goods.dto;
 
-import com.seven.marketclip.goods.domain.Files;
+import com.seven.marketclip.files.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.domain.GoodsStatus;
@@ -44,8 +44,8 @@ public class GoodsResDTO {
 
     public GoodsResDTO(Goods goods) {
         List<String> filesUrlList = new ArrayList<>();
-        for(Files files : goods.getFilesList()){
-            filesUrlList.add(files.getFileUrl());
+        for(GoodsImage goodsImage : goods.getGoodsImages()){
+            filesUrlList.add(goodsImage.getImageUrl());
         }
 
         this.title = goods.getTitle();

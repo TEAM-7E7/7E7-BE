@@ -38,10 +38,10 @@ public class GoodsTitleResDTO {
 
     public GoodsTitleResDTO(Goods goods) {
         String fileUrl;
-        if(goods.getFilesList().isEmpty()){
+        if(goods.getGoodsImages().isEmpty()){
             fileUrl = null;
         } else {
-            fileUrl = goods.getFilesList().get(0).getFileUrl();
+            fileUrl = goods.getGoodsImages().get(0).getImageUrl();
         }
 
         this.title = goods.getTitle();
