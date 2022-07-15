@@ -28,11 +28,11 @@ public enum ResponseCode {
     EMAIL_ALREADY_SENT(BAD_REQUEST, "이미 이메일이 발송되었습니다."),
     EMAIL_ALREADY_EXPIRED(BAD_REQUEST, "이메일 인증시간이 지났습니다, 인증번호를 다시 발급해주세요."),
     INVALID_EMAIL_TOKEN(BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
-    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았니다."),
+    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았습니다."),
 
     //수정하기*********************************************************************
     NICKNAME_UPDATE_SUCCESS(OK, "닉네임 수정이 완료되었습니다."),
-    PROFILEIMG_UPDATE_SUCCESS(OK, "프로필 사진 수정이 완료되었습니다."),
+    PROFILE_IMG_UPDATE_SUCCESS(OK, "프로필 사진 수정이 완료되었습니다."),
     PASSWORD_VALIDATION_SUCCESS(OK, "비밀번호 수정이 완료되었습니다."),
     /**********************************************************************************/
     //VERIFICATION*********************************************************************
@@ -53,6 +53,10 @@ public enum ResponseCode {
 
     // 게시글 수정
     URL_NOT_FOUND(BAD_REQUEST, "DB에 등록된 url 파일이 아닙니다."),
+    
+    // 즐겨찾기 토글
+    WRONG_WISHLIST_DELETE_REQUEST(BAD_REQUEST, "이미 즐겨찾기가 취소되었습니다."),
+    WRONG_WISHLIST_SAVE_REQUEST(BAD_REQUEST, "이미 즐겨찾기에 추가되었습니다."),
 
     // validation, integrity 위반
     WRONG_VALIDATION_INTEGRITY(BAD_REQUEST, "validation 또는 무결성 위반."),

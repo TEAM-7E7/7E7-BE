@@ -34,7 +34,7 @@ public class Goods extends Timestamped {
 
     private Integer sellPrice = 0;
 
-    private GoodsStatus status = GoodsStatus.NEW;
+    private GoodsStatus status = GoodsStatus.SALE;
 
     private Integer viewCount = 0;
 

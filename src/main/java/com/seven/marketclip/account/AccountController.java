@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -45,14 +42,15 @@ public class AccountController {
     @ApiOperation(value = "프로필 이미지 수정", notes = "회원 프로필 사진 수정하기")
     @PostMapping("/api/profile-img")
     public ResponseEntity<HttpResponse> updateProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> imageMap) {
-        System.out.println("프로필 이미지 수정 ID= " + userDetails.getId());
-        System.out.println("프로필 이미지 수정 nickname = " + userDetails.getNickname());
-        System.out.println("프로필 이미지 수정 password = " + userDetails.getPassword());
-        System.out.println("프로필 이미지 수정 email = " + userDetails.getUsername());
-        System.out.println("프로필 이미지 수정 role = " + userDetails.getRole());
-        System.out.println("프로필 이미지 수정2  = " + imageMap.get("profileImage"));
         return HttpResponse.toResponseEntity(accountService.updateProfileImg(userDetails.getId(), imageMap.get("profileImage")));
     }
+
+    @ApiOperation(value = "프로필 이미지 삭제", notes = "회원 프로필 사진 삭제하기")
+    @DeleteMapping("/api/profile-img")
+    public ResponseEntity<HttpResponse> deleteProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> imageMap) {
+        return HttpResponse.toResponseEntity(accountService.profileImgDelete(userDetails.getId()));
+    }
+
     //프로필 닉네임 수정
     @ApiOperation(value = "프로필 닉네임 수정", notes = "회원 프로필 닉네임 수정하기")
     @PostMapping("/api/profile-nickname")

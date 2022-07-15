@@ -70,28 +70,36 @@ public class AccountService {
         emailService.checkVerified(accountReqDTO.getEmail());
 
         accountRepository.save(account);
-        fileService.saveAccountImage("",account);
+        fileService.saveAccountImage("default",account);
 
         return SUCCESS;
     }
 
     //프로필 이미지 수정
     @Transactional
-    public ResponseCode updateProfileImg(Long id, String imgUrl) throws CustomException {
-        Account account = accountVerification.checkVerificationId(id);
-        // todo : account에 대한 검증을 또 해야하나...?
-        AccountImage accountImage = fileService.findAccountImage(account.getId());
+    public ResponseCode updateProfileImg(Long accountId, String imgUrl) throws CustomException {
+        Account account = accountVerification.checkVerificationId(accountId);        // todo : account에 대한 검증을 또 해야하나...?
+        AccountImage accountImage = fileService.findAccountImage(accountId);
 
-        //기존 이미지 s3에서 삭제
-//        if(imgUrl!=null || !imgUrl.isEmpty() || imgUrl.length() != 0 || imgUrl.equals("")){
-
-        if (accountImage.getImageUrl().equals("")) {
+        if (accountImage.getImageUrl().equals("default")) {
             accountImage.updateUrl(imgUrl);
         } else {
             fileService.saveAccountImage(imgUrl, account);
+            fileCloudService.deleteFile(accountImage.getImageUrl());
         }
+        return SUCCESS;
+    }
 
-        return PROFILEIMG_UPDATE_SUCCESS;
+    //프로필 이미지 삭제
+    @Transactional
+    public ResponseCode profileImgDelete(Long accountId) throws CustomException {
+        AccountImage accountImage = fileService.findAccountImage(accountId);
+
+        if (! accountImage.getImageUrl().equals("default")) {
+            fileService.deleteAccountImage(accountId);
+            fileCloudService.deleteFile(accountImage.getImageUrl());
+        }
+        return SUCCESS;
     }
 
     //프로필 닉네임 수정
