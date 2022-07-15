@@ -23,7 +23,7 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class AccountController {
 
-//    private final AccountReqDtoValidation accountReqDtoValidation;
+    //    private final AccountReqDtoValidation accountReqDtoValidation;
     private final AccountService accountService;
 
     @ApiOperation(value = "회원가입", notes = "회원가입 하는 API")
@@ -63,15 +63,16 @@ public class AccountController {
     //프로필 닉네임 수정
     @ApiOperation(value = "프로필 닉네임 수정", notes = "회원 프로필 닉네임 수정하기")
     @PostMapping("/profile-nickname")
-    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestParam String nickname) {
-        return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(),nickname));
+    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String nickname) {
+        return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
     }
+
     //비밀번호 변경
     @ApiOperation(value = "프로필 비밀번호 수정", notes = "회원 프로필 비밀번호 수정하기")
     @PostMapping("/profile-password")
-    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String password){
+    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String password) {
 //        SecurityContextHolder.getContext().setAuthentication((Authentication) userDetails);
-        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails.getId(),password));
+        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails.getId(), password));
     }
 
 }
