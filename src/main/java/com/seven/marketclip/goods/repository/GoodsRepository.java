@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface GoodsRepository extends JpaRepository<Goods, Long> {
     Page<Goods> findAllByOrderByCreatedAtDesc(Pageable pageable);
     Page<Goods> findAllByAccountIdOrderByCreatedAtDesc(Long accountId, Pageable pageable);
+    Page<Goods> findAllByOrderByViewCountDesc(Pageable pageable);
     Page<Goods> findAllByCategoryOrderByCreatedAtDesc(GoodsCategory category, Pageable pageable);
 
     @Modifying
