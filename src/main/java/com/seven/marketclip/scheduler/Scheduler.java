@@ -1,0 +1,32 @@
+package com.seven.marketclip.scheduler;
+
+import com.seven.marketclip.cloudServer.service.FileCloudService;
+import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
+import com.seven.marketclip.email.EmailService;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Scheduler {
+
+    private final EmailService emailService;
+    private final FileCloudService fileCloudService;
+
+    public Scheduler(EmailService emailService, S3CloudServiceImpl s3CloudService){
+        this.emailService = emailService;
+        this.fileCloudService = s3CloudService;
+    }
+
+    // 두시간마다 폐기된 이메일 데이터 삭제
+    @Scheduled(cron = "0 0 0/2 * * *")
+    public void emailClearance() {
+        emailService.clearanceEmail();
+    }
+
+    // 매일 정각
+    @Scheduled(cron = "0 0 0 * * *")
+    public void s3Clearance(){
+        fileCloudService.scheduledClearance();
+    }
+
+}

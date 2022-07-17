@@ -1,6 +1,6 @@
 package com.seven.marketclip.goods.dto;
 
-import com.seven.marketclip.files.domain.GoodsImage;
+import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.domain.GoodsStatus;

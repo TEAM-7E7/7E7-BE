@@ -1,4 +1,4 @@
-package com.seven.marketclip.files.domain;
+package com.seven.marketclip.image.domain;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.domain.Goods;

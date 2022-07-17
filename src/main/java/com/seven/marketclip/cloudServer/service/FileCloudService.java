@@ -7,4 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileCloudService {
     String uploadFile(MultipartFile multipartFile);
     void deleteFile(String fileUrl);
+    void scheduledClearance();
 }

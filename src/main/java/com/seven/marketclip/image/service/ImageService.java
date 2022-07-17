@@ -1,11 +1,11 @@
-package com.seven.marketclip.files.service;
+package com.seven.marketclip.image.service;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.files.domain.AccountImage;
-import com.seven.marketclip.files.domain.GoodsImage;
-import com.seven.marketclip.files.repository.AccountImageRepository;
-import com.seven.marketclip.files.repository.GoodsImageRepository;
+import com.seven.marketclip.image.domain.AccountImage;
+import com.seven.marketclip.image.domain.GoodsImage;
+import com.seven.marketclip.image.repository.AccountImageRepository;
+import com.seven.marketclip.image.repository.GoodsImageRepository;
 import com.seven.marketclip.goods.domain.Goods;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +14,11 @@ import java.util.List;
 import static com.seven.marketclip.exception.ResponseCode.ACCOUNT_IMAGE_NOT_FOUND;
 
 @Service
-public class FileService {
+public class ImageService {
     private final GoodsImageRepository goodsImageRepository;
     private final AccountImageRepository accountImageRepository;
 
-    public FileService(GoodsImageRepository goodsImageRepository, AccountImageRepository accountImageRepository) {
+    public ImageService(GoodsImageRepository goodsImageRepository, AccountImageRepository accountImageRepository) {
         this.goodsImageRepository = goodsImageRepository;
         this.accountImageRepository = accountImageRepository;
     }

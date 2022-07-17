@@ -93,16 +93,15 @@ public class EmailService {
 
     public void checkVerified(String email) throws CustomException {
         Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
-                () -> new CustomException(EMAIL_NOT_FOUND)
+                () -> new CustomException(EMAIL_CHECK_NOT_FOUND)
         );
         if (!emailFound.isEmailVerified()) {
             throw new CustomException(UNVERIFIED_EMAIL);
         }
     }
 
-    // 두시간마다 폐기된 이메일 데이터 삭제
-    @Scheduled(cron = "0 0 0/2 * * *")
-    public void deleteEmail() {
+//    @Scheduled(cron = "0 0 0/2 * * *")
+    public void clearanceEmail() {
         LocalDateTime localDateTime = LocalDateTime.now();
         emailRepository.deleteAllByExpireDateBefore(localDateTime);
     }
@@ -113,6 +112,14 @@ public class EmailService {
         simpleMessage.setSubject("marketClip 이메일 인증");
         simpleMessage.setText("이메일 인증번호=" + emailToken);
         javaMailSender.send(simpleMessage);
+    }
+
+    public void findEmail(String email) throws CustomException{
+        if(accountRepository.findByEmail(email).isEmpty()){
+            throw new CustomException(EMAIL_NOT_FOUND);
+        }
+
+
     }
 
 }

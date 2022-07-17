@@ -75,4 +75,12 @@ public class AccountController {
         return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails.getId(), password));
     }
 
+    // 비밀번호 찾기 -> 해당 이메일로 인증번호 전송
+    @ApiOperation(value = "비밀번호 찾기 기능", notes = "회원 프로필 비밀번호 찾기")
+    @PostMapping("/profile-find-password")
+    public ResponseEntity<HttpResponse> findPassword(@RequestParam String email) {
+//        SecurityContextHolder.getContext().setAuthentication((Authentication) userDetails);
+        return HttpResponse.toResponseEntity(accountService.findPassword(email));
+    }
+
 }

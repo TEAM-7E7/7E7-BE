@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.seven.marketclip.exception.CustomException;
-import lombok.RequiredArgsConstructor;
+import com.seven.marketclip.image.service.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,22 +14,31 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
-import static com.seven.marketclip.exception.ResponseCode.*;
+import static com.seven.marketclip.exception.ResponseCode.FILE_UPLOAD_ERROR;
+import static com.seven.marketclip.exception.ResponseCode.WRONG_FILE_TYPE;
 
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class S3CloudServiceImpl implements FileCloudService {
+
+    private final AmazonS3 amazonS3;
+    private final ImageService imageService;
+
+    public S3CloudServiceImpl(AmazonS3 amazonS3, ImageService imageService){
+        this.amazonS3 = amazonS3;
+        this.imageService = imageService;
+    }
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     @Value("${cloud.aws.region.static}")
     private String region;
-    private final String PROTOCOL = "https://";
-    private final AmazonS3 amazonS3;
+    private final String protocol = "https://";
     private final List<String> fileList =
             Arrays.asList(".jpg", ".png", ".jpeg", "gif", ".svg", ".mp4", ".m4v", ".avi", ".wmv", ".mwa", ".asf", ".mpg", ".mpeg", ".mkv");
 
@@ -46,15 +55,19 @@ public class S3CloudServiceImpl implements FileCloudService {
         } catch (IOException e) {
             throw new CustomException(FILE_UPLOAD_ERROR);
         }
-
-        return PROTOCOL + bucket + ".s3." + region + ".amazonaws.com/" + fileName;
+        return protocol + bucket + ".s3." + region + ".amazonaws.com/_" + fileName;
 
     }
 
     @Override
     public void deleteFile(String fileUrl) {
-        String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/")[1];
+        String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/_")[1];
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
+    }
+
+    @Override
+    public void scheduledClearance(){
+
     }
 
     private String getFileExtension(String fileName) throws CustomException {

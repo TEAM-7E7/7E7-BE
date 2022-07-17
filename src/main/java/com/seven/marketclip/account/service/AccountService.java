@@ -12,8 +12,8 @@ import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.files.domain.AccountImage;
-import com.seven.marketclip.files.service.FileService;
+import com.seven.marketclip.image.domain.AccountImage;
+import com.seven.marketclip.image.service.ImageService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,15 +31,15 @@ public class AccountService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AccountVerification accountVerification;
     private final FileCloudService fileCloudService;
-    private final FileService fileService;
+    private final ImageService imageService;
 
-    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, FileService fileService, S3CloudServiceImpl fileCloudService) {
+    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, ImageService imageService, S3CloudServiceImpl fileCloudService) {
         this.emailService = emailService;
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.accountVerification = accountVerification;
         this.fileCloudService = fileCloudService;
-        this.fileService = fileService;
+        this.imageService = imageService;
     }
 
     //닉네임 증복체크
@@ -72,7 +72,7 @@ public class AccountService {
         emailService.checkVerified(accountReqDTO.getEmail());
 
         accountRepository.save(account);
-        fileService.saveAccountImage("default",account);
+        imageService.saveAccountImage("default", account);
 
         return SUCCESS;
     }
@@ -85,7 +85,7 @@ public class AccountService {
     //프로필 이미지 수정
     @Transactional
     public ResponseCode updateProfileImg(Long accountId, String imgUrl) throws CustomException {
-        AccountImage accountImage = fileService.findAccountImage(accountId);
+        AccountImage accountImage = imageService.findAccountImage(accountId);
 
         if (accountImage.getImageUrl().equals("default")) {
             accountImage.updateUrl(imgUrl);
@@ -99,10 +99,10 @@ public class AccountService {
     //프로필 이미지 삭제
     @Transactional
     public ResponseCode profileImgDelete(Long accountId) throws CustomException {
-        AccountImage accountImage = fileService.findAccountImage(accountId);
+        AccountImage accountImage = imageService.findAccountImage(accountId);
 
-        if (! accountImage.getImageUrl().equals("default")) {
-            fileService.deleteAccountImage(accountId);
+        if (!accountImage.getImageUrl().equals("default")) {
+            imageService.deleteAccountImage(accountId);
             fileCloudService.deleteFile(accountImage.getImageUrl());
         }
         return SUCCESS;
@@ -126,6 +126,13 @@ public class AccountService {
         account.changePassword(password);
         account.encodePassword(bCryptPasswordEncoder);
         return PASSWORD_VALIDATION_SUCCESS;
+    }
+
+    //프로필 비밀번호 찾기
+    @Transactional
+    public ResponseCode findPassword(String email) {
+//        emailService.checkEmail();
+        return SUCCESS;
     }
 
 }

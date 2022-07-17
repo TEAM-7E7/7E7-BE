@@ -1,6 +1,6 @@
-package com.seven.marketclip.files.repository;
+package com.seven.marketclip.image.repository;
 
-import com.seven.marketclip.files.domain.AccountImage;
+import com.seven.marketclip.image.domain.AccountImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

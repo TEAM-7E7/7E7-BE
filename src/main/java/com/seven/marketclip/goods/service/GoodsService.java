@@ -6,8 +6,8 @@ import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.files.service.FileService;
-import com.seven.marketclip.files.domain.GoodsImage;
+import com.seven.marketclip.image.service.ImageService;
+import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.domain.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
@@ -32,13 +32,13 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
-    private final FileService fileService;
+    private final ImageService imageService;
     private final WishListsService wishListsService;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileService fileService, WishListsService wishListsService) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsService wishListsService) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
-        this.fileService = fileService;
+        this.imageService = imageService;
         this.wishListsService = wishListsService;
     }
 
@@ -69,7 +69,7 @@ public class GoodsService {
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
         goodsRepository.save(goods);
-        fileService.saveGoodsImageList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
+        imageService.saveGoodsImageList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
         return SUCCESS;
     }
 
@@ -102,10 +102,10 @@ public class GoodsService {
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
-        goods.update(goodsReqDTO);
         List<String> urlList = goodsReqDTO.getFileUrls();
-        fileService.deleteGoodsImages(goodsId);
-        fileService.saveGoodsImageList(urlList, goods, detailsAccount);
+        imageService.deleteGoodsImages(goodsId);
+        imageService.saveGoodsImageList(urlList, goods, detailsAccount);
+        goods.update(goodsReqDTO);
         return SUCCESS;
     }
 
