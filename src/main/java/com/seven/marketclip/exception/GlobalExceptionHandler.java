@@ -13,8 +13,7 @@ import static com.seven.marketclip.exception.ResponseCode.WRONG_VALIDATION_INTEG
 
 @Slf4j
 @RestControllerAdvice
-//public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = { ConstraintViolationException.class, DataIntegrityViolationException.class})
     protected ResponseEntity<HttpResponse> handleDataException() {

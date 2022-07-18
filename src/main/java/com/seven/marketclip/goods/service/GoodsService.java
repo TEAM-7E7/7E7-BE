@@ -1,15 +1,15 @@
 package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.Account;
-import com.seven.marketclip.cloudServer.service.FileCloudService;
-import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
+import com.seven.marketclip.cloud_server.service.FileCloudService;
+import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.files.service.FileService;
-import com.seven.marketclip.files.domain.GoodsImage;
+import com.seven.marketclip.image.service.ImageService;
+import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.domain.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
@@ -32,13 +32,13 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
-    private final FileService fileService;
+    private final ImageService imageService;
     private final WishListsService wishListsService;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, FileService fileService, WishListsService wishListsService) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsService wishListsService) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
-        this.fileService = fileService;
+        this.imageService = imageService;
         this.wishListsService = wishListsService;
     }
 
@@ -49,12 +49,24 @@ public class GoodsService {
     }
 
     // 게시물 이미지 파일 S3 저장
-    public DataResponseCode addS3(List<MultipartFile> multipartFileList) throws CustomException {
+    public DataResponseCode addS3(List<MultipartFile> multipartFileList, Long accountId) throws CustomException {
+        Account account = Account.builder().id(accountId).build();
         List<String> fileUrlList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFileList) {
             fileUrlList.add(fileCloudService.uploadFile(multipartFile));
         }
-        return new DataResponseCode(SUCCESS, fileUrlList);
+        List<Long> idList = imageService.saveGoodsImageList(fileUrlList, null, account);
+
+        List<Map<String, Object>> idUrlMapList = new ArrayList<>();
+        for(int i = 0; i < fileUrlList.size(); i++){
+            Map<String, Object> tempMap = new HashMap<>();
+            tempMap.put("id",idList.get(i));
+            tempMap.put("url",fileUrlList.get(i));
+
+            idUrlMapList.add(tempMap);
+        }
+
+        return new DataResponseCode(SUCCESS, idUrlMapList);
     }
 
     // 게시글 작성
@@ -68,8 +80,8 @@ public class GoodsService {
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
+        imageService.updateGoodsImageList(goodsReqDTO.getFileIdList(), goods, detailsAccount);
         goodsRepository.save(goods);
-        fileService.saveGoodsImageList(goodsReqDTO.getFileUrls(), goods, detailsAccount);
         return SUCCESS;
     }
 
@@ -97,15 +109,15 @@ public class GoodsService {
         return SUCCESS;
     }
 
-    // 게시글 수정 - 수정되면서 삭제된 이미지 파일을 S3에서 바로 지워주는 로직 제거함 (scheduler 로 해결)
+    // 게시글 수정
     @Transactional
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
+        List<Long> idList = goodsReqDTO.getFileIdList();
+        imageService.deleteGoodsImages(goodsId);
+        imageService.updateGoodsImageList(idList, goods, detailsAccount);
         goods.update(goodsReqDTO);
-        List<String> urlList = goodsReqDTO.getFileUrls();
-        fileService.deleteGoodsImages(goodsId);
-        fileService.saveGoodsImageList(urlList, goods, detailsAccount);
         return SUCCESS;
     }
 
@@ -158,6 +170,8 @@ public class GoodsService {
         return goods;
     }
 
+    //
+
     // 페이징된 결과를 response 형식으로 변환
     private Map<String, Object> pageToMap(Page<Goods> goodsList) {
         List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
@@ -170,6 +184,7 @@ public class GoodsService {
         }
         resultMap.put("endPage", goodsList.isLast());
         resultMap.put("goodsList", goodsTitleResDTOList);
+        resultMap.put("totalElements", goodsList.getTotalElements());
         return resultMap;
     }
 

@@ -2,7 +2,7 @@ package com.seven.marketclip.security;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.files.service.FileService;
+import com.seven.marketclip.image.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,14 +13,13 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final AccountRepository accountRepository;
-    private final FileService fileService;
+    private final ImageService imageService;
 
     @Autowired
-    public UserDetailsServiceImpl(AccountRepository accountRepository, FileService fileService) {
+    public UserDetailsServiceImpl(AccountRepository accountRepository, ImageService imageService) {
         this.accountRepository = accountRepository;
-        this.fileService = fileService;
+        this.imageService = imageService;
     }
-
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException { //로그인 때 입력한 아이디
         System.out.println("로그인 필터 4");
@@ -37,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .email(account.getEmail())
                 .nickname(account.getNickname())
                 .profileImgUrl(account.getProfileImgUrl().getImageUrl())
-//                .profileImgUrl(fileService.findAccountImage(account.getId()).getImageUrl())
+//                .profileImgUrl(imageService.findAccountImage(account.getId()).getImageUrl())
                 .role(account.getRole())
                 .build();
     }

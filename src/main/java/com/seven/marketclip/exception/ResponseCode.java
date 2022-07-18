@@ -53,7 +53,9 @@ public enum ResponseCode {
 
     // 게시글 수정
     URL_NOT_FOUND(BAD_REQUEST, "DB에 등록된 url 파일이 아닙니다."),
-    
+    INVALID_IMAGE_ACCESS(BAD_REQUEST, "해당 사용자가 등록한 이미지가 아닙니다."),
+    DUPLICATED_IMAGE_REQ(BAD_REQUEST, "이미 다른 게시글에 등록된 이미지입니다."),
+
     // 즐겨찾기 토글
     WRONG_WISHLIST_DELETE_REQUEST(BAD_REQUEST, "이미 즐겨찾기가 취소되었습니다."),
     WRONG_WISHLIST_SAVE_REQUEST(BAD_REQUEST, "이미 즐겨찾기에 추가되었습니다."),
@@ -72,7 +74,8 @@ public enum ResponseCode {
     HEADER_NOT_FOUND(FORBIDDEN, "헤더에 토큰이 존재하지 않습니다."),
 
     /** 404 NOT_FOUND  리소스를 찾을 수 없음 */
-    EMAIL_NOT_FOUND(NOT_FOUND, "이메일 인증을 신청하지 않았습니다."),
+    EMAIL_CHECK_NOT_FOUND(NOT_FOUND, "이메일 인증을 신청하지 않았습니다."),
+    EMAIL_NOT_FOUND(NOT_FOUND, "이메일이 등록되어 있지 않습니다."),
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),

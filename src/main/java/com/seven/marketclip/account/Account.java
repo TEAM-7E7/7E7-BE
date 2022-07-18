@@ -2,7 +2,7 @@ package com.seven.marketclip.account;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.dto.AccountReqDTO;
-import com.seven.marketclip.files.domain.AccountImage;
+import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wishList.domain.WishLists;
@@ -74,7 +74,6 @@ public class Account extends Timestamped {
 
     public Account(UserDetailsImpl userDetails) {
         this.id = userDetails.getId();
-        this.email = userDetails.getUsername();
     }
 
     //계정 타입 (일반)
