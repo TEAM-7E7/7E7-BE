@@ -5,9 +5,9 @@ import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.account.AccountTypeEnum;
 import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.files.domain.AccountImage;
-import com.seven.marketclip.files.repository.AccountImageRepository;
-import com.seven.marketclip.files.service.FileService;
+import com.seven.marketclip.image.domain.AccountImage;
+import com.seven.marketclip.image.repository.AccountImageRepository;
+import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,7 +33,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private final FileService fileService;
+    private final ImageService imageService;
 
     private final AccountImageRepository accountImageRepository;
 

@@ -1,7 +1,7 @@
 package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.exception.HttpResponse;
-import com.seven.marketclip.goods.domain.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -39,8 +39,8 @@ public class GoodsController {
 
     @ApiOperation(value = "게시글 이미지 파일 저장", notes = "게시글 이미지 파일 저장 api")
     @PostMapping(value = "/image-upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> s3Add(@RequestParam("goodsImage") List<MultipartFile> multipartFileList) {
-        return HttpResponse.toResponseEntity(goodsService.addS3(multipartFileList));
+    public ResponseEntity<HttpResponse> s3Add(@RequestParam("goodsImage") List<MultipartFile> multipartFileList, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return HttpResponse.toResponseEntity(goodsService.addS3(multipartFileList, userDetails.getId()));
     }
 
     @ApiOperation(value = "게시글 작성", notes = "게시글을 작성하는 api")
