@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -71,9 +72,10 @@ public class S3CloudServiceImpl implements FileCloudService {
     @Override
     @Transactional
     public void scheduledClearance() {
-        List<GoodsImage> goodsImages = imageService.clearUnusedImage();
-        for (GoodsImage goodsImage : goodsImages) {
-            deleteFile(goodsImage.getImageUrl());
+        List<GoodsImage> unUsedIdUrls = imageService.clearUnusedImage();
+        for (GoodsImage unUsedIdUrl : unUsedIdUrls) {
+            unUsedIdUrl.setDeletedAt(LocalDateTime.now());
+            deleteFile(unUsedIdUrl.getImageUrl());
         }
     }
 

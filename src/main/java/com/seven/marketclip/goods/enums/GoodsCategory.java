@@ -2,7 +2,6 @@ package com.seven.marketclip.goods.enums;
 
 import lombok.Getter;
 
-
 @Getter
 public enum GoodsCategory {
     DIGITAL_ELECTRONICS("디지털/가전"),

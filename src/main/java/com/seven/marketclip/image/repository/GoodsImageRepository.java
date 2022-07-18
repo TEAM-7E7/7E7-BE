@@ -12,4 +12,5 @@ public interface GoodsImageRepository extends JpaRepository<GoodsImage, Long> {
 
     @Query(value = "SELECT gi FROM GoodsImage gi where gi.goods is null")
     List<GoodsImage> findAllByGoodsIdIsNull();
+
 }
