@@ -1,8 +1,8 @@
 package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.exception.HttpResponse;
-import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
+import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import io.swagger.annotations.Api;

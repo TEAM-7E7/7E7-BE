@@ -35,6 +35,9 @@ public class GoodsImage {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Builder
     public GoodsImage(Account account, Goods goods, String imageUrl, int sequence){
         this.account = account;
@@ -52,5 +55,8 @@ public class GoodsImage {
         this.goods = goods;
     }
 
+    public void setDeletedAt(LocalDateTime localDateTime){
+        this.deletedAt = localDateTime;
+    }
 
 }

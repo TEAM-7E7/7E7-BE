@@ -6,6 +6,8 @@ import com.seven.marketclip.email.EmailService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 @Component
 public class Scheduler {
 
@@ -19,12 +21,15 @@ public class Scheduler {
 
     // 두시간마다 폐기된 이메일 데이터 삭제
     @Scheduled(cron = "0 0 0/2 * * *")
+    @Transactional
     public void emailClearance() {
         emailService.clearanceEmail();
     }
 
     // 매일 정각
-    @Scheduled(cron = "0 0 0 * * *")
+//    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0/2 * * *")
+    @Transactional
     public void s3Clearance(){
         fileCloudService.scheduledClearance();
     }
