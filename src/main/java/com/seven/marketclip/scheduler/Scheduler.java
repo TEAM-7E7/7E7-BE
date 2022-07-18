@@ -1,7 +1,7 @@
 package com.seven.marketclip.scheduler;
 
-import com.seven.marketclip.cloudServer.service.FileCloudService;
-import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
+import com.seven.marketclip.cloud_server.service.FileCloudService;
+import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.email.EmailService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

@@ -53,7 +53,9 @@ public enum ResponseCode {
 
     // 게시글 수정
     URL_NOT_FOUND(BAD_REQUEST, "DB에 등록된 url 파일이 아닙니다."),
-    
+    INVALID_IMAGE_ACCESS(BAD_REQUEST, "해당 사용자가 등록한 이미지가 아닙니다."),
+    DUPLICATED_IMAGE_REQ(BAD_REQUEST, "이미 다른 게시글에 등록된 이미지입니다."),
+
     // 즐겨찾기 토글
     WRONG_WISHLIST_DELETE_REQUEST(BAD_REQUEST, "이미 즐겨찾기가 취소되었습니다."),
     WRONG_WISHLIST_SAVE_REQUEST(BAD_REQUEST, "이미 즐겨찾기에 추가되었습니다."),

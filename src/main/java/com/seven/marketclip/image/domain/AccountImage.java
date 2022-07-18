@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @Entity
 public class AccountImage {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
+    @MapsId
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;

@@ -101,6 +101,7 @@ public class EmailService {
     }
 
 //    @Scheduled(cron = "0 0 0/2 * * *")
+    @Transactional
     public void clearanceEmail() {
         LocalDateTime localDateTime = LocalDateTime.now();
         emailRepository.deleteAllByExpireDateBefore(localDateTime);

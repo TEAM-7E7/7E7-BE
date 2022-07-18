@@ -1,8 +1,8 @@
 package com.seven.marketclip.goods.dto;
 
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.domain.GoodsCategory;
-import com.seven.marketclip.goods.domain.GoodsStatus;
+import com.seven.marketclip.goods.enums.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,18 +40,18 @@ public class GoodsTitleResDTO {
     }
 
     public GoodsTitleResDTO(Goods goods) {
-        String goodsImageUrl;
+        String goodsFirstImageUrl;
         if(goods.getGoodsImages().isEmpty()){
-            goodsImageUrl = null;
+            goodsFirstImageUrl = null;
         } else {
-            goodsImageUrl = goods.getGoodsImages().get(0).getImageUrl();
+            goodsFirstImageUrl = goods.getGoodsImages().get(0).getImageUrl();
         }
         this.id = goods.getId();
         this.nickname = goods.getAccount().getNickname();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.createdAt = goods.getCreatedAt();
-        this.goodsImageUrl = goodsImageUrl;
+        this.goodsImageUrl = goodsFirstImageUrl;
         this.viewCount = goods.getViewCount();
         this.sellPrice = goods.getSellPrice();
         this.status = goods.getStatus();

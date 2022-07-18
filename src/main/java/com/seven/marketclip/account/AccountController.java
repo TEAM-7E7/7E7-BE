@@ -40,18 +40,9 @@ public class AccountController {
     }
 
     @ApiOperation(value = "프로필 이미지 파일 S3 업로드", notes = "게시글 이미지 파일 S3 저장 api")
-    @PostMapping(value = "/image-upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile) {
-        return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile));
-    }
-
-    //TODO @RequestParam으로 받는게 아니라 @Authentication으로 받는게 좋을 듯?
-    //TODO JWT Provider에서 디코더를 할 때 백에서는 id만? 디코더 해도 좋을 듯?
-    //프로필 사진 수정 -> 이것도 가져오기 JWT에서
-    @ApiOperation(value = "프로필 이미지 수정", notes = "회원 프로필 사진 수정하기")
-    @PostMapping("/profile-img")
-    public ResponseEntity<HttpResponse> updateProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> imageMap) {
-        return HttpResponse.toResponseEntity(accountService.updateProfileImg(userDetails.getId(), imageMap.get("profileImage")));
+    @PostMapping(value = "/profile-img", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId()));
     }
 
     @ApiOperation(value = "프로필 이미지 삭제", notes = "회원 프로필 사진 삭제하기")

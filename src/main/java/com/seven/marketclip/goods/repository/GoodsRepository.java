@@ -1,7 +1,7 @@
 package com.seven.marketclip.goods.repository;
 
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.domain.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

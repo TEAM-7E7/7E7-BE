@@ -74,7 +74,6 @@ public class Account extends Timestamped {
 
     public Account(UserDetailsImpl userDetails) {
         this.id = userDetails.getId();
-        this.email = userDetails.getUsername();
     }
 
     //계정 타입 (일반)

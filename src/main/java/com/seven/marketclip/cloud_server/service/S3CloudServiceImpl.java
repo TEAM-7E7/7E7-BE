@@ -1,4 +1,4 @@
-package com.seven.marketclip.cloudServer.service;
+package com.seven.marketclip.cloud_server.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -6,12 +6,14 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.image.service.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -29,7 +31,7 @@ public class S3CloudServiceImpl implements FileCloudService {
     private final AmazonS3 amazonS3;
     private final ImageService imageService;
 
-    public S3CloudServiceImpl(AmazonS3 amazonS3, ImageService imageService){
+    public S3CloudServiceImpl(AmazonS3 amazonS3, ImageService imageService) {
         this.amazonS3 = amazonS3;
         this.imageService = imageService;
     }
@@ -55,19 +57,24 @@ public class S3CloudServiceImpl implements FileCloudService {
         } catch (IOException e) {
             throw new CustomException(FILE_UPLOAD_ERROR);
         }
-        return protocol + bucket + ".s3." + region + ".amazonaws.com/_" + fileName;
+        return protocol + bucket + ".s3." + region + ".amazonaws.com/" + fileName;
 
     }
 
     @Override
     public void deleteFile(String fileUrl) {
-        String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/_")[1];
+        String fileKey = fileUrl.split(".s3." + region + ".amazonaws.com/")[1];
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
     }
 
+    // todo 스케줄러 작동 확인
     @Override
-    public void scheduledClearance(){
-
+    @Transactional
+    public void scheduledClearance() {
+        List<GoodsImage> goodsImages = imageService.clearUnusedImage();
+        for (GoodsImage goodsImage : goodsImages) {
+            deleteFile(goodsImage.getImageUrl());
+        }
     }
 
     private String getFileExtension(String fileName) throws CustomException {
@@ -82,7 +89,7 @@ public class S3CloudServiceImpl implements FileCloudService {
             throw new CustomException(WRONG_FILE_TYPE);
         }
         if (fileList.contains(target)) {
-            return shortName + target;
+            return "_" + shortName + target;
         } else {
             throw new CustomException(WRONG_FILE_TYPE);
         }

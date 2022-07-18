@@ -26,8 +26,8 @@ public class GoodsImage {
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
-//    @Column(nullable = false)
-//    private String fileType;
+    @Column
+    private int sequence;
 
     @Column(nullable = false)
     private String imageUrl;
@@ -36,15 +36,21 @@ public class GoodsImage {
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsImage(Account account, Goods goods, String imageUrl){
+    public GoodsImage(Account account, Goods goods, String imageUrl, int sequence){
         this.account = account;
         this.goods = goods;
         this.imageUrl = imageUrl;
+        this.sequence = sequence;
         this.createdAt = LocalDateTime.now();
     }
 
-    public void updateUrl(String url){
-        this.imageUrl = url;
+    public void updateSequence(int sequence){
+        this.sequence = sequence;
     }
+
+    public void updateGoods(Goods goods){
+        this.goods = goods;
+    }
+
 
 }

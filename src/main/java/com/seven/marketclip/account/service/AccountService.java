@@ -6,8 +6,8 @@ import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.account.AccountTypeEnum;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.validation.AccountVerification;
-import com.seven.marketclip.cloudServer.service.FileCloudService;
-import com.seven.marketclip.cloudServer.service.S3CloudServiceImpl;
+import com.seven.marketclip.cloud_server.service.FileCloudService;
+import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
+import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 
@@ -33,12 +33,12 @@ public class AccountService {
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
 
-    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, ImageService imageService, S3CloudServiceImpl fileCloudService) {
+    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, ImageService imageService) {
         this.emailService = emailService;
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.accountVerification = accountVerification;
-        this.fileCloudService = fileCloudService;
+        this.fileCloudService = s3CloudService;
         this.imageService = imageService;
     }
 
@@ -78,22 +78,22 @@ public class AccountService {
     }
 
     // 유저 프로필 S3 업로드
-    public DataResponseCode addS3UserImage(MultipartFile multipartFile) throws CustomException {
-        return new DataResponseCode(SUCCESS, fileCloudService.uploadFile(multipartFile));
-    }
-
-    //프로필 이미지 수정
     @Transactional
-    public ResponseCode updateProfileImg(Long accountId, String imgUrl) throws CustomException {
-        AccountImage accountImage = imageService.findAccountImage(accountId);
+    public DataResponseCode addS3UserImage(MultipartFile multipartFile, Long accountId) throws CustomException {
+        String profileUrl = fileCloudService.uploadFile(multipartFile);
+        Map<String, Object> idUrlMap = new HashMap<>();
+        idUrlMap.put("id", accountId);
+        idUrlMap.put("url", profileUrl);
 
+        AccountImage accountImage = imageService.findAccountImage(accountId);
         if (accountImage.getImageUrl().equals("default")) {
-            accountImage.updateUrl(imgUrl);
+            accountImage.updateUrl(profileUrl);
         } else {
-            accountImage.updateUrl(imgUrl);
             fileCloudService.deleteFile(accountImage.getImageUrl());
+            accountImage.updateUrl(profileUrl);
         }
-        return SUCCESS;
+
+        return new DataResponseCode(SUCCESS, idUrlMap);
     }
 
     //프로필 이미지 삭제
