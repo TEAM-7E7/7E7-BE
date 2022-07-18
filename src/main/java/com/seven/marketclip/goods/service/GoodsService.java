@@ -80,8 +80,8 @@ public class GoodsService {
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
-        goodsRepository.save(goods);
         imageService.updateGoodsImageList(goodsReqDTO.getFileIdList(), goods, detailsAccount);
+        goodsRepository.save(goods);
         return SUCCESS;
     }
 
@@ -109,6 +109,7 @@ public class GoodsService {
         return SUCCESS;
     }
 
+    // 게시글 수정
     @Transactional
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);

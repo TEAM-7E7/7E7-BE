@@ -9,6 +9,7 @@ import com.seven.marketclip.image.repository.GoodsImageRepository;
 import com.seven.marketclip.goods.domain.Goods;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class ImageService {
         return idList;
     }
 
+    @Transactional
     public void updateGoodsImageList(List<Long> idList, Goods goods, Account account) throws CustomException {
         for (int i = 0; i < idList.size(); i++) {
             GoodsImage goodsImage = goodsImageRepository.findById(idList.get(i)).orElseThrow(

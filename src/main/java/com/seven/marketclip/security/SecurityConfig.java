@@ -4,6 +4,8 @@ import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.oauth.OauthFailHandler;
 import com.seven.marketclip.account.oauth.OauthHandler;
 import com.seven.marketclip.account.oauth.PrincipalOauth2UserService;
+import com.seven.marketclip.image.repository.AccountImageRepository;
+import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.filter.FormLoginFilter;
 import com.seven.marketclip.security.filter.JwtAuthFilter;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
@@ -47,6 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final OauthFailHandler oauthFailHandler;
 
+    private final ImageService imageService;
+    private final AccountImageRepository accountImageRepository;
+
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) {
@@ -63,6 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**");
         web.ignoring().antMatchers(PERMIT_URL_ARRAY);
     }
+
     //ㄴㅇ
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -119,10 +125,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/goods/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/goods/**").permitAll()
                 .antMatchers("/", "/api/user/sign-up", "/api/refresh-re", "/api/email-validation", "/api/user/nickname-check", "api/goods/favorite").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
-                .antMatchers("/api/manager","/api/profile-img").hasRole("USER")
+                .antMatchers("/api/manager", "/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
 
 
@@ -131,7 +137,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PrincipalOauth2UserService principalOauth2UserService() {
-        return new PrincipalOauth2UserService(accountRepository, bCryptPasswordEncoder);
+        return new PrincipalOauth2UserService(accountRepository, bCryptPasswordEncoder, imageService, accountImageRepository);
     }
 
 
