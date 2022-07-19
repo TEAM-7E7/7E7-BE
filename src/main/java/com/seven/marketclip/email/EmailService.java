@@ -100,11 +100,9 @@ public class EmailService {
         }
     }
 
-//    @Scheduled(cron = "0 0 0/2 * * *")
     @Transactional
     public void clearanceEmail() {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        emailRepository.deleteAllByExpireDateBefore(localDateTime);
+        emailRepository.deleteAllByExpireDateBefore(LocalDateTime.now());
     }
 
     public void sendEmail(String email, String emailToken) {
@@ -119,8 +117,6 @@ public class EmailService {
         if(accountRepository.findByEmail(email).isEmpty()){
             throw new CustomException(EMAIL_NOT_FOUND);
         }
-
-
     }
 
 }

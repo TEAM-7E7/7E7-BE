@@ -10,6 +10,7 @@ import com.seven.marketclip.goods.domain.Goods;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,8 +80,12 @@ public class ImageService {
         accountImage.updateUrl("default");
     }
 
-    public List<GoodsImage> clearUnusedImage(){
+    public List<String> findUnusedImages(){
         return goodsImageRepository.findAllByGoodsIdIsNull();
+    }
+
+    public void deleteUnusedImages(){
+        goodsImageRepository.deleteAllByGoodsIdIsNull(LocalDateTime.now().minusMinutes(20));
     }
 
 }
