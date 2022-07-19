@@ -68,15 +68,14 @@ public class S3CloudServiceImpl implements FileCloudService {
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
     }
 
-    // todo 스케줄러 작동 확인
     @Override
     @Transactional
     public void scheduledClearance() {
-        List<GoodsImage> unUsedIdUrls = imageService.clearUnusedImage();
-        for (GoodsImage unUsedIdUrl : unUsedIdUrls) {
-            unUsedIdUrl.setDeletedAt(LocalDateTime.now());
-            deleteFile(unUsedIdUrl.getImageUrl());
+        List<String> unusedUrls = imageService.findUnusedImages();
+        for (String unusedUrl : unusedUrls) {
+            deleteFile(unusedUrl);
         }
+        imageService.deleteUnusedImages();
     }
 
     private String getFileExtension(String fileName) throws CustomException {
