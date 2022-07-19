@@ -32,10 +32,12 @@ public class Goods extends Timestamped {
     @Column(nullable = false)
     private String description;//내용
 
+    @Enumerated(value = EnumType.STRING)
     private GoodsCategory category;
 
     private Integer sellPrice = 0;
 
+    @Enumerated(value = EnumType.STRING)
     private GoodsStatus status = GoodsStatus.SALE;
 
     private Integer viewCount = 0;
