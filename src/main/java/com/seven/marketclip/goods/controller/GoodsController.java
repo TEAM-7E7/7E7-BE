@@ -33,7 +33,6 @@ public class GoodsController {
     @ApiOperation(value = "게시글 전체 조회", notes = "상세설명을 제외하고, 첫 번째 사진(대문 사진)만을 포함한 물품 데이터 / 페이징")
     @GetMapping("")
     public ResponseEntity<HttpResponse> goodsList(@PageableDefault final Pageable pageable) {
-//        String accountRoleEnum = AccountRoleEnum.USER.getAuthority();
         return HttpResponse.toResponseEntity(goodsService.findGoods(pageable));
     }
 
