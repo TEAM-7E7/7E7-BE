@@ -43,9 +43,9 @@ public enum ResponseCode {
     //JWT, Refresh Token **************************************************************
     REFRESH_TOKEN_VERIFY(BAD_REQUEST, "RefreshFilter-verify"),
     REFRESH_TOKEN_NO_HEADER(BAD_REQUEST, "RefreshFilter-Refresh-No_Header"),
-    REFRESH_TOKEN_EXPIRED(BAD_REQUEST, "RefreshFilter - Refresh - expired"),
-    REFRESH_TOKEN_ID_NOT_EXIST(BAD_REQUEST, "RefreshFilter - ID - Not exist"),
-    REFRESH_TOKEN_NOT_EXIST_DB(BAD_REQUEST, "RefreshToken - Not ExistDB"),
+    REFRESH_TOKEN_EXPIRED(BAD_REQUEST, "RefreshFilter-Refresh-expired"),
+    REFRESH_TOKEN_ID_NOT_EXIST(BAD_REQUEST, "RefreshFilter-ID-Not-exist"),
+    REFRESH_TOKEN_NOT_EXIST_DB(BAD_REQUEST, "RefreshToken-Not-ExistDB"),
 
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰이 유효하지 않습니다."),
     MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다."),
