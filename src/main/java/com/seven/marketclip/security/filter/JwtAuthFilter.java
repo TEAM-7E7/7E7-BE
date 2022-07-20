@@ -54,24 +54,25 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         try{
             System.out.println(authorization.length());
         }catch (Exception e){
-            response.getWriter().print("RefreshFilter-Refresh-invalid_expired_not_existDB");
-            response.setStatus(400);
-            throw new IllegalArgumentException("리프레쉬 필터 - 리프레쉬 토큰 - 잘못됨");
+//            response.getWriter().print("RefreshFilter-Refresh-invalid_expired_not_existDB");
+//            response.setStatus(400);
+            throw new AuthenticationException("RefreshFilter-Refresh-invalid_expired_not_existDB") {
+            };
         }
 
         System.out.println(refreshToken.length());
 //        JwtPreProcessingToken jwtToken = checkValidJwtToken(request, authorization, refreshToken);
 
         if (authorization == null || authorization.length() == 0) {
-            response.getWriter().print("JwtAuthFilter-AccessToken-No_Header");
-            response.setStatus(400);
-            throw new IllegalArgumentException("AccessToken - No Header");
+//            response.getWriter().print("JwtAuthFilter-AccessToken-No_Header");
+//            response.setStatus(400);
+            throw new AuthenticationException("AccessToken - No Header"){};
 //            return null;
         }
         if (refreshToken == null || refreshToken.length() == 0) {
-            response.getWriter().print("JwtAuthFilter-Refresh-No_Header");
-            response.setStatus(400);
-            throw new IllegalArgumentException("RefreshToken - No Header");
+//            response.getWriter().print("JwtAuthFilter-Refresh-No_Header");
+//            response.setStatus(400);
+            throw new IllegalArgumentException("JwtAuthFilter-Refresh-No_Header");
 //            return null;
         }
 

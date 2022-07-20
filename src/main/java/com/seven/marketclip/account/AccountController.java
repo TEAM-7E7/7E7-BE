@@ -8,12 +8,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "프로필 이미지 파일 S3 업로드", notes = "게시글 이미지 파일 S3 저장 api")
-    @PostMapping(value = "/profile-img", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/profile-img")
     public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId()));
     }
@@ -73,5 +74,12 @@ public class AccountController {
 //        SecurityContextHolder.getContext().setAuthentication((Authentication) userDetails);
         return HttpResponse.toResponseEntity(accountService.findPassword(email));
     }
+    @ApiOperation(value = "리프레쉬 토큰 재발급", notes = "리프레쉬 토큰 재발급")
+    @GetMapping("/refresh-re")
+    public ResponseEntity<HttpResponse> reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        return HttpResponse.toResponseEntity(accountService.reissueRefreshToken(request,response));
+    }
+
+
 
 }

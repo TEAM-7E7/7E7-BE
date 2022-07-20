@@ -34,7 +34,8 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
             String password = requestBody.get("password").asText();
             authRequest = new UsernamePasswordAuthenticationToken(email, password); //사용자가 입력한 아이디(이메일) 비번.
         } catch (Exception e) {
-            throw new RuntimeException("username, password 입력이 필요합니다. (JSON)");
+            throw new AuthenticationException("username, password 입력이 필요합니다. (JSON)") {
+            };
         }
 
         setDetails(request, authRequest);
