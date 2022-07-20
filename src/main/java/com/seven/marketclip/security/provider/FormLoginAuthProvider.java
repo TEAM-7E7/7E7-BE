@@ -35,7 +35,7 @@ public class FormLoginAuthProvider implements AuthenticationProvider {
             System.out.println(userDetails.getPassword());
             if (!passwordEncoder.matches(password, userDetails.getPassword())) {
                 System.out.println("로그인 필터 : 비번 틀림");
-                throw new BadCredentialsException(userDetails.getUsername() + "Invalid password");
+                throw new BadCredentialsException("Invalid password");
             }
             System.out.println("로그인 필터 6");
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
