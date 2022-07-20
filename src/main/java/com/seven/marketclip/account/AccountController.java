@@ -8,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "프로필 이미지 파일 S3 업로드", notes = "게시글 이미지 파일 S3 저장 api")
-    @PostMapping(value = "/profile-img", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/profile-img")
     public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId()));
     }
