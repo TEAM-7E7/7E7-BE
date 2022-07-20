@@ -8,8 +8,7 @@ import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish_list.domain.WishLists;
 import com.seven.marketclip.wish_list.repository.WishListsRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,19 +18,13 @@ import javax.transaction.Transactional;
 import static com.seven.marketclip.exception.ResponseCode.*;
 
 @Service
-@RequiredArgsConstructor
 public class WishListsService {
-    private GoodsService goodsService;
+    private final GoodsService goodsService;
     private final WishListsRepository wishListsRepository;
 
-//    public WishListsService(GoodsService goodsService, WishListsRepository wishListsRepository) {
-//        this.goodsService = goodsService;
-//        this.wishListsRepository = wishListsRepository;
-//    }
-
-    @Autowired
-    public void setGoodsService(GoodsService goodsService){
+    public WishListsService(@Lazy GoodsService goodsService, WishListsRepository wishListsRepository) {
         this.goodsService = goodsService;
+        this.wishListsRepository = wishListsRepository;
     }
 
     @Transactional

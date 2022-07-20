@@ -6,23 +6,19 @@ import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
-import com.seven.marketclip.goods.dto.OrderByDTO;
-import com.seven.marketclip.image.service.ImageService;
-import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
+import com.seven.marketclip.goods.dto.OrderByDTO;
+import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.repository.GoodsRepository;
+import com.seven.marketclip.image.domain.GoodsImage;
+import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish_list.domain.WishLists;
-import com.seven.marketclip.wish_list.repository.WishListsRepository;
 import com.seven.marketclip.wish_list.service.WishListsService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,22 +32,16 @@ import static com.seven.marketclip.goods.enums.GoodsOrderBy.*;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
-    private WishListsService wishListsService;
+    private final WishListsService wishListsService;
 
-//    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsRepository wishListsRepository) {
-//        this.goodsRepository = goodsRepository;
-//        this.fileCloudService = s3CloudServiceImpl;
-//        this.imageService = imageService;
-//        this.wishListsRepository = wishListsRepository;
-//    }
-
-    @Autowired
-    public void setWishListsService(WishListsService wishListsService){
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsService wishListsService) {
+        this.goodsRepository = goodsRepository;
+        this.fileCloudService = s3CloudServiceImpl;
+        this.imageService = imageService;
         this.wishListsService = wishListsService;
     }
 
