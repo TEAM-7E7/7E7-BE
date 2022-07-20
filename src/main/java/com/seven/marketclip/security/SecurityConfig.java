@@ -51,6 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ImageService imageService;
     private final AccountImageRepository accountImageRepository;
+    private final LoginFailFilter loginFailFilter;
+    private final JwtFailFilter jwtFailFilter;
 
 
     @Override
@@ -158,6 +160,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public FormLoginFilter formLoginFilter() throws Exception {
         FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
         formLoginFilter.setFilterProcessesUrl("/api/user/login");
+        formLoginFilter.setAuthenticationFailureHandler(loginFailFilter);
         formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
         formLoginFilter.afterPropertiesSet(); //TODO 찾아보기 -> formLoginFilter.afterPropertiesSet
         return formLoginFilter;
@@ -194,7 +197,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 회원 관리 API 허용
         skipPathList.add("GET,https://marketclip.kr");
         skipPathList.add("GET,/");
-        skipPathList.add("GET,/api/refresh-re");
+        skipPathList.add("GET,/api/user/refresh-re");
         skipPathList.add("GET,/api/goods");
         skipPathList.add("GET,/api/goods/**");
         skipPathList.add("GET,/api/goods/favorite");
@@ -236,6 +239,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 , accountRepository
         );
         filter.setAuthenticationManager(super.authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(jwtFailFilter);
 //        filter.setFilterProcessesUrl("");
 
         return filter;

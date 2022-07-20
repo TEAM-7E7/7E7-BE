@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @Slf4j
@@ -72,5 +74,12 @@ public class AccountController {
 //        SecurityContextHolder.getContext().setAuthentication((Authentication) userDetails);
         return HttpResponse.toResponseEntity(accountService.findPassword(email));
     }
+    @ApiOperation(value = "리프레쉬 토큰 재발급", notes = "리프레쉬 토큰 재발급")
+    @GetMapping("/refresh-re")
+    public ResponseEntity<HttpResponse> reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        return HttpResponse.toResponseEntity(accountService.reissueRefreshToken(request,response));
+    }
+
+
 
 }
