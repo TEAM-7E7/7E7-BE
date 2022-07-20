@@ -6,7 +6,7 @@ import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
-import com.seven.marketclip.wishList.domain.WishLists;
+import com.seven.marketclip.wish_list.domain.WishLists;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +49,8 @@ public class Goods extends Timestamped {
     private List<WishLists> wishLists;
 
     @Builder
-    public Goods(Account account, String title, String description, GoodsCategory category, Integer sellPrice) {
+    public Goods(Long id, Account account, String title, String description, GoodsCategory category, Integer sellPrice) {
+        this.id = id;
         this.account = account;
         this.title = title;
         this.description = description;

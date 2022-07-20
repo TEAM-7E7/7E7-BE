@@ -1,15 +1,13 @@
-package com.seven.marketclip.wishList.service;
-
+package com.seven.marketclip.wish_list.service;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.repository.GoodsRepository;
+import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wishList.domain.WishLists;
-import com.seven.marketclip.wishList.repository.WishListsRepository;
-import lombok.RequiredArgsConstructor;
+import com.seven.marketclip.wish_list.domain.WishLists;
+import com.seven.marketclip.wish_list.repository.WishListsRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,17 +15,19 @@ import javax.transaction.Transactional;
 import static com.seven.marketclip.exception.ResponseCode.*;
 
 @Service
-@RequiredArgsConstructor
 public class WishListsService {
-    private final GoodsRepository goodsRepository;
+    private final GoodsService goodsService;
     private final WishListsRepository wishListsRepository;
+
+    public WishListsService(GoodsService goodsService, WishListsRepository wishListsRepository) {
+        this.goodsService = goodsService;
+        this.wishListsRepository = wishListsRepository;
+    }
 
     @Transactional
     public ResponseCode doWishList(Long goodsId, UserDetailsImpl account, String httpMethod) throws CustomException {
         Account detailsAccount = new Account(account);
-        Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
-        );
+        Goods goods = goodsService.findGoodsById(goodsId);
         WishLists wishLists = wishListsRepository.findByGoodsAndAccount(goods, detailsAccount).orElse(null);
         if (wishLists != null) {
             if (httpMethod.equals("DELETE")) {
@@ -47,6 +47,11 @@ public class WishListsService {
         }
         return SUCCESS;
     }
+
+    // 내가 즐겨찾기 한 게시글 보기 - GoodsService 에서 호출
+//    public Page<WishLists> findMyWish(Long accountId, Pageable pageable){
+//        return wishListsRepository.findAllByAccountIdOrderByCreatedAtDesc(accountId, pageable);
+//    }
 
     public int wishListCount(Long goodsId) {
         return wishListsRepository.findAllByGoodsId(goodsId).size();

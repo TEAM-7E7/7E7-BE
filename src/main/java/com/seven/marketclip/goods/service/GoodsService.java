@@ -6,6 +6,7 @@ import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
+import com.seven.marketclip.goods.dto.OrderByDTO;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
@@ -15,7 +16,8 @@ import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wishList.service.WishListsService;
+import com.seven.marketclip.wish_list.domain.WishLists;
+import com.seven.marketclip.wish_list.repository.WishListsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
+import static com.seven.marketclip.goods.enums.GoodsOrderBy.*;
 
 @Service
 @Slf4j
@@ -33,19 +36,36 @@ public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
-    private final WishListsService wishListsService;
+    private final WishListsRepository wishListsRepository;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsService wishListsService) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsRepository wishListsRepository) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
-        this.wishListsService = wishListsService;
+        this.wishListsRepository = wishListsRepository;
     }
 
-    // 게시글 전체 조회 - 대문사진만 보내주기
-    public DataResponseCode findGoods(Pageable pageable) throws CustomException {
-        Page<Goods> goodsList = goodsRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new DataResponseCode(SUCCESS, pageToMap(goodsList));
+    public DataResponseCode pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
+        Page<Goods> goodsPage = null;
+        List<GoodsCategory> categoryList = orderByDTO.getGoodsCategoryList();
+        List<String> querySentence = new ArrayList<>(Arrays.asList("where category = "));
+        for (GoodsCategory goodsCategory : categoryList) {
+            querySentence.add(goodsCategory.name());
+        }
+        String categoryListToQuery = "'" + String.join("' or '", querySentence) + "'";
+        System.out.println(categoryListToQuery);
+
+        if (orderByDTO.getGoodsOrderBy() == ORDER_BY_CREATED_AT) {
+            goodsPage = goodsRepository.findAllByOrderByCreatedAtDesc(categoryListToQuery, orderByDTO.getGoodsOrderBy().getQuery(), pageable);
+        } else if (orderByDTO.getGoodsOrderBy() == ORDER_BY_VIEW_COUNT) {
+            goodsPage = goodsRepository.findAllByOrderByCreatedAtDesc(categoryListToQuery, orderByDTO.getGoodsOrderBy().getQuery(), pageable);
+        } else if (orderByDTO.getGoodsOrderBy() == ORDER_BY_WISHLIST_COUNT) {
+
+        } else {
+            throw new CustomException(ORDER_BY_NOT_FOUND);
+        }
+
+        return new DataResponseCode(SUCCESS, pageToMap(goodsPage));
     }
 
     // 게시물 이미지 파일 S3 저장
@@ -58,10 +78,10 @@ public class GoodsService {
         List<Long> idList = imageService.saveGoodsImageList(fileUrlList, null, account);
 
         List<Map<String, Object>> idUrlMapList = new ArrayList<>();
-        for(int i = 0; i < fileUrlList.size(); i++){
+        for (int i = 0; i < fileUrlList.size(); i++) {
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("id",idList.get(i));
-            tempMap.put("url",fileUrlList.get(i));
+            tempMap.put("id", idList.get(i));
+            tempMap.put("url", fileUrlList.get(i));
 
             idUrlMapList.add(tempMap);
         }
@@ -93,7 +113,7 @@ public class GoodsService {
         );
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
-        goodsResDTO.setWishCount(wishListsService.wishListCount(goodsId));
+        goodsResDTO.setWishCount(wishListsRepository.findAllByGoodsId(goodsId).size());
         goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
         return new DataResponseCode(SUCCESS, goodsResDTO);
     }
@@ -129,6 +149,15 @@ public class GoodsService {
         return new DataResponseCode(SUCCESS, resultMap);
     }
 
+    // 내가 즐겨찾기 한 글 보기
+    public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
+        Page<WishLists> wishList = wishListsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
+        Page<Goods> goodsList = wishList.map(WishLists::getGoods);
+        Map<String, Object> resultMap = pageToMap(goodsList);
+
+        return new DataResponseCode(SUCCESS, resultMap);
+    }
+
     // 카테고리 별 조회
     public DataResponseCode findGoodsCategory(GoodsCategory category, Pageable pageable) {
         Page<Goods> goodsList = goodsRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
@@ -158,6 +187,13 @@ public class GoodsService {
         }
         goodsRepository.updateView(id);
     }
+    
+    // WishListService에서 호출
+    public Goods findGoodsById(Long goodsId) throws CustomException {
+        return goodsRepository.findById(goodsId).orElseThrow(
+                () -> new CustomException(GOODS_NOT_FOUND)
+        );
+    }
 
     // 게시글 수정 & 삭제 - 상품 게시판 존재 여부/ 작성자 아이디와 접속한 아이디 비교/ 둘 다 true 시 Goods 반환
     private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl userDetails) {
@@ -170,8 +206,6 @@ public class GoodsService {
         return goods;
     }
 
-    //
-
     // 페이징된 결과를 response 형식으로 변환
     private Map<String, Object> pageToMap(Page<Goods> goodsList) {
         List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
@@ -179,7 +213,7 @@ public class GoodsService {
         for (Goods goods : goodsList) {
             GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
             goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
-            goodsTitleResDTO.setWishCount(wishListsService.wishListCount(goods.getId()));
+            goodsTitleResDTO.setWishCount(wishListsRepository.findAllByGoodsId(goods.getId()).size());
             goodsTitleResDTOList.add(goodsTitleResDTO);
         }
         resultMap.put("endPage", goodsList.isLast());

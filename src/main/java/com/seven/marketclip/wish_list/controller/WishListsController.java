@@ -1,8 +1,8 @@
-package com.seven.marketclip.wishList.controller;
+package com.seven.marketclip.wish_list.controller;
 
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wishList.service.WishListsService;
+import com.seven.marketclip.wish_list.service.WishListsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

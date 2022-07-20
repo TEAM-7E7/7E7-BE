@@ -1,4 +1,4 @@
-package com.seven.marketclip.wishList.domain;
+package com.seven.marketclip.wish_list.domain;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.domain.Goods;

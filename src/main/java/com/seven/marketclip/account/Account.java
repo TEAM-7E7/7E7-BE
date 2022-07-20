@@ -5,7 +5,7 @@ import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wishList.domain.WishLists;
+import com.seven.marketclip.wish_list.domain.WishLists;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
