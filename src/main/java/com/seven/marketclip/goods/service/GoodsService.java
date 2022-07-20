@@ -18,7 +18,11 @@ import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish_list.domain.WishLists;
 import com.seven.marketclip.wish_list.repository.WishListsRepository;
+import com.seven.marketclip.wish_list.service.WishListsService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,17 +36,23 @@ import static com.seven.marketclip.goods.enums.GoodsOrderBy.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
-    private final WishListsRepository wishListsRepository;
+    private WishListsService wishListsService;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsRepository wishListsRepository) {
-        this.goodsRepository = goodsRepository;
-        this.fileCloudService = s3CloudServiceImpl;
-        this.imageService = imageService;
-        this.wishListsRepository = wishListsRepository;
+//    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsRepository wishListsRepository) {
+//        this.goodsRepository = goodsRepository;
+//        this.fileCloudService = s3CloudServiceImpl;
+//        this.imageService = imageService;
+//        this.wishListsRepository = wishListsRepository;
+//    }
+
+    @Autowired
+    public void setWishListsService(WishListsService wishListsService){
+        this.wishListsService = wishListsService;
     }
 
     public DataResponseCode pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
@@ -113,7 +123,7 @@ public class GoodsService {
         );
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
-        goodsResDTO.setWishCount(wishListsRepository.findAllByGoodsId(goodsId).size());
+        goodsResDTO.setWishCount(wishListsService.wishListCount(goodsId));
         goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
         return new DataResponseCode(SUCCESS, goodsResDTO);
     }
@@ -151,7 +161,7 @@ public class GoodsService {
 
     // 내가 즐겨찾기 한 글 보기
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
-        Page<WishLists> wishList = wishListsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
+        Page<WishLists> wishList = wishListsService.findMyWish(userDetails.getId(), pageable);
         Page<Goods> goodsList = wishList.map(WishLists::getGoods);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
@@ -213,7 +223,7 @@ public class GoodsService {
         for (Goods goods : goodsList) {
             GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
             goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
-            goodsTitleResDTO.setWishCount(wishListsRepository.findAllByGoodsId(goods.getId()).size());
+            goodsTitleResDTO.setWishCount(wishListsService.wishListCount(goods.getId()));
             goodsTitleResDTOList.add(goodsTitleResDTO);
         }
         resultMap.put("endPage", goodsList.isLast());
