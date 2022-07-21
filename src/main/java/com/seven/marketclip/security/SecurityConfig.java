@@ -126,7 +126,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/goods/**").permitAll()
-                .antMatchers("/", "/api/user/sign-up", "/api/refresh-re", "/api/email-validation", "/api/user/nickname-check", "api/goods/favorite").permitAll()
+                .antMatchers("/", "/api/user/sign-up", "/api/refresh-re", "/api/email-validation", "/api/user/nickname-check", "api/goods/favorite", "api/goods/dynamic-paging").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager", "/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
@@ -198,6 +198,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/api/goods");
         skipPathList.add("GET,/api/goods/**");
         skipPathList.add("GET,/api/goods/favorite");
+        skipPathList.add("POST,/api/goods/dynamic-paging");
         skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/user/sign-up");

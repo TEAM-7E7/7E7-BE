@@ -92,7 +92,6 @@ public class AccountService {
             fileCloudService.deleteFile(accountImage.getImageUrl());
             accountImage.updateUrl(profileUrl);
         }
-
         return new DataResponseCode(SUCCESS, idUrlMap);
     }
 

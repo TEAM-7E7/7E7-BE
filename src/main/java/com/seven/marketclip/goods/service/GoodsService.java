@@ -7,28 +7,27 @@ import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.dto.GoodsReqDTO;
-import com.seven.marketclip.goods.dto.GoodsResDTO;
-import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
-import com.seven.marketclip.goods.dto.OrderByDTO;
+import com.seven.marketclip.goods.dto.*;
 import com.seven.marketclip.goods.enums.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsOrderBy;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wish_list.domain.WishLists;
-import com.seven.marketclip.wish_list.service.WishListsService;
+import com.seven.marketclip.wish.domain.Wish;
+import com.seven.marketclip.wish.service.WishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
-import static com.seven.marketclip.goods.enums.GoodsOrderBy.*;
+import static com.seven.marketclip.goods.enums.GoodsOrderBy.ORDER_BY_WISHLIST_COUNT;
 
 @Service
 @Slf4j
@@ -36,33 +35,38 @@ public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
-    private final WishListsService wishListsService;
+    private final WishService wishService;
+    private final EntityManager em;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishListsService wishListsService) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishService wishService, EntityManager em) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
-        this.wishListsService = wishListsService;
+        this.wishService = wishService;
+        this.em = em;
     }
 
     public DataResponseCode pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
+        String categoryListToQuery = categoryListToQuery(orderByDTO.getGoodsCategoryList());
+//        String categoryListToQuery = orderByDTO.getGoodsCategoryList().get(0).getType();
+        GoodsOrderBy goodsOrderBy = orderByDTO.getGoodsOrderBy();
+
+        System.out.println("카테고리 쿼리 :" + categoryListToQuery);
+        System.out.println("정렬 쿼리 :" + goodsOrderBy.getQuery());
+
         Page<Goods> goodsPage = null;
-        List<GoodsCategory> categoryList = orderByDTO.getGoodsCategoryList();
-        List<String> querySentence = new ArrayList<>(Arrays.asList("where category = "));
-        for (GoodsCategory goodsCategory : categoryList) {
-            querySentence.add(goodsCategory.name());
-        }
-        String categoryListToQuery = "'" + String.join("' or '", querySentence) + "'";
-        System.out.println(categoryListToQuery);
 
-        if (orderByDTO.getGoodsOrderBy() == ORDER_BY_CREATED_AT) {
-            goodsPage = goodsRepository.findAllByOrderByCreatedAtDesc(categoryListToQuery, orderByDTO.getGoodsOrderBy().getQuery(), pageable);
-        } else if (orderByDTO.getGoodsOrderBy() == ORDER_BY_VIEW_COUNT) {
-            goodsPage = goodsRepository.findAllByOrderByCreatedAtDesc(categoryListToQuery, orderByDTO.getGoodsOrderBy().getQuery(), pageable);
-        } else if (orderByDTO.getGoodsOrderBy() == ORDER_BY_WISHLIST_COUNT) {
+        String jpqlQuery = "select g from Goods as g where " + categoryListToQuery + goodsOrderBy.getQuery();
+        em.createQuery(jpqlQuery,Goods.class)
+                .getResultList();
 
-        } else {
+        if (orderByDTO.getGoodsOrderBy() == null) {
             throw new CustomException(ORDER_BY_NOT_FOUND);
+        }
+        if (orderByDTO.getGoodsOrderBy() == ORDER_BY_WISHLIST_COUNT) {
+//            goodsPage = goodsRepository.pagingGoodsWishList(categoryListToQuery, goodsOrderBy.getQuery(), pageable);
+        } else {
+            goodsPage = goodsRepository.pagingGoods(categoryListToQuery, goodsOrderBy.getQuery(), pageable);
         }
 
         return new DataResponseCode(SUCCESS, pageToMap(goodsPage));
@@ -111,9 +115,10 @@ public class GoodsService {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
+
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
-        goodsResDTO.setWishCount(wishListsService.wishListCount(goodsId));
+        goodsResDTO.setWishIds(wishService.goodsWishLists(goodsId));
         goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
         return new DataResponseCode(SUCCESS, goodsResDTO);
     }
@@ -151,31 +156,10 @@ public class GoodsService {
 
     // 내가 즐겨찾기 한 글 보기
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
-        Page<WishLists> wishList = wishListsService.findMyWish(userDetails.getId(), pageable);
-        Page<Goods> goodsList = wishList.map(WishLists::getGoods);
+        Page<Wish> wishList = wishService.findMyWish(userDetails.getId(), pageable);
+        Page<Goods> goodsList = wishList.map(Wish::getGoods);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
-        return new DataResponseCode(SUCCESS, resultMap);
-    }
-
-    // 카테고리 별 조회
-    public DataResponseCode findGoodsCategory(GoodsCategory category, Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
-        Map<String, Object> resultMap = pageToMap(goodsList);
-        return new DataResponseCode(SUCCESS, resultMap);
-    }
-
-    // 즐겨찾기 갯수 순 조회
-    public DataResponseCode goodsListFavorite(Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByOrderByWishListsCount(pageable);
-        Map<String, Object> resultMap = pageToMap(goodsList);
-        return new DataResponseCode(SUCCESS, resultMap);
-    }
-
-    // 조회수 순 조회
-    public DataResponseCode goodsListView(Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByOrderByViewCountDesc(pageable);
-        Map<String, Object> resultMap = pageToMap(goodsList);
         return new DataResponseCode(SUCCESS, resultMap);
     }
 
@@ -186,13 +170,6 @@ public class GoodsService {
             throw new CustomException(GOODS_NOT_FOUND);
         }
         goodsRepository.updateView(id);
-    }
-    
-    // WishListService에서 호출
-    public Goods findGoodsById(Long goodsId) throws CustomException {
-        return goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
-        );
     }
 
     // 게시글 수정 & 삭제 - 상품 게시판 존재 여부/ 작성자 아이디와 접속한 아이디 비교/ 둘 다 true 시 Goods 반환
@@ -206,14 +183,27 @@ public class GoodsService {
         return goods;
     }
 
+    private String categoryListToQuery(List<GoodsCategory> goodsCategories) {
+        if (goodsCategories.isEmpty()) {
+            return "";
+        } else {
+            List<String> querySentence = new ArrayList<>();
+            for (GoodsCategory goodsCategory : goodsCategories) {
+                querySentence.add("'" + goodsCategory.name() + "'");
+            }
+            return " g.category = " + String.join(" or ", querySentence);
+        }
+    }
+
     // 페이징된 결과를 response 형식으로 변환
     private Map<String, Object> pageToMap(Page<Goods> goodsList) {
         List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
         Map<String, Object> resultMap = new HashMap<>();
+
         for (Goods goods : goodsList) {
             GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
             goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
-            goodsTitleResDTO.setWishCount(wishListsService.wishListCount(goods.getId()));
+            goodsTitleResDTO.setWishIds(wishService.goodsWishLists(goods.getId()));
             goodsTitleResDTOList.add(goodsTitleResDTO);
         }
         resultMap.put("endPage", goodsList.isLast());

@@ -5,7 +5,7 @@ import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wish_list.domain.WishLists;
+import com.seven.marketclip.wish.domain.Wish;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,7 +54,7 @@ public class Account extends Timestamped {
     private List<Goods> goodsList;
 
     @OneToMany(mappedBy = "account", orphanRemoval = true)
-    private List<WishLists> wishLists;
+    private List<Wish> wishLists;
 
     @Builder
     public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {

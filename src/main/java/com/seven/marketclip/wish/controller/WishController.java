@@ -1,8 +1,8 @@
-package com.seven.marketclip.wish_list.controller;
+package com.seven.marketclip.wish.controller;
 
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.UserDetailsImpl;
-import com.seven.marketclip.wish_list.service.WishListsService;
+import com.seven.marketclip.wish.service.WishService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -16,17 +16,17 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "즐겨찾기 컨트롤러")
 @Slf4j
 @RequestMapping("/api/wish-list")
-public class WishListsController {
-    private final WishListsService wishListsService;
+public class WishController {
+    private final WishService wishService;
 
-    public WishListsController(WishListsService wishListsService) {
-        this.wishListsService = wishListsService;
+    public WishController(WishService wishService) {
+        this.wishService = wishService;
     }
 
     @ApiOperation(value = "게시글 찜하기 (토글)", notes = "게시글 찜하기 / 취소를 수행하는 토글 api")
     @RequestMapping(value = "/{goodsId}", method = {RequestMethod.POST, RequestMethod.DELETE})
-    public ResponseEntity<HttpResponse> wishListToggle(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account, HttpServletRequest httpServletRequest) {
-        return HttpResponse.toResponseEntity(wishListsService.doWishList(goodsId, account, httpServletRequest.getMethod()));
+    public ResponseEntity<HttpResponse> wishToggle(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl account, HttpServletRequest httpServletRequest) {
+        return HttpResponse.toResponseEntity(wishService.doWishList(goodsId, account, httpServletRequest.getMethod()));
     }
 
 }

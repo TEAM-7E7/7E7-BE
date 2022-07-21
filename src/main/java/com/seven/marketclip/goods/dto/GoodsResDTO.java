@@ -19,7 +19,7 @@ import java.util.Map;
 public class GoodsResDTO {
     private Long id;
     private Integer viewCount;
-    private Integer wishCount;
+    private List<Long> wishIds;
     private String nickname;
     private String accountImageUrl;
     private String title;
@@ -31,10 +31,10 @@ public class GoodsResDTO {
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsResDTO(Long id, Integer viewCount, Integer wishCount, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<Map<String, Object>> imageMapList, GoodsStatus status, LocalDateTime createdAt) {
+    public GoodsResDTO(Long id, Integer viewCount, List<Long> wishIds, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<Map<String, Object>> imageMapList, GoodsStatus status, LocalDateTime createdAt) {
         this.id = id;
         this.viewCount = viewCount;
-        this.wishCount = wishCount;
+        this.wishIds = wishIds;
         this.nickname = nickname;
         this.accountImageUrl = accountImageUrl;
         this.title = title;
@@ -72,8 +72,8 @@ public class GoodsResDTO {
         this.accountImageUrl = accountImageUrl;
     }
 
-    public void setWishCount(int wishCount){
-        this.wishCount = wishCount;
+    public void setWishIds(List<Long> wishIds){
+        this.wishIds = wishIds;
     }
 
 }
