@@ -6,8 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.image.domain.GoodsImage;
-import com.seven.marketclip.image.service.ImageService;
+import com.seven.marketclip.image.repository.GoodsImageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,11 +29,11 @@ import static com.seven.marketclip.exception.ResponseCode.WRONG_FILE_TYPE;
 public class S3CloudServiceImpl implements FileCloudService {
 
     private final AmazonS3 amazonS3;
-    private final ImageService imageService;
+    private final GoodsImageRepository goodsImageRepository;
 
-    public S3CloudServiceImpl(AmazonS3 amazonS3, ImageService imageService) {
+    public S3CloudServiceImpl(AmazonS3 amazonS3, GoodsImageRepository goodsImageRepository) {
         this.amazonS3 = amazonS3;
-        this.imageService = imageService;
+        this.goodsImageRepository = goodsImageRepository;
     }
 
     @Value("${cloud.aws.s3.bucket}")
@@ -71,11 +70,11 @@ public class S3CloudServiceImpl implements FileCloudService {
     @Override
     @Transactional
     public void scheduledClearance() {
-        List<String> unusedUrls = imageService.findUnusedImages();
+        List<String> unusedUrls = goodsImageRepository.findAllByGoodsIdIsNull();
         for (String unusedUrl : unusedUrls) {
             deleteFile(unusedUrl);
         }
-        imageService.deleteUnusedImages();
+        goodsImageRepository.deleteAllByGoodsIdIsNull(LocalDateTime.now().minusMinutes(20));
     }
 
     private String getFileExtension(String fileName) throws CustomException {

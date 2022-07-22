@@ -1,4 +1,4 @@
-package com.seven.marketclip.wishList.domain;
+package com.seven.marketclip.wish.domain;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.domain.Goods;
@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "wish_lists")
 @Getter
 @NoArgsConstructor
-public class WishLists{
+public class Wish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class WishLists{
     private LocalDateTime createdAt;
 
     @Builder
-    public WishLists(Goods goods, Account account){
+    public Wish(Goods goods, Account account){
         this.account = account;
         this.goods = goods;
         this.createdAt = LocalDateTime.now();

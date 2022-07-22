@@ -2,7 +2,7 @@ package com.seven.marketclip.goods.controller;
 
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
-import com.seven.marketclip.goods.enums.GoodsCategory;
+import com.seven.marketclip.goods.dto.OrderByDTO;
 import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import io.swagger.annotations.Api;
@@ -31,9 +31,9 @@ public class GoodsController {
 
     // 게시글 전체 조회 -> 정렬 => 생성일자 내림차순
     @ApiOperation(value = "게시글 전체 조회", notes = "상세설명을 제외하고, 첫 번째 사진(대문 사진)만을 포함한 물품 데이터 / 페이징")
-    @GetMapping("")
-    public ResponseEntity<HttpResponse> goodsList(@PageableDefault final Pageable pageable) {
-        return HttpResponse.toResponseEntity(goodsService.findGoods(pageable));
+    @PostMapping("/dynamic-paging")
+    public ResponseEntity<HttpResponse> goodsPaging(@RequestBody OrderByDTO orderByDTO, @PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.pagingGoods(orderByDTO, pageable));
     }
 
     @ApiOperation(value = "게시글 이미지 파일 저장", notes = "게시글 이미지 파일 저장 api")
@@ -72,22 +72,10 @@ public class GoodsController {
         return HttpResponse.toResponseEntity(goodsService.findMyGoods(userDetails, pageable));
     }
 
-    @ApiOperation(value = "카테고리별 조회", notes = "카테고리별 조회 api / 페이징")
-    @GetMapping("/category/{category}")
-    public ResponseEntity<HttpResponse> categoryGoodsList(@PathVariable GoodsCategory category, @PageableDefault final Pageable pageable) {
-        return HttpResponse.toResponseEntity(goodsService.findGoodsCategory(category, pageable));
-    }
-
-    @ApiOperation(value = "즐겨찾기순 정렬 조회", notes = "카테고리별 조회 api / 페이징")
-    @GetMapping("/favorite")
-    public ResponseEntity<HttpResponse> favoriteGoodsList(@PageableDefault final Pageable pageable) {
-        return HttpResponse.toResponseEntity(goodsService.goodsListFavorite(pageable));
-    }
-
-    @ApiOperation(value = "조회순 정렬 조회", notes = "조회순 정렬 api / 페이징")
-    @GetMapping("/view")
-    public ResponseEntity<HttpResponse> viewGoodsList(@PageableDefault final Pageable pageable) {
-        return HttpResponse.toResponseEntity(goodsService.goodsListView(pageable));
+    @ApiOperation(value = "내가 즐겨찾기 한 게시글 보기", notes = "내가 즐겨찾기 한 게시글 보기 api / 페이징")
+    @PostMapping("/my-wish")
+    public ResponseEntity<HttpResponse> myWishFind(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.findMyWish(userDetails, pageable));
     }
 
 }
