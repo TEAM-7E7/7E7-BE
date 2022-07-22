@@ -4,7 +4,6 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.goods.dto.OrderByDTO;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsOrderBy;
@@ -33,10 +32,11 @@ public class GoodsQueryRep {
         GoodsOrderBy goodsOrderBy = orderByDTO.getGoodsOrderBy();
 
         List<Goods> queryResult = null;
+        int count;
 
         if (goodsOrderBy == ORDER_BY_WISHLIST_COUNT) {
-            queryResult = queryFactory.select(goods)
-                    .from(goods)
+            queryResult = queryFactory
+                    .selectFrom(goods)
                     .leftJoin(wish)
                     .on(wish.goods.eq(goods))
                     .groupBy(goods.id)
@@ -45,18 +45,33 @@ public class GoodsQueryRep {
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
+
+            count = queryFactory
+                    .selectFrom(goods)
+                    .leftJoin(wish)
+                    .on(wish.goods.eq(goods))
+                    .where(categoriesToExpression(goodsCategories))
+                    .fetch()
+                    .size();
+
         } else {
-            queryResult = queryFactory.select(goods)
-                    .from(goods)
+            queryResult = queryFactory
+                    .selectFrom(goods)
                     .where(categoriesToExpression(goodsCategories))
                     .orderBy(orderByToExpression(goodsOrderBy))
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
+
+            count = queryFactory
+                    .selectFrom(goods)
+                    .where(categoriesToExpression(goodsCategories))
+                    .fetch()
+                    .size();
         }
 
+        return new PageImpl<>(queryResult, pageable, count);
 
-        return new PageImpl<>(queryResult, pageable, queryResult.size());
     }
 
     private BooleanExpression categoriesToExpression(List<GoodsCategory> goodsCategories) {
