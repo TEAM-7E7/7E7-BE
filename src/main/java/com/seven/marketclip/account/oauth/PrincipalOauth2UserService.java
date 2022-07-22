@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.transaction.Transactional;
@@ -113,8 +114,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         if(accountOptEmail.isPresent()){
             System.out.println("sdasdas");
         }
-//&& (accountOptEmail.get().getType() == typeKakao || accountOptEmail.get().getType() == typeGoogle || accountOptEmail.get().getType() == typeNaver)
-        if (accountOptEmail.isPresent() ) {
+
+        if (accountOptEmail.isPresent() && (accountOptEmail.get().getType() == typeKakao || accountOptEmail.get().getType() == typeGoogle || accountOptEmail.get().getType() == typeNaver)) {
             System.out.println("구글, 네이버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
 
             //이미 있으니까 바로 로그인인
@@ -137,21 +138,19 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .role(role)
                     .build();
 
-        }
-//        else if (accountOptEmail.isPresent()) {//마켓클립일 때 -> 예외처리
-//            System.out.println("이메일이 마켓클립 이메일일 때");
-////            UserDetailsImpl userDetails = new UserDetailsImpl();
-//            AccountRoleEnum accountRoleEnum = AccountRoleEnum.USER;
-////            return UserDetailsImpl.builder()
-////                    .role(accountRoleEnum)
-////                    .build();
-//            OAuth2Error oauth2Error = new OAuth2Error("에러당!",
-//                    "Missing required \"user name\" attribute name in UserInfoEndpoint for Client Registration: "
-//                            + userRequest.getClientRegistration().getRegistrationId(),
-//                    null);
-//            throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
-//        }
-        else {
+        } else if (accountOptEmail.isPresent()) {//마켓클립일 때 -> 예외처리
+            System.out.println("이메일이 마켓클립 이메일일 때");
+//            UserDetailsImpl userDetails = new UserDetailsImpl();
+            AccountRoleEnum accountRoleEnum = AccountRoleEnum.USER;
+//            return UserDetailsImpl.builder()
+//                    .role(accountRoleEnum)
+//                    .build();
+            OAuth2Error oauth2Error = new OAuth2Error("에러당!",
+                    "Missing required \"user name\" attribute name in UserInfoEndpoint for Client Registration: "
+                            + userRequest.getClientRegistration().getRegistrationId(),
+                    null);
+            throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
+        } else {
             System.out.println("회원가입 해야할 때");
             String uuidPassword = String.valueOf(UUID.randomUUID());
             AccountRoleEnum roleEnum = AccountRoleEnum.USER;
