@@ -7,9 +7,11 @@ import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.dto.*;
-import com.seven.marketclip.goods.enums.GoodsCategory;
-import com.seven.marketclip.goods.enums.GoodsOrderBy;
+import com.seven.marketclip.goods.dto.GoodsReqDTO;
+import com.seven.marketclip.goods.dto.GoodsResDTO;
+import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
+import com.seven.marketclip.goods.dto.OrderByDTO;
+import com.seven.marketclip.goods.repository.GoodsQueryRep;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.image.service.ImageService;
@@ -22,12 +24,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
-import static com.seven.marketclip.goods.enums.GoodsOrderBy.ORDER_BY_WISHLIST_COUNT;
 
 @Service
 @Slf4j
@@ -36,38 +36,18 @@ public class GoodsService {
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
     private final WishService wishService;
-    private final EntityManager em;
+    private final GoodsQueryRep goodsQueryRep;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishService wishService, EntityManager em) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishService wishService, GoodsQueryRep goodsQueryRep) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
         this.wishService = wishService;
-        this.em = em;
+        this.goodsQueryRep = goodsQueryRep;
     }
 
     public DataResponseCode pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
-        String categoryListToQuery = categoryListToQuery(orderByDTO.getGoodsCategoryList());
-//        String categoryListToQuery = orderByDTO.getGoodsCategoryList().get(0).getType();
-        GoodsOrderBy goodsOrderBy = orderByDTO.getGoodsOrderBy();
-
-        System.out.println("카테고리 쿼리 :" + categoryListToQuery);
-        System.out.println("정렬 쿼리 :" + goodsOrderBy.getQuery());
-
-        Page<Goods> goodsPage = null;
-
-        String jpqlQuery = "select g from Goods as g where " + categoryListToQuery + goodsOrderBy.getQuery();
-        em.createQuery(jpqlQuery,Goods.class)
-                .getResultList();
-
-        if (orderByDTO.getGoodsOrderBy() == null) {
-            throw new CustomException(ORDER_BY_NOT_FOUND);
-        }
-        if (orderByDTO.getGoodsOrderBy() == ORDER_BY_WISHLIST_COUNT) {
-//            goodsPage = goodsRepository.pagingGoodsWishList(categoryListToQuery, goodsOrderBy.getQuery(), pageable);
-        } else {
-            goodsPage = goodsRepository.pagingGoods(categoryListToQuery, goodsOrderBy.getQuery(), pageable);
-        }
+        Page<Goods> goodsPage = goodsQueryRep.pagingGoods(orderByDTO, pageable);
 
         return new DataResponseCode(SUCCESS, pageToMap(goodsPage));
     }
@@ -181,18 +161,6 @@ public class GoodsService {
             throw new CustomException(NOT_AUTHORED);
         }
         return goods;
-    }
-
-    private String categoryListToQuery(List<GoodsCategory> goodsCategories) {
-        if (goodsCategories.isEmpty()) {
-            return "";
-        } else {
-            List<String> querySentence = new ArrayList<>();
-            for (GoodsCategory goodsCategory : goodsCategories) {
-                querySentence.add("'" + goodsCategory.name() + "'");
-            }
-            return " g.category = " + String.join(" or ", querySentence);
-        }
     }
 
     // 페이징된 결과를 response 형식으로 변환
