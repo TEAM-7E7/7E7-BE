@@ -11,6 +11,7 @@ import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.GoodsResDTO;
 import com.seven.marketclip.goods.dto.GoodsTitleResDTO;
 import com.seven.marketclip.goods.dto.OrderByDTO;
+import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsQueryRep;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.image.domain.GoodsImage;
@@ -127,8 +128,8 @@ public class GoodsService {
     }
 
     // 내가 쓴 글 보기
-    public DataResponseCode findMyGoods(UserDetailsImpl userDetails, Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
+    public DataResponseCode findMyGoods(UserDetailsImpl userDetails, GoodsStatus goodsStatus, Pageable pageable) {
+        Page<Goods> goodsList = goodsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), goodsStatus.name(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
         return new DataResponseCode(SUCCESS, resultMap);

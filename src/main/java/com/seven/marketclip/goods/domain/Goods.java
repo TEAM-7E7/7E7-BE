@@ -71,6 +71,7 @@ public class Goods extends Timestamped {
         this.title = goodsReqDTO.getTitle();
         this.description = goodsReqDTO.getDescription();
         this.sellPrice = goodsReqDTO.getSellPrice();
+        this.status = goodsReqDTO.getStatus();
         this.category = goodsReqDTO.getCategory();
     }
 
