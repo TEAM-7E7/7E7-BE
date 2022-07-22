@@ -7,7 +7,6 @@ import com.seven.marketclip.exception.ResponseCode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -93,18 +92,16 @@ public class EmailService {
 
     public void checkVerified(String email) throws CustomException {
         Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
-                () -> new CustomException(EMAIL_NOT_FOUND)
+                () -> new CustomException(EMAIL_CHECK_NOT_FOUND)
         );
         if (!emailFound.isEmailVerified()) {
             throw new CustomException(UNVERIFIED_EMAIL);
         }
     }
 
-    // 두시간마다 폐기된 이메일 데이터 삭제
-    @Scheduled(cron = "0 0 0/2 * * *")
-    public void deleteEmail() {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        emailRepository.deleteAllByExpireDateBefore(localDateTime);
+    @Transactional
+    public void clearanceEmail() {
+        emailRepository.deleteAllByExpireDateBefore(LocalDateTime.now());
     }
 
     public void sendEmail(String email, String emailToken) {
@@ -113,6 +110,12 @@ public class EmailService {
         simpleMessage.setSubject("marketClip 이메일 인증");
         simpleMessage.setText("이메일 인증번호=" + emailToken);
         javaMailSender.send(simpleMessage);
+    }
+
+    public void findEmail(String email) throws CustomException{
+        if(accountRepository.findByEmail(email).isEmpty()){
+            throw new CustomException(EMAIL_NOT_FOUND);
+        }
     }
 
 }

@@ -2,8 +2,11 @@ package com.seven.marketclip.goods.domain;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.goods.enums.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsStatus;
+import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
-import com.seven.marketclip.wishList.domain.WishLists;
+import com.seven.marketclip.wish.domain.Wish;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,19 +32,21 @@ public class Goods extends Timestamped {
     @Column(nullable = false)
     private String description;//내용
 
+    @Enumerated(value = EnumType.STRING)
     private GoodsCategory category;
 
     private Integer sellPrice = 0;
 
-    private GoodsStatus status = GoodsStatus.NEW;
+    @Enumerated(value = EnumType.STRING)
+    private GoodsStatus status = GoodsStatus.SALE;
 
     private Integer viewCount = 0;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Files> filesList;
+    private List<GoodsImage> goodsImages;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WishLists> wishLists;
+    private List<Wish> wishLists;
 
     @Builder
     public Goods(Long id, Account account, String title, String description, GoodsCategory category, Integer sellPrice) {
@@ -66,6 +71,7 @@ public class Goods extends Timestamped {
         this.title = goodsReqDTO.getTitle();
         this.description = goodsReqDTO.getDescription();
         this.sellPrice = goodsReqDTO.getSellPrice();
+        this.status = goodsReqDTO.getStatus();
         this.category = goodsReqDTO.getCategory();
     }
 

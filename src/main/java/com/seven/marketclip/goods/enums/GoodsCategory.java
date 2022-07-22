@@ -1,7 +1,6 @@
-package com.seven.marketclip.goods.domain;
+package com.seven.marketclip.goods.enums;
 
 import lombok.Getter;
-
 
 @Getter
 public enum GoodsCategory {

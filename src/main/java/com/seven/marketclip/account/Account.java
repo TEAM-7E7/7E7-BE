@@ -2,9 +2,10 @@ package com.seven.marketclip.account;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.dto.AccountReqDTO;
+import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.wishList.domain.WishLists;
 import com.seven.marketclip.security.UserDetailsImpl;
+import com.seven.marketclip.wish.domain.Wish;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.List;
 public class Account extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(unique = true)
@@ -31,7 +32,9 @@ public class Account extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    private String profileImgUrl;
+    @OneToOne(mappedBy = "account")
+    @JoinColumn(name = "profile_image")
+    private AccountImage profileImgUrl;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -51,17 +54,16 @@ public class Account extends Timestamped {
     private List<Goods> goodsList;
 
     @OneToMany(mappedBy = "account", orphanRemoval = true)
-    private List<WishLists> wishLists;
+    private List<Wish> wishLists;
 
     @Builder
-    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type, String profileImgUrl) {
+    public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.role = role;
         this.type = type;
-        this.profileImgUrl = profileImgUrl;
     }
 
     public Account(AccountReqDTO accountReqDTO) {
@@ -72,7 +74,6 @@ public class Account extends Timestamped {
 
     public Account(UserDetailsImpl userDetails) {
         this.id = userDetails.getId();
-        this.email = userDetails.getUsername();
     }
 
     //계정 타입 (일반)
@@ -96,7 +97,6 @@ public class Account extends Timestamped {
     }
 
     //프로필 이미지 변경
-    public void changeProfileImg(String file){this.profileImgUrl = file;}
     public void changeNickname(String nickname){this.nickname = nickname;}
     public void changePassword(String password){this.password = password;}
 

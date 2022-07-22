@@ -1,60 +1,69 @@
 package com.seven.marketclip.goods.dto;
 
 import com.seven.marketclip.goods.domain.Goods;
-import com.seven.marketclip.goods.domain.GoodsCategory;
-import com.seven.marketclip.goods.domain.GoodsStatus;
+import com.seven.marketclip.goods.enums.GoodsCategory;
+import com.seven.marketclip.goods.enums.GoodsStatus;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class GoodsTitleResDTO {
-
     private Long id;
-    private String fileUrl;
     private Integer viewCount;
-    private Integer wishCount;
-    private String account;
+    private List<Long> wishIds;
+    private String nickname;
+    private String accountImageUrl;
     private String title;
     private GoodsCategory category;
     private Integer sellPrice;
+    private String goodsImageUrl;
     private GoodsStatus status;
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsTitleResDTO(Long id, Integer viewCount, Integer wishCount, String account, String title, GoodsCategory category, Integer sellPrice, String fileUrl, GoodsStatus status, LocalDateTime createdAt) {
+    public GoodsTitleResDTO(Long id, Integer viewCount, List<Long> wishIds, String nickname, String accountImageUrl, String title, GoodsCategory category, Integer sellPrice, String goodsImageUrl, GoodsStatus status, LocalDateTime createdAt) {
         this.id = id;
         this.viewCount = viewCount;
-        this.wishCount = wishCount;
-        this.account = account;
+        this.wishIds = wishIds;
+        this.nickname = nickname;
+        this.accountImageUrl = accountImageUrl;
         this.title = title;
         this.category = category;
         this.sellPrice = sellPrice;
-        this.fileUrl = fileUrl;
+        this.goodsImageUrl = goodsImageUrl;
         this.status = status;
         this.createdAt = createdAt;
     }
 
     public GoodsTitleResDTO(Goods goods) {
-        String fileUrl;
-        if(goods.getFilesList().isEmpty()){
-            fileUrl = null;
+        String goodsFirstImageUrl;
+        if(goods.getGoodsImages().isEmpty()){
+            goodsFirstImageUrl = null;
         } else {
-            fileUrl = goods.getFilesList().get(0).getFileUrl();
+            goodsFirstImageUrl = goods.getGoodsImages().get(0).getImageUrl();
         }
-
-        this.title = goods.getTitle();
         this.id = goods.getId();
-        this.account = goods.getAccount().getEmail();
+        this.nickname = goods.getAccount().getNickname();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.createdAt = goods.getCreatedAt();
-        this.fileUrl = fileUrl;
+        this.goodsImageUrl = goodsFirstImageUrl;
         this.viewCount = goods.getViewCount();
         this.sellPrice = goods.getSellPrice();
-        this.wishCount = goods.getWishLists().size();
         this.status = goods.getStatus();
+    }
+
+    public void setAccountImageUrl(String accountImageUrl){
+        this.accountImageUrl = accountImageUrl;
+    }
+
+    public void setWishIds(List<Long> wishIds){
+        this.wishIds = wishIds;
     }
 
 }

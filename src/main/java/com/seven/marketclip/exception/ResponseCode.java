@@ -15,36 +15,40 @@ public enum ResponseCode {
     EMAIL_VALIDATION_SUCCESS(OK, "이메일 인증이 완료되었습니다."),
     EMAIL_DISPATCH_SUCCESS(OK, "해당 이메일로 인증번호를 발송하였습니다."),
 
+    //수정하기*********************************************************************
+    NICKNAME_UPDATE_SUCCESS(OK, "닉네임 수정이 완료되었습니다."),
+    PROFILE_IMG_UPDATE_SUCCESS(OK, "프로필 사진 수정이 완료되었습니다."),
+    PASSWORD_VALIDATION_SUCCESS(OK, "비밀번호 수정이 완료되었습니다."),
+
     /** 400 BAD_REQUEST 잘못된 요청 */
+
+    //VERIFICATION*********************************************************************
+    VERIFICATION_ID(BAD_REQUEST,"아이디가 존재하지 않습니다."),
+    VERIFICATION_EMAIL(BAD_REQUEST,"이메일이 존재하지 않습니다."),
+    VERIFICATION_NICKNAME(BAD_REQUEST,"닉네임이 존재하지 않습니다."),
+
+    //JWT, Refresh Token **************************************************************
+    REFRESH_TOKEN_VERIFY(BAD_REQUEST, "RefreshFilter-verify"),
+    REFRESH_TOKEN_NO_HEADER(BAD_REQUEST, "RefreshFilter-Refresh-No_Header"),
+    REFRESH_TOKEN_EXPIRED(BAD_REQUEST, "RefreshFilter-Refresh-expired"),
+    REFRESH_TOKEN_ID_NOT_EXIST(BAD_REQUEST, "RefreshFilter-ID-Not-exist"),
+    REFRESH_TOKEN_NOT_EXIST_DB(BAD_REQUEST, "RefreshToken-Not-ExistDB"),
+
+    INVALID_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰이 유효하지 않습니다."),
+    MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다."),
+
     // 회원가입 + 로그인
     ALREADY_LOGIN(BAD_REQUEST, "이미 로그인이 되어있습니다."),
     INVALID_REGISTER_EMAIL(BAD_REQUEST, "이메일 형식이 유효하지 않습니다."),
     INVALID_REGISTER_PASSWORD(BAD_REQUEST, "비밀번호 형식이 유효하지 않습니다."),
     INVALID_REGISTER_USERNAME(BAD_REQUEST, "이름을 입력해 주세요."),
-
     INVALID_LOGIN(BAD_REQUEST, "이메일 또는 패스워드를 확인해 주세요."),
 
-
+    // 이메일 인증
     EMAIL_ALREADY_SENT(BAD_REQUEST, "이미 이메일이 발송되었습니다."),
     EMAIL_ALREADY_EXPIRED(BAD_REQUEST, "이메일 인증시간이 지났습니다, 인증번호를 다시 발급해주세요."),
     INVALID_EMAIL_TOKEN(BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
-    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았니다."),
-
-    //수정하기*********************************************************************
-    NICKNAME_UPDATE_SUCCESS(OK, "닉네임 수정이 완료되었습니다."),
-    PROFILEIMG_UPDATE_SUCCESS(OK, "프로필 사진 수정이 완료되었습니다."),
-    PASSWORD_VALIDATION_SUCCESS(OK, "비밀번호 수정이 완료되었습니다."),
-    /**********************************************************************************/
-    //VERIFICATION*********************************************************************
-    VERIFICATION_ID(BAD_REQUEST,"아이디가 존재하지 않습니다."),
-    VERIFICATION_EMAIL(BAD_REQUEST,"이메일이 존재하지 않습니다."),
-    VERIFICATION_NICKNAME(BAD_REQUEST,"닉네임이 존재하지 않습니다."),
-    /**********************************************************************************/
-    //JWT, Refresh Token **************************************************************
-    INVALID_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰이 유효하지 않습니다."),
-    MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다."),
-    /**********************************************************************************/
-
+    UNVERIFIED_EMAIL(BAD_REQUEST, "이메일이 인증되지 않았습니다."),
 
     // 게시글 작성
     INVALID_GOODS_REQ(BAD_REQUEST, "게시글 형식을 확인해 주세요."),
@@ -53,6 +57,12 @@ public enum ResponseCode {
 
     // 게시글 수정
     URL_NOT_FOUND(BAD_REQUEST, "DB에 등록된 url 파일이 아닙니다."),
+    INVALID_IMAGE_ACCESS(BAD_REQUEST, "해당 사용자가 등록한 이미지가 아닙니다."),
+    DUPLICATED_IMAGE_REQ(BAD_REQUEST, "이미 다른 게시글에 등록된 이미지입니다."),
+
+    // 즐겨찾기 토글
+    WRONG_WISHLIST_DELETE_REQUEST(BAD_REQUEST, "이미 즐겨찾기가 취소되었습니다."),
+    WRONG_WISHLIST_SAVE_REQUEST(BAD_REQUEST, "이미 즐겨찾기에 추가되었습니다."),
 
     // validation, integrity 위반
     WRONG_VALIDATION_INTEGRITY(BAD_REQUEST, "validation 또는 무결성 위반."),
@@ -68,14 +78,18 @@ public enum ResponseCode {
     HEADER_NOT_FOUND(FORBIDDEN, "헤더에 토큰이 존재하지 않습니다."),
 
     /** 404 NOT_FOUND  리소스를 찾을 수 없음 */
-    EMAIL_NOT_FOUND(NOT_FOUND, "이메일 인증을 신청하지 않았습니다."),
+    EMAIL_CHECK_NOT_FOUND(NOT_FOUND, "이메일 인증을 신청하지 않았습니다."),
+    EMAIL_NOT_FOUND(NOT_FOUND, "이메일이 등록되어 있지 않습니다."),
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),
-    FILE_NOT_FOUND(NOT_FOUND, "해당 파일을 찾을 수 없습니다."),
+    GOODS_IMAGE_NOT_FOUND(NOT_FOUND, "게시글의 이미지를 찾을 수 없습니다."),
+    ACCOUNT_IMAGE_NOT_FOUND(NOT_FOUND, "사용자의 프로필 사진을 찾을 수 없습니다."),
+
 
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 상태입니다 다시 로그인 해주세요."),
     NULL_POINT_EXCEPTION(NOT_FOUND, "Null Point Exception 발생."),
+    ORDER_BY_NOT_FOUND(NOT_FOUND, "약속된 정렬 요청이 아닙니다"),
 
 
     /** 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */

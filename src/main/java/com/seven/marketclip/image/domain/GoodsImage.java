@@ -1,6 +1,7 @@
-package com.seven.marketclip.goods.domain;
+package com.seven.marketclip.image.domain;
 
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.goods.domain.Goods;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Files {
+public class GoodsImage {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -25,25 +26,30 @@ public class Files {
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
-//    @Column(nullable = false)
-//    private String fileType;
+    @Column
+    private int sequence;
 
     @Column(nullable = false)
-    private String fileUrl;
+    private String imageUrl;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    public Files(Account account, Goods goods, String fileUrl){
+    public GoodsImage(Account account, Goods goods, String imageUrl, int sequence){
         this.account = account;
         this.goods = goods;
-        this.fileUrl = fileUrl;
+        this.imageUrl = imageUrl;
+        this.sequence = sequence;
         this.createdAt = LocalDateTime.now();
     }
 
-    public void updateUrl(String url){
-        this.fileUrl = url;
+    public void updateSequence(int sequence){
+        this.sequence = sequence;
+    }
+
+    public void updateGoods(Goods goods){
+        this.goods = goods;
     }
 
 }

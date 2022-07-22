@@ -5,6 +5,9 @@ import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.account.AccountRoleEnum;
 import com.seven.marketclip.account.AccountTypeEnum;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.image.domain.AccountImage;
+import com.seven.marketclip.image.repository.AccountImageRepository;
+import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -29,6 +32,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     //    private final AccountService accountService;
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final ImageService imageService;
+
+    private final AccountImageRepository accountImageRepository;
 
     // userRequest 는 code를 받아서 accessToken을 응답 받은 객체
     @Override
@@ -110,6 +117,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         if (accountOptEmail.isPresent() && (accountOptEmail.get().getType() == typeKakao || accountOptEmail.get().getType() == typeGoogle || accountOptEmail.get().getType() == typeNaver)) {
             System.out.println("구글, 네이버 사용자 회원가입 불가 - 이메일,닉네임 중 이미 있음");
+
             //이미 있으니까 바로 로그인인
             Account account = accountOptEmail.orElseThrow(
                     () -> new CustomException(USER_NOT_FOUND)
@@ -119,7 +127,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             String email = account.getEmail();
             AccountRoleEnum role = account.getRole();
             String nickname = account.getNickname();
-            String imgUrl = account.getProfileImgUrl();
+//            String imgUrl = account.getProfileImgUrl().getImageUrl();
+            String imgUrl = account.getProfileImgUrl().getImageUrl();
+            System.out.println(imgUrl);
             return UserDetailsImpl.builder()
                     .id(id)
                     .email(email)
@@ -152,13 +162,45 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .role(roleEnum)
                     .build();
             account.encodePassword(bCryptPasswordEncoder);
+            System.out.println("소이님 : id 굿 : " + account.getId());
             accountRepository.save(account);
+
+
+            Account account1 = accountRepository.findByEmail(oAuth2UserInfo.getEmail()).orElseThrow(
+                    () -> new IllegalArgumentException("아이디를 찾을 수 없읍니다.")
+            );
+            System.out.println("남신욱의 유저 아이디  : "+ account1.getId());
+
+            accountImageRepository.save(AccountImage.builder()
+                            .account(account1)
+                            .imageUrl("default")
+                    .build());
+
+//            fileService.saveAccountImage("asdadssdsds",account1);
+
+            AccountImage accountImage = accountImageRepository.findByAccountId(account1.getId()).orElseThrow(
+                    () -> new IllegalArgumentException("asasd")
+            );
+
+            Account account2 = accountRepository.findByEmail(oAuth2UserInfo.getEmail()).orElseThrow(
+                    () -> new IllegalArgumentException("아이디를 찾을 수 없읍니다.")
+            );
+
+
+            System.out.println("김채원의 어카운트 이미지 :" + accountImage.getImageUrl());
+            System.out.println(account1.getProfileImgUrl());
+            System.out.println(account2.getEmail());
+            System.out.println(account2.getProfileImgUrl());
+
+//            System.out.println(account2.getProfileImgUrl().getImageUrl());
+
+
             return UserDetailsImpl.builder()
-                    .id(account.getId())
-                    .email(account.getEmail())
-                    .nickname(account.getNickname())
-                    .profileImgUrl(account.getProfileImgUrl())
-                    .role(account.getRole())
+                    .id(account1.getId())
+                    .email(account1.getEmail())
+                    .nickname(account1.getNickname())
+                    .profileImgUrl("default")
+                    .role(account1.getRole())
                     .build();
         }
     }

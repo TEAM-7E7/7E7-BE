@@ -2,17 +2,24 @@ package com.seven.marketclip;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
 
 @ServletComponentScan
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableScheduling
+//@EnableJpaRepositories(basePackages = {"com.seven.marketclip"})
+//@EntityScan
 public class MarketclipApplication {
 
     @Bean
@@ -29,7 +36,14 @@ public class MarketclipApplication {
     }
 
     public static void main(String[] args) {
+
         SpringApplication.run(MarketclipApplication.class, args);
+    }
+
+    @PostConstruct
+    public void started() {
+        // timezone UTC 셋팅
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 
 }

@@ -18,7 +18,7 @@ public class AccountVerification {
     //유저 아이디 중복 체크
     public Account checkVerificationId(Long id) throws CustomException{
         return accountRepository.findById(id).orElseThrow(
-                ()-> new CustomException(VERIFICATION_ID)
+                ()-> new CustomException(USER_NOT_FOUND)
         );
     }
 
