@@ -8,37 +8,44 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class ChatMessageService {
-
     private final ChatMessageRepository chatMessageRepository;
-
     @Transactional
     public String saveChatMessage(ChatMessages messages) {
-            
-        ChatMessages cr = ChatMessages.builder()
+        ChatMessages cm = ChatMessages.builder()
                 .chatRoomId(messages.getChatRoomId())
-//                .senderId(messages.getSenderId())
-                .senderId(1L)
+                .senderId(messages.getSenderId())
                 .message(messages.getMessage())
                 .createdAt(messages.getCreatedAt())
                 .build();
-        chatMessageRepository.save(cr);
-        return "성공이유";
+        chatMessageRepository.save(cm);
+        return "";
     }
-    @Transactional
-    public List<ChatMessages> messageList(Long partnerId){
-        List<ChatMessages> li = chatMessageRepository.findAllBySenderIdAndCheckRead(partnerId, false);
-        for (ChatMessages cm:li) {
-            cm.readMessage();
-        }
+    @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
+    public List<ChatMessages> messageList(Long roomId,Long loginId){      //전체 메시지 불러오기
+        chatMessageRepository.checkReadFlipOver(roomId, loginId);
         return chatMessageRepository.
-                findAllBySenderIdOrSenderIdOrderByCreatedAtDesc(partnerId, partnerId);//수정 필요 partnerId
+                findAllByChatRoomIdOrderByCreatedAtDesc(roomId);
     }
     @Transactional
-    public Long findReadOrNot(Long partnerId){
-        return chatMessageRepository.countBySenderIdAndCheckRead(partnerId, false);
+    public Long findCheckReadCnt(Long chatRoomId, Long partnerId){   // 안읽은 메시지 가져오기
+        return chatMessageRepository.countBySenderIdAndChatRoomIdAndCheckRead(chatRoomId, partnerId, false);
     }
+    @Transactional
+    public ChatMessages findLastMessage(Long chatRoomId){       //마지막 채팅내용
+        Optional<ChatMessages> ms = chatMessageRepository.latestMessage(chatRoomId);
+        if(ms.isEmpty()){
+            return null;
+        }
+        return ms.get();
+    }
+    @Transactional
+    public int modifyCheckRead(Long chatRoomId, Long loginId){
+        return chatMessageRepository.checkReadFlipOver(chatRoomId, loginId);
+    }
+
 }

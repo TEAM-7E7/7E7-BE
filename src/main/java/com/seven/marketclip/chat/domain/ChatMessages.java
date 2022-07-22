@@ -1,12 +1,11 @@
 package com.seven.marketclip.chat.domain;
 
+import com.seven.marketclip.account.Account;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -17,9 +16,13 @@ public class ChatMessages {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //채팅방 ID
-    private Long chatRoomId;
+    @ManyToOne
+    @JoinColumn(name="CHATROOM_ID")
+    private ChatRoom chatRoomId;
+    @ManyToOne
+    @JoinColumn(name="ACCOUNT_ID")
     //발신 회원
-    private Long senderId;
+    private Account senderId;
     //내용
     private String message;
     private boolean checkRead = false;  //기본값 false 지정
@@ -27,14 +30,11 @@ public class ChatMessages {
     private Date createdAt;
 
     @Builder
-    public ChatMessages(Long chatRoomId, Long senderId, String message, Date createdAt){
+    public ChatMessages(ChatRoom chatRoomId, Account senderId, String message, Date createdAt){
         this.chatRoomId = chatRoomId;
         this.senderId = senderId;
         this.message = message;
         this.createdAt = createdAt;
     }
 
-    public void readMessage(){
-        this.checkRead = true;
-    }
 }

@@ -44,7 +44,8 @@ public class Goods extends Timestamped {
     private List<WishLists> wishLists;
 
     @Builder
-    public Goods(Account account, String title, String description, GoodsCategory category, Integer sellPrice) {
+    public Goods(Long id, Account account, String title, String description, GoodsCategory category, Integer sellPrice) {
+        this.id = id;
         this.account = account;
         this.title = title;
         this.description = description;
@@ -67,5 +68,7 @@ public class Goods extends Timestamped {
         this.sellPrice = goodsReqDTO.getSellPrice();
         this.category = goodsReqDTO.getCategory();
     }
+
+
 
 }
