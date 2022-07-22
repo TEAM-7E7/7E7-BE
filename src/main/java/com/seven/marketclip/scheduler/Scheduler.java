@@ -26,9 +26,8 @@ public class Scheduler {
         emailService.clearanceEmail();
     }
 
-    // 매일 정각
-//    @Scheduled(cron = "0 0 0 * * *")
-    @Scheduled(cron = "0 0 0/1 * * *")
+    // 매일 새벽 2시
+    @Scheduled(cron = "0 0 2 * * *")
     @Transactional
     public void s3Clearance(){
         fileCloudService.scheduledClearance();

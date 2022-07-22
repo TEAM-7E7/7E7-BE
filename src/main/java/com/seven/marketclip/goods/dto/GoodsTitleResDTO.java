@@ -8,13 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class GoodsTitleResDTO {
     private Long id;
     private Integer viewCount;
-    private Integer wishCount;
+    private List<Long> wishIds;
     private String nickname;
     private String accountImageUrl;
     private String title;
@@ -25,10 +26,10 @@ public class GoodsTitleResDTO {
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsTitleResDTO(Long id, Integer viewCount, Integer wishCount, String nickname, String accountImageUrl, String title, GoodsCategory category, Integer sellPrice, String goodsImageUrl, GoodsStatus status, LocalDateTime createdAt) {
+    public GoodsTitleResDTO(Long id, Integer viewCount, List<Long> wishIds, String nickname, String accountImageUrl, String title, GoodsCategory category, Integer sellPrice, String goodsImageUrl, GoodsStatus status, LocalDateTime createdAt) {
         this.id = id;
         this.viewCount = viewCount;
-        this.wishCount = wishCount;
+        this.wishIds = wishIds;
         this.nickname = nickname;
         this.accountImageUrl = accountImageUrl;
         this.title = title;
@@ -61,8 +62,8 @@ public class GoodsTitleResDTO {
         this.accountImageUrl = accountImageUrl;
     }
 
-    public void setWishCount(int wishCount){
-        this.wishCount = wishCount;
+    public void setWishIds(List<Long> wishIds){
+        this.wishIds = wishIds;
     }
 
 }

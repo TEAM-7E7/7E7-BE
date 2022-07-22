@@ -2,15 +2,14 @@ package com.seven.marketclip.image.service;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.image.repository.AccountImageRepository;
 import com.seven.marketclip.image.repository.GoodsImageRepository;
-import com.seven.marketclip.goods.domain.Goods;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,14 +77,6 @@ public class ImageService {
     public void deleteAccountImage(Long accountId) {
         AccountImage accountImage = findAccountImage(accountId);
         accountImage.updateUrl("default");
-    }
-
-    public List<String> findUnusedImages(){
-        return goodsImageRepository.findAllByGoodsIdIsNull();
-    }
-
-    public void deleteUnusedImages(){
-        goodsImageRepository.deleteAllByGoodsIdIsNull(LocalDateTime.now().minusMinutes(20));
     }
 
 }
