@@ -3,6 +3,7 @@ package com.seven.marketclip.goods.controller;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.dto.OrderByDTO;
+import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.service.GoodsService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import io.swagger.annotations.Api;
@@ -68,13 +69,13 @@ public class GoodsController {
 
     @ApiOperation(value = "내가 쓴 게시글 조회", notes = "내가 쓴 게시글을 조회하는 api / 페이징")
     @PostMapping("/my-page")
-    public ResponseEntity<HttpResponse> myGoodsList(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault final Pageable pageable) {
-        return HttpResponse.toResponseEntity(goodsService.findMyGoods(userDetails, pageable));
+    public ResponseEntity<HttpResponse> myGoodsList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("goodsStatus") GoodsStatus goodsStatus, @PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.findMyGoods(userDetails, goodsStatus, pageable));
     }
 
     @ApiOperation(value = "내가 즐겨찾기 한 게시글 보기", notes = "내가 즐겨찾기 한 게시글 보기 api / 페이징")
     @PostMapping("/my-wish")
-    public ResponseEntity<HttpResponse> myWishFind(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PageableDefault final Pageable pageable) {
+    public ResponseEntity<HttpResponse> myWishFind(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault final Pageable pageable) {
         return HttpResponse.toResponseEntity(goodsService.findMyWish(userDetails, pageable));
     }
 
