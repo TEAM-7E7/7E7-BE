@@ -1,44 +1,63 @@
 package com.seven.marketclip.chat.service;
 
 
+import com.seven.marketclip.account.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
+import com.seven.marketclip.chat.domain.ChatRoom;
+import com.seven.marketclip.chat.dto.ChatMessageReq;
+import com.seven.marketclip.chat.dto.ChatMessagesDto;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ChatMessageService {
-
     private final ChatMessageRepository chatMessageRepository;
-
     @Transactional
-    public String saveChatMessage(ChatMessages messages) {
-            
-        ChatMessages cr = ChatMessages.builder()
-                .chatRoomId(messages.getChatRoomId())
-//                .senderId(messages.getSenderId())
-                .senderId(1L)
+    public String saveChatMessage(ChatMessageReq messages) {
+        ChatMessages cm = ChatMessages.builder()
+                .chatRoomId(ChatRoom.builder()
+                        .id(messages.getChatRoomId())
+                        .build())
+                .senderId(Account.builder()
+                        .id(messages.getSenderId())
+                        .build())
                 .message(messages.getMessage())
                 .createdAt(messages.getCreatedAt())
                 .build();
-        chatMessageRepository.save(cr);
-        return "성공이유";
+        chatMessageRepository.save(cm);
+        return "";
+    }
+    @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
+    public List<ChatMessagesDto> messageList(Long roomId,Long loginId) {      //전체 메시지 불러오기
+        modifyCheckRead(roomId, loginId);
+        List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(roomId);
+        List<ChatMessagesDto> result = chatMessagesList.stream()
+                .map(r -> new ChatMessagesDto(r))
+                .collect(Collectors.toList());
+        return result;
     }
     @Transactional
-    public List<ChatMessages> messageList(Long partnerId){
-        List<ChatMessages> li = chatMessageRepository.findAllBySenderIdAndCheckRead(partnerId, false);
-        for (ChatMessages cm:li) {
-            cm.readMessage();
+    public Long findCheckReadCnt(Long chatRoomId, Long partnerId){   // 안읽은 메시지 가져오기
+        return chatMessageRepository.countBySenderIdAndChatRoomIdAndCheckRead(chatRoomId, partnerId, false);
+    }
+    @Transactional
+    public ChatMessages findLastMessage(Long chatRoomId){       //마지막 채팅내용
+        Optional<ChatMessages> ms = chatMessageRepository.latestMessage(chatRoomId);
+        if(ms.isEmpty()){
+            return null;
         }
-        return chatMessageRepository.
-                findAllBySenderIdOrSenderIdOrderByCreatedAtDesc(partnerId, partnerId);//수정 필요 partnerId
+        return ms.get();
     }
     @Transactional
-    public Long findReadOrNot(Long partnerId){
-        return chatMessageRepository.countBySenderIdAndCheckRead(partnerId, false);
+    public void modifyCheckRead(Long chatRoomId, Long loginId){
+        chatMessageRepository.checkReadFlipOver(chatRoomId, loginId);
     }
+
 }

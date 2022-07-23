@@ -9,13 +9,15 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 public class ChatMessageReq {
+    //상품 ID
+    private Long goodsId;
     //채팅방 ID
     private Long chatRoomId;
     //보낸 사람
     private Long senderId;
     //내용
     private String message;
-    private boolean read;
+    private boolean checkRead;
     //날짜(정렬 기준)
     private Date createdAt;
 }
