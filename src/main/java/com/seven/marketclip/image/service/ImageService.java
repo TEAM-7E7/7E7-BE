@@ -42,23 +42,33 @@ public class ImageService {
 
     @Transactional
     public void updateGoodsImageList(List<Long> idList, Goods goods, Account account) throws CustomException {
+        List<GoodsImage> goodsImages = new ArrayList<>();
         for (int i = 0; i < idList.size(); i++) {
             GoodsImage goodsImage = goodsImageRepository.findById(idList.get(i)).orElseThrow(
                     () -> new CustomException(GOODS_IMAGE_NOT_FOUND)
             );
             if (goodsImage.getAccount().getId() != account.getId()) {
                 throw new CustomException(INVALID_IMAGE_ACCESS);
-            } else if (goodsImage.getGoods() != null) {
+            } else if (goodsImage.getGoods() != null && goodsImage.getGoods() != goods) {
                 throw new CustomException(DUPLICATED_IMAGE_REQ);
             }
+            goodsImages.add(goodsImage);
+        }
+        softDeleteGoods(goods.getId());
 
-            goodsImage.updateSequence(i + 1);
+        for (int i = 0; i < idList.size(); i++) {
+            GoodsImage goodsImage = goodsImages.get(i);
             goodsImage.updateGoods(goods);
+            goodsImage.updateSequence(i + 1);
         }
     }
 
-    public void deleteGoodsImages(Long goodsId) {
-        goodsImageRepository.deleteAllByGoodsId(goodsId);
+    @Transactional
+    public void softDeleteGoods(Long goodsId) {
+        List<GoodsImage> goodsImages = goodsImageRepository.findAllByGoodsId(goodsId);
+        for (GoodsImage goodsImage : goodsImages) {
+            goodsImage.softDeleteGoods();
+        }
     }
 
     public AccountImage findAccountImage(Long accountId) throws CustomException {
