@@ -99,11 +99,6 @@ public class EmailService {
         }
     }
 
-    @Transactional
-    public void clearanceEmail() {
-        emailRepository.deleteAllByExpireDateBefore(LocalDateTime.now());
-    }
-
     public void sendEmail(String email, String emailToken) {
         SimpleMailMessage simpleMessage = new SimpleMailMessage();
         simpleMessage.setTo(email);

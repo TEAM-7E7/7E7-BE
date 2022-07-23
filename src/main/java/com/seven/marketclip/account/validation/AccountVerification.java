@@ -22,7 +22,7 @@ public class AccountVerification {
         );
     }
 
-    //이미지 중복 체크
+    //이메일 중복 체크
     public void checkVerificationEmail(String email) throws CustomException {
         if(!accountRepository.existsByEmail(email)){
             throw new CustomException(VERIFICATION_EMAIL);
