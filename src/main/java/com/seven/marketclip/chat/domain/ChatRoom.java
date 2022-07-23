@@ -29,7 +29,8 @@ public class ChatRoom implements Serializable{
     @CreatedDate // 생성일자임을 나타냅니다. 프론트에서 생성하는 경우 제거
     private LocalDateTime createdAt;
     @Builder
-    public ChatRoom(Goods goods, Account account){
+    public ChatRoom(Long id, Goods goods, Account account){
+        this.id = id;
         this.goods = goods;
         this.account = account;
     }

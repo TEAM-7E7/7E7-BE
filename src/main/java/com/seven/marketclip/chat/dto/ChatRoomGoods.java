@@ -37,16 +37,16 @@ public class ChatRoomGoods {
         Account buyer = chatRoom.getAccount();
         this.chatRoomId = chatRoom.getId();
         this.goodsId = goods.getId();
-        this.goodsFileUrl = goods.getFilesList().get(1).getFileUrl(); // 사진 없을때 예외처리
+        this.goodsFileUrl = goods.getGoodsImages().get(0).getImageUrl(); // 사진 없을때 예외처리
         this.lastMessage = chatMessages.getMessage();
         this.lastDate = chatMessages.getCreatedAt();
         this.checkReadCnt = checkReadCnt;
         if(buyer.getId() != loginId){                 //대화 상대 구분
             this.partner = buyer.getNickname();
-            this.partnerProfileUrl = buyer.getProfileImgUrl();
+            this.partnerProfileUrl = buyer.getProfileImgUrl().getImageUrl();
         }else{
             this.partner = goods.getAccount().getNickname();
-            this.partnerProfileUrl = goods.getAccount().getProfileImgUrl();
+            this.partnerProfileUrl = goods.getAccount().getProfileImgUrl().getImageUrl();
         }
 
     }
