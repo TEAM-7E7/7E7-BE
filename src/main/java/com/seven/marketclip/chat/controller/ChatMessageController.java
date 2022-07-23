@@ -26,9 +26,9 @@ public class ChatMessageController {
     private final RedisPublisher redisPublisher;
 
     @MessageMapping("/chat/first-message")       // 첫 번째 메세지 전송
-    public void firstMessage(ChatMessageReq message, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if(!chatRoomService.findChatRoom(message.getGoodsId(), userDetails.getId())){
-            chatRoomService.saveChatRoom(message.getGoodsId(), userDetails.getId());
+    public void firstMessage(ChatMessageReq message) {
+        if(!chatRoomService.findChatRoom(message.getGoodsId(), message.getSenderId())){
+            chatRoomService.saveChatRoom(message.getGoodsId(), message.getSenderId());
         }
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
