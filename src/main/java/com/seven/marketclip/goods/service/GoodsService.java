@@ -120,9 +120,7 @@ public class GoodsService {
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
-        List<Long> idList = goodsReqDTO.getFileIdList();
-        imageService.deleteGoodsImages(goodsId);
-        imageService.updateGoodsImageList(idList, goods, detailsAccount);
+        imageService.updateGoodsImageList(goodsReqDTO.getFileIdList(), goods, detailsAccount);
         goods.update(goodsReqDTO);
         return SUCCESS;
     }

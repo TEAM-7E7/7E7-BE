@@ -36,7 +36,7 @@ public class GoodsImage {
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsImage(Account account, Goods goods, String imageUrl, int sequence){
+    public GoodsImage(Account account, Goods goods, String imageUrl, int sequence) {
         this.account = account;
         this.goods = goods;
         this.imageUrl = imageUrl;
@@ -44,12 +44,16 @@ public class GoodsImage {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void updateSequence(int sequence){
-        this.sequence = sequence;
+    public void softDeleteGoods() {
+        this.goods = null;
     }
 
-    public void updateGoods(Goods goods){
+    public void updateGoods(Goods goods) {
         this.goods = goods;
+    }
+
+    public void updateSequence(int sequence) {
+        this.sequence = sequence;
     }
 
 }

@@ -31,7 +31,7 @@ public class GoodsQueryRep {
         List<GoodsCategory> goodsCategories = orderByDTO.getGoodsCategoryList();
         GoodsOrderBy goodsOrderBy = orderByDTO.getGoodsOrderBy();
 
-        List<Goods> queryResult = null;
+        List<Goods> queryResult;
         int count;
 
         if (goodsOrderBy == ORDER_BY_WISHLIST_COUNT) {
@@ -71,7 +71,6 @@ public class GoodsQueryRep {
         }
 
         return new PageImpl<>(queryResult, pageable, count);
-
     }
 
     private BooleanExpression categoriesToExpression(List<GoodsCategory> goodsCategories) {
