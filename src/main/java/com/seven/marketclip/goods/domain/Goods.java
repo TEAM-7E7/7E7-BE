@@ -75,4 +75,6 @@ public class Goods extends Timestamped {
         this.category = goodsReqDTO.getCategory();
     }
 
+
+
 }
