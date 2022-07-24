@@ -41,28 +41,25 @@ public class GoodsTitleResDTO {
     }
 
     public GoodsTitleResDTO(Goods goods) {
-        String goodsFirstImageUrl;
-        if(goods.getGoodsImages().isEmpty()){
-            goodsFirstImageUrl = null;
-        } else {
-            goodsFirstImageUrl = goods.getGoodsImages().get(0).getImageUrl();
-        }
         this.id = goods.getId();
         this.nickname = goods.getAccount().getNickname();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.createdAt = goods.getCreatedAt();
-        this.goodsImageUrl = goodsFirstImageUrl;
         this.viewCount = goods.getViewCount();
         this.sellPrice = goods.getSellPrice();
         this.status = goods.getStatus();
     }
 
-    public void setAccountImageUrl(String accountImageUrl){
+    public void setGoodsImageUrl(String goodsFirstImageUrl){
+        this.goodsImageUrl = goodsFirstImageUrl;
+    }
+
+    public void setAccountImageUrl(String accountImageUrl) {
         this.accountImageUrl = accountImageUrl;
     }
 
-    public void setWishIds(List<Long> wishIds){
+    public void setWishIds(List<Long> wishIds) {
         this.wishIds = wishIds;
     }
 

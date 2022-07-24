@@ -14,4 +14,9 @@ public interface GoodsImageRepository extends JpaRepository<GoodsImage, Long> {
     @Query(value = "SELECT gi FROM GoodsImage gi where gi.goods is null and gi.createdAt < :localtime")
     List<GoodsImage> findAllByGoodsIdIsNull(@Param("localtime") LocalDateTime localDateTime);
 
+    @Query(value = "SELECT gi FROM GoodsImage gi where gi.goods.id = :goodsId and gi.sequence = 1")
+    GoodsImage findFirstByGoodsId(Long goodsId);
+
+    @Query(value = "SELECT gi FROM GoodsImage gi where gi.goods.id = :goodsId order by gi.sequence asc ")
+    List<GoodsImage> findAllByGoodsIdSequence(Long goodsId);
 }

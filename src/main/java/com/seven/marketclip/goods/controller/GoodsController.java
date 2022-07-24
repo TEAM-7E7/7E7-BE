@@ -30,7 +30,7 @@ public class GoodsController {
         this.goodsService = goodsService;
     }
 
-    // 게시글 전체 조회 -> 정렬 => 생성일자 내림차순
+    // 게시글 전체 조회 -> 동적 쿼리
     @ApiOperation(value = "게시글 전체 조회", notes = "상세설명을 제외하고, 첫 번째 사진(대문 사진)만을 포함한 물품 데이터 / 페이징")
     @PostMapping("/dynamic-paging")
     public ResponseEntity<HttpResponse> goodsPaging(@RequestBody OrderByDTO orderByDTO, @PageableDefault final Pageable pageable) {
