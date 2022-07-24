@@ -2,20 +2,21 @@ package com.seven.marketclip.scheduler;
 
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
-import com.seven.marketclip.email.EmailService;
+import com.seven.marketclip.email.EmailRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
 @Component
 public class Scheduler {
 
-    private final EmailService emailService;
+    private final EmailRepository emailRepository;
     private final FileCloudService fileCloudService;
 
-    public Scheduler(EmailService emailService, S3CloudServiceImpl s3CloudService){
-        this.emailService = emailService;
+    public Scheduler(EmailRepository emailRepository, S3CloudServiceImpl s3CloudService){
+        this.emailRepository = emailRepository;
         this.fileCloudService = s3CloudService;
     }
 
@@ -23,7 +24,7 @@ public class Scheduler {
     @Scheduled(cron = "0 0 0/2 * * *")
     @Transactional
     public void emailClearance() {
-        emailService.clearanceEmail();
+        emailRepository.deleteAllByExpireDateBefore(LocalDateTime.now());
     }
 
     // 매일 새벽 2시

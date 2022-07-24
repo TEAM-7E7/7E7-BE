@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "email_validation")
+@Entity(name = "email_verification")
 @Getter
 @NoArgsConstructor
 public class Email {
