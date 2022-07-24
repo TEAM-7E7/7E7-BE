@@ -47,32 +47,34 @@ public class GoodsResDTO {
     }
 
     public GoodsResDTO(Goods goods) {
-        List<Map<String, Object>> imageMapList = new ArrayList<>();
-        for(GoodsImage goodsImage : goods.getGoodsImages()){
-            Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("id",goodsImage.getId());
-            tempMap.put("url",goodsImage.getImageUrl());
-
-            imageMapList.add(tempMap);
-        }
-
         this.id = goods.getId();
         this.nickname = goods.getAccount().getNickname();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.description = goods.getDescription();
         this.createdAt = goods.getCreatedAt();
-        this.imageMapList = imageMapList;
         this.viewCount = goods.getViewCount();
         this.sellPrice = goods.getSellPrice();
         this.status = goods.getStatus();
     }
 
-    public void setAccountImageUrl(String accountImageUrl){
+    public void setImageMapList(List<GoodsImage> goodsImages) {
+        List<Map<String, Object>> imageMapList = new ArrayList<>();
+        for (GoodsImage goodsImage : goodsImages) {
+            Map<String, Object> tempMap = new HashMap<>();
+            tempMap.put("id", goodsImage.getId());
+            tempMap.put("url", goodsImage.getImageUrl());
+
+            imageMapList.add(tempMap);
+        }
+        this.imageMapList = imageMapList;
+    }
+
+    public void setAccountImageUrl(String accountImageUrl) {
         this.accountImageUrl = accountImageUrl;
     }
 
-    public void setWishIds(List<Long> wishIds){
+    public void setWishIds(List<Long> wishIds) {
         this.wishIds = wishIds;
     }
 

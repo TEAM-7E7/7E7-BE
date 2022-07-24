@@ -15,6 +15,7 @@ import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsQueryRep;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.image.domain.GoodsImage;
+import com.seven.marketclip.image.repository.GoodsImageRepository;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
@@ -38,15 +39,18 @@ public class GoodsService {
     private final ImageService imageService;
     private final WishService wishService;
     private final GoodsQueryRep goodsQueryRep;
+    private final GoodsImageRepository goodsImageRepository;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishService wishService, GoodsQueryRep goodsQueryRep) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishService wishService, GoodsQueryRep goodsQueryRep, GoodsImageRepository goodsImageRepository) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
         this.wishService = wishService;
         this.goodsQueryRep = goodsQueryRep;
+        this.goodsImageRepository = goodsImageRepository;
     }
 
+    // 게시글 전체 조회 -> 동적 쿼리
     public DataResponseCode pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
         Page<Goods> goodsPage = goodsQueryRep.pagingGoods(orderByDTO, pageable);
 
@@ -70,7 +74,6 @@ public class GoodsService {
 
             idUrlMapList.add(tempMap);
         }
-
         return new DataResponseCode(SUCCESS, idUrlMapList);
     }
 
@@ -99,6 +102,7 @@ public class GoodsService {
 
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
+        goodsResDTO.setImageMapList(goodsImageRepository.findAllByGoodsIdSequence(goodsId));
         goodsResDTO.setWishIds(wishService.goodsWishLists(goodsId));
         goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
         return new DataResponseCode(SUCCESS, goodsResDTO);
@@ -169,6 +173,7 @@ public class GoodsService {
 
         for (Goods goods : goodsList) {
             GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
+            goodsTitleResDTO.setGoodsImageUrl(goodsImageRepository.findFirstByGoodsId(goods.getId()).getImageUrl());
             goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
             goodsTitleResDTO.setWishIds(wishService.goodsWishLists(goods.getId()));
             goodsTitleResDTOList.add(goodsTitleResDTO);
