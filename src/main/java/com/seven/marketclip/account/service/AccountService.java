@@ -116,10 +116,12 @@ public class AccountService {
     public ResponseCode profileImgDelete(Long accountId) throws CustomException {
         AccountImage accountImage = imageService.findAccountImage(accountId);
 
-        if (!accountImage.getImageUrl().equals("default")) {
-            imageService.deleteAccountImage(accountId);
-            fileCloudService.deleteFile(accountImage.getImageUrl());
+        if (accountImage.getImageUrl().equals("default")) {
+            throw new CustomException(ACCOUNT_IMAGE_NOT_FOUND);
         }
+        fileCloudService.deleteFile(accountImage.getImageUrl());
+        imageService.deleteAccountImage(accountId);
+
         return SUCCESS;
     }
 
@@ -151,7 +153,7 @@ public class AccountService {
     }
 
     //리프레쉬 토큰 재발급
-    public ResponseCode reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    public ResponseCode reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String refresh = request.getHeader("X-REFRESH-TOKEN");
         System.out.println("dasasffffffffffffffffffff");
         if (refresh == null) {
@@ -175,12 +177,11 @@ public class AccountService {
                 .require(algorithm)
                 .build();
 
-        try{
+        try {
             jwt = verifier.verify(refresh);
-        }catch (Exception e){
+        } catch (Exception e) {
             return REFRESH_TOKEN_VERIFY;
         }
-
 
 
         Date expiredDate = jwt
@@ -198,7 +199,7 @@ public class AccountService {
                 .asLong();
 
         Optional<Account> accounts = accountRepository.findById(id);
-        if(accounts.isEmpty()){
+        if (accounts.isEmpty()) {
             return REFRESH_TOKEN_ID_NOT_EXIST;
         }
         Account account = accounts.get();

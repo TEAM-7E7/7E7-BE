@@ -84,6 +84,7 @@ public class ImageService {
                 .build());
     }
 
+    @Transactional
     public void deleteAccountImage(Long accountId) {
         AccountImage accountImage = findAccountImage(accountId);
         accountImage.updateUrl("default");

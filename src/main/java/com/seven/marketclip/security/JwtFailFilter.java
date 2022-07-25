@@ -15,7 +15,7 @@ import java.io.IOException;
 public class JwtFailFilter implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        System.out.println("진입 성공");
+//        System.out.println("진입 성공");
         response.setCharacterEncoding("utf-8");
         response.setStatus(400);
         response.getWriter().print("JWT 문제 생김");

@@ -32,8 +32,9 @@ public class Account extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "account")
-//    @JoinColumn(name = "profile_image")
+
+    @OneToOne(mappedBy = "account", orphanRemoval = true)
+    @JoinColumn(name = "profile_image")
     private AccountImage profileImgUrl;
 
     @Column(nullable = false)

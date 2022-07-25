@@ -1,6 +1,5 @@
 package com.seven.marketclip.email;
 
-import com.seven.marketclip.account.Account;
 import com.seven.marketclip.account.AccountRepository;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
@@ -50,9 +49,8 @@ public class EmailService {
         String receivedEmail = emailDTO.getEmail();
         String receivedToken = emailDTO.getEmailToken();
         Optional<Email> emailOpt = emailRepository.findByUserEmail(receivedEmail);
-        Optional<Account> accountOpt = accountRepository.findByEmail(receivedEmail);
 
-        if (accountOpt.isPresent()) {
+        if (accountRepository.findByEmail(receivedEmail).isPresent()) {
             throw new CustomException(USER_ALREADY_EXISTS);
         }
 
