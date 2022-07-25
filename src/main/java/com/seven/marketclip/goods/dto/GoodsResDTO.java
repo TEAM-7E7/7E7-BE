@@ -20,6 +20,7 @@ public class GoodsResDTO {
     private Long id;
     private Integer viewCount;
     private List<Long> wishIds;
+    private Long accountId;
     private String nickname;
     private String accountImageUrl;
     private String title;
@@ -31,10 +32,11 @@ public class GoodsResDTO {
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsResDTO(Long id, Integer viewCount, List<Long> wishIds, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<Map<String, Object>> imageMapList, GoodsStatus status, LocalDateTime createdAt) {
+    public GoodsResDTO(Long id, Integer viewCount, List<Long> wishIds, Long accountId, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<Map<String, Object>> imageMapList, GoodsStatus status, LocalDateTime createdAt) {
         this.id = id;
         this.viewCount = viewCount;
         this.wishIds = wishIds;
+        this.accountId = accountId;
         this.nickname = nickname;
         this.accountImageUrl = accountImageUrl;
         this.title = title;
@@ -49,6 +51,7 @@ public class GoodsResDTO {
     public GoodsResDTO(Goods goods) {
         this.id = goods.getId();
         this.nickname = goods.getAccount().getNickname();
+        this.accountId = goods.getAccount().getId();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
         this.description = goods.getDescription();
