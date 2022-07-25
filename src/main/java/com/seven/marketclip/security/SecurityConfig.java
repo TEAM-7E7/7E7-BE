@@ -188,7 +188,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
         // 회원 관리 API 허용
         skipPathList.add("GET,/api/user/refresh-re");
-        skipPathList.add("GET,/api/goods");
+        skipPathList.add("GET,/api/goods/details/**");
         skipPathList.add("POST,/api/goods/dynamic-paging");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/user/sign-up");
