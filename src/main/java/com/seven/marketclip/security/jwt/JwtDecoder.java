@@ -38,7 +38,7 @@ public class JwtDecoder {
         Long userid = decodedJWT
                 .getClaim(CLAIM_USER_ID)
                 .asLong();
-        System.out.println("Long 파서:" + userid);
+//        System.out.println("Long 파서:" + userid);
 
         return userid;
     }
@@ -58,9 +58,9 @@ public class JwtDecoder {
         }
 
         String userImg = decodedJWT
-                .getClaim(CLAIM_USER_PROFILEIMG)
+                .getClaim(CLAIM_USER_PROFILE_IMG)
                 .asString();
-        System.out.println("Long 파서:" + userImg);
+//        System.out.println("Long 파서:" + userImg);
 
         return userImg;
     }

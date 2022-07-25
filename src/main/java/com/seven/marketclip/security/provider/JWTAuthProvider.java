@@ -22,7 +22,7 @@ public class JWTAuthProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        System.out.println("전체필터 3");
+//        System.out.println("전체필터 3");
         String token = (String) authentication.getPrincipal();
 
         Long id = jwtDecoder.decodeUserId(token);
@@ -39,7 +39,7 @@ public class JWTAuthProvider implements AuthenticationProvider {
                 .role(role)
                 .build();
 
-        System.out.println("전체필터 4");
+//        System.out.println("전체필터 4");
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
