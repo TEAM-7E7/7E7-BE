@@ -23,7 +23,7 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        System.out.println("로그인 필터 1");
+//        System.out.println("로그인 필터 1");
 
 //         SecurityContextHolder.getContext().getAuthentication().getPrincipal()
 
@@ -39,7 +39,7 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
         }
 
         setDetails(request, authRequest);
-        System.out.println("로그인 필터 2");
+//        System.out.println("로그인 필터 2");
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 }

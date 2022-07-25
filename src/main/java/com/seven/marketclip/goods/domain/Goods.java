@@ -26,7 +26,7 @@ public class Goods extends Timestamped {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @Column(nullable = false, length = 25)
+    @Column(nullable = false, length = 20)
     private String title;//제목
 
     @Column(nullable = false)
