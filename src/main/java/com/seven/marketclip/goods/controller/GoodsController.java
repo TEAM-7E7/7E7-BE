@@ -68,13 +68,13 @@ public class GoodsController {
     }
 
     @ApiOperation(value = "내가 쓴 게시글 조회", notes = "내가 쓴 게시글을 조회하는 api / 페이징")
-    @PostMapping("/my-page")
+    @GetMapping("/my-page")
     public ResponseEntity<HttpResponse> myGoodsList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("goodsStatus") GoodsStatus goodsStatus, @PageableDefault final Pageable pageable) {
         return HttpResponse.toResponseEntity(goodsService.findMyGoods(userDetails, goodsStatus, pageable));
     }
 
     @ApiOperation(value = "내가 즐겨찾기 한 게시글 보기", notes = "내가 즐겨찾기 한 게시글 보기 api / 페이징")
-    @PostMapping("/my-wish")
+    @GetMapping("/my-wish")
     public ResponseEntity<HttpResponse> myWishFind(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault final Pageable pageable) {
         return HttpResponse.toResponseEntity(goodsService.findMyWish(userDetails, pageable));
     }
