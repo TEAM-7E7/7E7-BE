@@ -54,7 +54,7 @@ public final class JwtTokenUtils {
 
         try {
             token = JWT.create()
-                    .withIssuer("sparta")
+                    .withIssuer("market_clip")
                     .withClaim(CLAIM_USER_ID, userDetails.getId())
                     .withClaim(CLAIM_USER_NAME, userDetails.getNickname())
                     .withClaim(CLAIM_USER_EMAIL, userDetails.getUsername())

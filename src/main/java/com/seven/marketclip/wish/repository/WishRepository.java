@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface WishRepository extends JpaRepository<Wish, Long> {
     List<Wish> findAllByGoodsId(Long goodsId);
 
-    @Query(value = "select g.account_id from goods as g right join wish_lists as wl on g.id = wl.goods_id where g.id = :goodsId", nativeQuery = true)
+    @Query(value = "select wl.account_id from goods as g right join wish_lists as wl on g.id = wl.goods_id where g.id = :goodsId", nativeQuery = true)
     List<Long> findAllAccountIdByGoodsId(Long goodsId);
 
     Optional<Wish> findByGoodsAndAccount(Goods goods, Account account);

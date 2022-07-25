@@ -127,8 +127,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO mvcMatchers 하고 authorizatino 차이
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/goods/**").permitAll()
-                .antMatchers("/", "/api/user/sign-up", "/api/refresh-re", "/api/email-validation", "/api/user/nickname-check", "api/goods/favorite", "api/goods/dynamic-paging").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/goods").permitAll()
+                .antMatchers("/api/user/sign-up", "/api/user/refresh-re", "/api/email-validation", "/api/user/nickname-check", "api/goods/dynamic-paging").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager", "/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
@@ -185,31 +185,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/images/**");
         skipPathList.add("GET,/css/**");
 
-
-//        // 테스트용
-//        skipPathList.add("GET,/**");
-//        skipPathList.add("POST,/**");
-//        skipPathList.add("PUT,/**");
-//        skipPathList.add("DELETE,/**");
-
-
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
         // 회원 관리 API 허용
-        skipPathList.add("GET,https://marketclip.kr");
-        skipPathList.add("GET,/");
         skipPathList.add("GET,/api/user/refresh-re");
         skipPathList.add("GET,/api/goods");
-        skipPathList.add("GET,/api/goods/**");
-        skipPathList.add("GET,/api/goods/favorite");
         skipPathList.add("POST,/api/goods/dynamic-paging");
-        skipPathList.add("POST,/api/refresh-re");
         skipPathList.add("POST,/api/email-validation");
         skipPathList.add("POST,/api/user/sign-up");
         skipPathList.add("POST,/api/user/nickname-check");
-
-        // h2-console 허용
-        skipPathList.add("GET,/h2-console/**");
-        skipPathList.add("POST,/h2-console/**");
 
         //소셜 콜백 주소
         //KAKAO
