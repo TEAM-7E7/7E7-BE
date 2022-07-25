@@ -25,6 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println("로그인 필터 4");
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Can't find " + email));
+
         System.out.println("우리가 쓴 패스워드 : " +account.getPassword());
         System.out.println("로그인 필터 5");
 
