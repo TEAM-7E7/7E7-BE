@@ -1,3 +1,4 @@
+/*
 package com.seven.marketclip.security.filter;
 
 import com.auth0.jwt.JWT;
@@ -42,7 +43,7 @@ public class RefreshFilter implements Filter {
     @Transactional
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("리프레쉬 토큰 필터");
+//        System.out.println("리프레쉬 토큰 필터");
 
         //헤더에 토큰이 잇는지 확인.
         final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
@@ -52,15 +53,15 @@ public class RefreshFilter implements Filter {
         if (refresh == null) {
             httpServletResponse.getWriter().println("RefreshFilter-Refresh-No_Header");
             httpServletResponse.setStatus(400);
-            System.out.println("헤더가 없음");
+//            System.out.println("헤더가 없음");
             throw new IllegalArgumentException("리프레쉬 토큰 - 헤더가 존재하지 않습니다.");
         }
 
         //TODO Decoder에 있는거 같은 함수로 빼기
         //올바른 토큰인지 확인
         refresh = headerTokenExtractor.extract(refresh, httpServletRequest, httpServletResponse);
-        System.out.println("리프레쉬 토큰 확인");
-        System.out.println("헤더에서 받은 jwt 확인 " + refresh);
+//        System.out.println("리프레쉬 토큰 확인");
+//        System.out.println("헤더에서 받은 jwt 확인 " + refresh);
 
 
         //만료된 토큰인지 확인 -> JWT필터에서도 해줘야함.
@@ -104,7 +105,7 @@ public class RefreshFilter implements Filter {
             throw new IllegalArgumentException("리프레쉬 토큰 - 데이터 베이스에 없음.");
         }
 
-        System.out.println("유저 디테일스 : " + account.getProfileImgUrl().getImageUrl());
+//        System.out.println("유저 디테일스 : " + account.getProfileImgUrl().getImageUrl());
 
         UserDetailsImpl userDetails = UserDetailsImpl.builder()
                 .id(account.getId())
@@ -122,8 +123,8 @@ public class RefreshFilter implements Filter {
 
         httpServletResponse.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceJWT);
         httpServletResponse.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceRefreshToken);
-        System.out.println("리프레시 필터 끝");
+//        System.out.println("리프레시 필터 끝");
 
     }
 
-}
+}*/
