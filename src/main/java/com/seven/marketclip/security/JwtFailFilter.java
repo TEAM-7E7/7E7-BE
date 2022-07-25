@@ -15,9 +15,6 @@ import java.io.IOException;
 public class JwtFailFilter implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        response.setCharacterEncoding("utf-8");
-        response.setStatus(400);
-        response.getWriter().print("JWT 문제 생김");
 
         if(exception.getMessage().equals("AccessToken - No Header")){
             response.getWriter().print("AccessToken - No Header");

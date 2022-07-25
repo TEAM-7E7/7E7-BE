@@ -81,7 +81,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
             Date nows = new Date();
             if (expiredDates.before(nows)) {
-                throw new AuthenticationException("JWT 필터 - JWT 토큰 만료됨."){};
+                throw new AuthenticationException("JwtAuthFilter-Access-expired"){};
             }
         JwtPreProcessingToken jwtTokens = new JwtPreProcessingToken(extractor.extract(authorization, request, response));
 
@@ -110,7 +110,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         if (!accountRepository.existsByRefreshToken(refresh)) {
 //            System.out.println(refresh);
 //            System.out.println("RefreshToken - Not ExistDB");
-            throw new AuthenticationException("리프레쉬 토큰 - 데이터 베이스에 없음.") {};
+            throw new AuthenticationException("JwtAuthFilter-Refresh-Not_existDB") {};
         }
 
 //        System.out.println("전체필터 2");
