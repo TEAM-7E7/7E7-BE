@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ChatMessageInfo {
-    Long roomId;
+    String roomId;
     Long partnerId;
 }

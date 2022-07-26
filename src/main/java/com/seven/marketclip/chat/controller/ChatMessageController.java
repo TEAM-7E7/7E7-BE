@@ -24,15 +24,15 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final RedisPublisher redisPublisher;
 
-    @MessageMapping("/chat/first-message")       // 첫 번째 메세지 전송
-    public Long firstMessage(ChatMessageReq message) {
-        Long chatRoomId = null;
-        if(!chatRoomService.findChatRoom(message.getGoodsId(), message.getSenderId())){
-            chatRoomId = chatRoomService.saveChatRoom(message.getGoodsId(), message.getSenderId());
-        }
-        redisPublisher.publish(chatRoomService.getTopic(chatRoomId), message);
-        return chatRoomId;
-    }
+//    @MessageMapping("/chat/first-message")       // 첫 번째 메세지 전송
+//    public String firstMessage(ChatMessageReq message) {
+//        String chatRoomId = null;
+//        if(!chatRoomService.findChatRoom(message.getGoodsId(), message.getSenderId())){
+//            chatRoomId = chatRoomService.saveChatRoom(message.getGoodsId(), message.getSenderId());
+//        }
+//        redisPublisher.publish(chatRoomService.getTopic(chatRoomId), message);
+//        return chatRoomId;
+//    }
 
     // websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
     @MessageMapping("/chat/message")            //메세지 전송

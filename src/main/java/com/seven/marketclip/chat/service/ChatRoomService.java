@@ -5,6 +5,7 @@ import com.seven.marketclip.account.Account;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
 import com.seven.marketclip.chat.dto.ChatRoomId;
+import com.seven.marketclip.chat.dto.RoomMake;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
@@ -29,7 +30,7 @@ public class ChatRoomService {
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
-    private Map<Long, ChannelTopic> topics;
+    private Map<String, ChannelTopic> topics;
 
     @PostConstruct
     private void init() {
@@ -37,24 +38,26 @@ public class ChatRoomService {
         topics = new HashMap<>();
     }
     @Transactional      //채팅방 생성
-    public Long saveChatRoom(Long goodsId, Long buyerId) {
+    public String saveChatRoom(RoomMake roomMake, Long loginId) {
         Account ac = Account.builder()
-                .id(buyerId)
+                .id(loginId)
                 .build();
         Goods gd = Goods.builder()
-                .id(goodsId)
+                .id(roomMake.getGoodsId())
                 .build();
         ChatRoom chatRoom = ChatRoom.builder()
+                .id(roomMake.getId())
                 .account(ac)
                 .goods(gd)
+                .createdAt(roomMake.getCreatedAt())
                 .build();
         chatRoomRepository.save(chatRoom);
         enterChatRoom(chatRoom.getId());
         ChatRoomId redisRoom = ChatRoomId.builder()
-                .buyerId(buyerId)
-                .goodsId(goodsId)
+                .buyerId(loginId)
+                .goodsId(roomMake.getGoodsId())
                 .build();
-        opsHashChatRoom.put("CHAT_ROOMS", Long.toString(chatRoom.getId()), redisRoom);
+        opsHashChatRoom.put("CHAT_ROOMS", chatRoom.getId(), redisRoom);
         return chatRoom.getId();
     }
 
@@ -89,7 +92,7 @@ public class ChatRoomService {
                     .chatRoom(room)
                     .chatMessages(chatMessageService.findLastMessage(room.getId()))
                     .loginId(loginId)
-                    .checkReadCnt(chatMessageService.findCheckReadCnt(partnerId, room.getId()))
+                    .checkReadCnt(chatMessageService.findCheckReadCnt(room.getId(), partnerId))
                     .build();
             respRoomList.add(chatRoomGoods);
         }
@@ -105,8 +108,8 @@ public class ChatRoomService {
         return respRoomList;
     }
 
-    public void enterChatRoom(Long roomId) {
-        String parseId = Long.toString(roomId);
+    public void enterChatRoom(String roomId) {
+        String parseId = roomId;
         ChannelTopic topic = topics.get(roomId);
         if (topic == null) {
             topic = new ChannelTopic(parseId);
@@ -115,7 +118,7 @@ public class ChatRoomService {
         }
     }
 
-    public ChannelTopic getTopic(Long roomId) {
+    public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }
 }
