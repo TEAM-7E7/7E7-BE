@@ -10,7 +10,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 public class ChatRoomRes {
-    private Long goodsId;       //다시 받기 위해서 아니? 버튼 눌렀을때 줘야지
+    private Long goodsId;
     private String partner;     //거래 상대
     private String partnerProfileUrl; // 상대 프로필 사진 주소
     private String lastMessage; // 마지막 대화내용

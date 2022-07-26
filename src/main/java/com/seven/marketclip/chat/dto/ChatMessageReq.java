@@ -9,10 +9,11 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 public class ChatMessageReq {
+    private Long partnerId;
     //상품 ID
     private Long goodsId;
     //채팅방 ID
-    private Long chatRoomId;
+    private String chatRoomId;
     //보낸 사람
     private Long senderId;
     //내용

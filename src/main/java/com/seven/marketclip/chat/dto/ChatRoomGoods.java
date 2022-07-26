@@ -21,7 +21,7 @@ public class ChatRoomGoods {
     private String goodsFileUrl;    //상품의 이미지 (대표 사진은 두번째 Url)
 
     //채팅방 정보
-    private Long chatRoomId;
+    private String chatRoomId;
     //채팅방의 메시지
     private String lastMessage;     //마지막 대화 내용
     private Date lastDate;          //마지막 대화 일자
