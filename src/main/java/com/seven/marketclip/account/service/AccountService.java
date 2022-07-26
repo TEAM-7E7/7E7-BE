@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
+import static com.seven.marketclip.image.service.ImageService.DEFAULT_PROFILE_IMAGE;
 import static com.seven.marketclip.security.jwt.JwtTokenUtils.*;
 
 @Service
@@ -60,8 +61,7 @@ public class AccountService {
 
     //닉네임 증복체크
     public ResponseCode checkNickname(String nickname) throws CustomException {
-        Optional<Account> accountOpt = accountRepository.findByNickname(nickname);
-        if (accountOpt.isPresent()) {
+        if (accountRepository.findByNickname(nickname).isPresent()) {
             throw new CustomException(NICKNAME_ALREADY_EXISTS);
         }
         return SUCCESS;
@@ -72,9 +72,11 @@ public class AccountService {
     public ResponseCode addUser(AccountReqDTO accountReqDTO) throws CustomException {
         String encodedPassword = bCryptPasswordEncoder.encode(accountReqDTO.getPassword());
 
-        Optional<Account> accountOpt = accountRepository.findByEmail(accountReqDTO.getEmail());
-        if (accountOpt.isPresent()) {
+        if (accountRepository.findByEmail(accountReqDTO.getEmail()).isPresent()) {
             throw new CustomException(USER_ALREADY_EXISTS);
+        }
+        if (accountRepository.findByNickname(accountReqDTO.getNickname()).isPresent()) {
+            throw new CustomException(NICKNAME_ALREADY_EXISTS);
         }
 
         Account account = Account.builder()
@@ -88,7 +90,7 @@ public class AccountService {
         emailService.checkVerified(accountReqDTO.getEmail());
 
         accountRepository.save(account);
-        imageService.saveAccountImage("default", account);
+        imageService.saveAccountImage(DEFAULT_PROFILE_IMAGE, account);
 
         return SUCCESS;
     }
@@ -102,7 +104,7 @@ public class AccountService {
         idUrlMap.put("url", profileUrl);
 
         AccountImage accountImage = imageService.findAccountImage(accountId);
-        if (accountImage.getImageUrl().equals("default")) {
+        if (accountImage.getImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
             accountImage.updateUrl(profileUrl);
         } else {
             fileCloudService.deleteFile(accountImage.getImageUrl());
@@ -116,7 +118,7 @@ public class AccountService {
     public ResponseCode profileImgDelete(Long accountId) throws CustomException {
         AccountImage accountImage = imageService.findAccountImage(accountId);
 
-        if (accountImage.getImageUrl().equals("default")) {
+        if (accountImage.getImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
             throw new CustomException(ACCOUNT_IMAGE_NOT_FOUND);
         }
         fileCloudService.deleteFile(accountImage.getImageUrl());
