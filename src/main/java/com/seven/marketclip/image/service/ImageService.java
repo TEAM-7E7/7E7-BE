@@ -19,6 +19,7 @@ import static com.seven.marketclip.exception.ResponseCode.*;
 public class ImageService {
     private final GoodsImageRepository goodsImageRepository;
     private final AccountImageRepository accountImageRepository;
+    public static final String DEFAULT_PROFILE_IMAGE = "default";
 
     public ImageService(GoodsImageRepository goodsImageRepository, AccountImageRepository accountImageRepository) {
         this.goodsImageRepository = goodsImageRepository;
@@ -91,7 +92,7 @@ public class ImageService {
     @Transactional
     public void deleteAccountImage(Long accountId) {
         AccountImage accountImage = findAccountImage(accountId);
-        accountImage.updateUrl("default");
+        accountImage.updateUrl(DEFAULT_PROFILE_IMAGE);
     }
 
 }
