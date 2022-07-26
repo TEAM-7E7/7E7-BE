@@ -13,12 +13,12 @@ import java.util.List;
 public class ChatTestController {       //테스트 후 삭제 클래스
     private final ChatRoomService chatRoomService;
 
-    @PostMapping("/room")   //채팅방 만들기 API 1번
+    @PostMapping("/api/room")   //채팅방 만들기 API 1번
     public void chatRoomSave(@RequestBody ChatRoomId req) {
         chatRoomService.saveChatRoom(req.getBuyerId(), req.getGoodsId());
     }
 
-    @GetMapping("/chat-rooms/{id}")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
+    @GetMapping("/api/chat-rooms/{id}")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
     public List<ChatRoomGoods> chatRooms(@PathVariable Long id) {
         return chatRoomService.findChatRooms(id);
     }

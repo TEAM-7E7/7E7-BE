@@ -16,12 +16,12 @@ import java.util.List;
 @RestController
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
-    @DeleteMapping ("/room")
+    @DeleteMapping ("/api/room")
     public void chatRoomRemove(@RequestParam List<Long> chatRoomId){
         chatRoomService.removeChatRoom(chatRoomId);
     }
 
-    @GetMapping("/chat-rooms")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
+    @GetMapping("/api/chat-rooms")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
     public List<ChatRoomGoods> chatRooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return chatRoomService.findChatRooms(userDetails.getId());
     }
