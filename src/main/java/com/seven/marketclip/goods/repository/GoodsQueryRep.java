@@ -35,7 +35,7 @@ public class GoodsQueryRep {
 
         List<Goods> queryResult;
         int count;
-//        QAccount subAccount = new QAccount("subAccount");
+        QAccount subAccount = new QAccount("subAccount");
 
         if (goodsOrderBy == ORDER_BY_WISHLIST_COUNT) {
             queryResult = queryFactory
@@ -62,8 +62,8 @@ public class GoodsQueryRep {
             queryResult = queryFactory
                     .select(goods)
                     .from(goods)
-//                    .leftJoin(goodsImage)
-//                    .on(goods.eq(goodsImage.goods))
+                    .leftJoin(goodsImage)
+                    .on(goods.eq(goodsImage.goods))
                     .where(categoriesToExpression(goodsCategories))
                     .orderBy(orderByToExpression(goodsOrderBy))
                     .offset(pageable.getOffset())

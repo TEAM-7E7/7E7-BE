@@ -4,6 +4,7 @@ import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
+import com.seven.marketclip.wish.domain.Wish;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -49,36 +51,26 @@ public class GoodsResDTO {
     }
 
     public GoodsResDTO(Goods goods) {
-        this.id = goods.getId();
-        this.nickname = goods.getAccount().getNickname();
-        this.accountId = goods.getAccount().getId();
-        this.title = goods.getTitle();
-        this.category = goods.getCategory();
-        this.description = goods.getDescription();
-        this.createdAt = goods.getCreatedAt();
-        this.viewCount = goods.getViewCount();
-        this.sellPrice = goods.getSellPrice();
-        this.status = goods.getStatus();
-    }
-
-    public void setImageMapList(List<GoodsImage> goodsImages) {
         List<Map<String, Object>> mapArrayList = new ArrayList<>();
-        for (GoodsImage goodsImage : goodsImages) {
+        for (GoodsImage goodsImage : goods.getGoodsImages()) {
             Map<String, Object> tempMap = new HashMap<>();
             tempMap.put("id", goodsImage.getId());
             tempMap.put("url", goodsImage.getImageUrl());
 
             mapArrayList.add(tempMap);
         }
+        this.id = goods.getId();
+        this.viewCount = goods.getViewCount();
+        this.wishIds = goods.getWishLists().stream().map(Wish::getId).collect(Collectors.toList());
+        this.nickname = goods.getAccount().getNickname();
+        this.accountImageUrl = goods.getAccount().getProfileImgUrl().getImageUrl();
+        this.title = goods.getTitle();
+        this.category = goods.getCategory();
+        this.description = goods.getDescription();
+        this.sellPrice = goods.getSellPrice();
         this.imageMapList = mapArrayList;
-    }
-
-    public void setAccountImageUrl(String accountImageUrl) {
-        this.accountImageUrl = accountImageUrl;
-    }
-
-    public void setWishIds(List<Long> wishIds) {
-        this.wishIds = wishIds;
+        this.status = goods.getStatus();
+        this.createdAt = goods.getCreatedAt();
     }
 
 }

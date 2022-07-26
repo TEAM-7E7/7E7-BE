@@ -20,7 +20,6 @@ import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.wish.repository.WishRepository;
-import com.seven.marketclip.wish.service.WishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -101,12 +100,8 @@ public class GoodsService {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
-        goodsResDTO.setImageMapList(goodsImageRepository.findAllByGoodsIdSequence(goodsId));
-        goodsResDTO.setWishIds(wishRepository.findAllAccountIdByGoodsId(goodsId));
-        goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
         return new DataResponseCode(SUCCESS, goodsResDTO);
     }
 
@@ -151,9 +146,6 @@ public class GoodsService {
     // 조회수 + 1
     @Transactional
     public void plusView(Long id) throws CustomException {
-        if (!goodsRepository.existsById(id)) {
-            throw new CustomException(GOODS_NOT_FOUND);
-        }
         goodsRepository.updateView(id);
     }
 
@@ -170,16 +162,12 @@ public class GoodsService {
 
     // 페이징된 결과를 response 형식으로 변환
     private Map<String, Object> pageToMap(Page<Goods> goodsList) {
-        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
         Map<String, Object> resultMap = new HashMap<>();
-
+        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
         for (Goods goods : goodsList) {
-            GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
-            goodsTitleResDTO.setGoodsImageUrl(goodsImageRepository.findFirstByGoodsId(goods.getId()).getImageUrl());
-            goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
-            goodsTitleResDTO.setWishIds(wishRepository.findAllAccountIdByGoodsId(goods.getId()));
-            goodsTitleResDTOList.add(goodsTitleResDTO);
+            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
         }
+
         resultMap.put("endPage", goodsList.isLast());
         resultMap.put("goodsList", goodsTitleResDTOList);
         resultMap.put("totalElements", goodsList.getTotalElements());
