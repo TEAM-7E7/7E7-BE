@@ -37,7 +37,7 @@ public class ChatRoomService {
         topics = new HashMap<>();
     }
     @Transactional      //채팅방 생성
-    public void saveChatRoom(Long goodsId, Long buyerId) {
+    public Long saveChatRoom(Long goodsId, Long buyerId) {
         Account ac = Account.builder()
                 .id(buyerId)
                 .build();
@@ -55,6 +55,7 @@ public class ChatRoomService {
                 .goodsId(goodsId)
                 .build();
         opsHashChatRoom.put("CHAT_ROOMS", Long.toString(chatRoom.getId()), redisRoom);
+        return chatRoom.getId();
     }
 
     // 단일 채팅방 조회(채팅방 생성시 로직) API 및 메서드 2번
