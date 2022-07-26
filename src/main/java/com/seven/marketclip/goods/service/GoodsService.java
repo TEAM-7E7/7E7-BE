@@ -15,7 +15,6 @@ import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsQueryRep;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.image.domain.GoodsImage;
-import com.seven.marketclip.image.repository.GoodsImageRepository;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
@@ -39,15 +38,13 @@ public class GoodsService {
     private final ImageService imageService;
     private final WishRepository wishRepository;
     private final GoodsQueryRep goodsQueryRep;
-    private final GoodsImageRepository goodsImageRepository;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep, GoodsImageRepository goodsImageRepository) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
         this.wishRepository = wishRepository;
         this.goodsQueryRep = goodsQueryRep;
-        this.goodsImageRepository = goodsImageRepository;
     }
 
     // 게시글 전체 조회 -> 동적 쿼리
@@ -163,10 +160,7 @@ public class GoodsService {
     // 페이징된 결과를 response 형식으로 변환
     private Map<String, Object> pageToMap(Page<Goods> goodsList) {
         Map<String, Object> resultMap = new HashMap<>();
-        List<GoodsTitleResDTO> goodsTitleResDTOList = new ArrayList<>();
-        for (Goods goods : goodsList) {
-            goodsTitleResDTOList.add(new GoodsTitleResDTO(goods));
-        }
+        List<GoodsTitleResDTO> goodsTitleResDTOList = goodsList.map(GoodsTitleResDTO::new).toList();
 
         resultMap.put("endPage", goodsList.isLast());
         resultMap.put("goodsList", goodsTitleResDTOList);
