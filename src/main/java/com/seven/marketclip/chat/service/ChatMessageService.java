@@ -37,7 +37,8 @@ public class ChatMessageService {
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
     public List<ChatMessagesDto> messageList(Long roomId,Long loginId) {      //전체 메시지 불러오기
         modifyCheckRead(roomId, loginId);
-        List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(roomId);
+        List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
+                                                                        ChatRoom.builder().id(roomId).build());
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());
@@ -45,11 +46,15 @@ public class ChatMessageService {
     }
     @Transactional
     public Long findCheckReadCnt(Long chatRoomId, Long partnerId){   // 안읽은 메시지 가져오기
-        return chatMessageRepository.countBySenderIdAndChatRoomIdAndCheckRead(chatRoomId, partnerId, false);
+        return chatMessageRepository.countByChatRoomIdAndSenderIdAndCheckRead(
+                ChatRoom.builder().id(chatRoomId).build(),
+                Account.builder().id(partnerId).build(),
+                false);
     }
     @Transactional
     public ChatMessages findLastMessage(Long chatRoomId){       //마지막 채팅내용
-        Optional<ChatMessages> ms = chatMessageRepository.latestMessage(chatRoomId);
+        Optional<ChatMessages> ms = chatMessageRepository.latestMessage(
+                ChatRoom.builder().id(chatRoomId).build());
         if(ms.isEmpty()){
             return null;
         }
@@ -57,7 +62,8 @@ public class ChatMessageService {
     }
     @Transactional
     public void modifyCheckRead(Long chatRoomId, Long loginId){
-        chatMessageRepository.checkReadFlipOver(chatRoomId, loginId);
+        chatMessageRepository.checkReadFlipOver(ChatRoom.builder().id(chatRoomId).build(),
+                                                Account.builder().id(loginId).build());
     }
 
 }

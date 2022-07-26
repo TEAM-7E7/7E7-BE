@@ -6,15 +6,17 @@ import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.util.List;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
 public class Account extends Timestamped {
@@ -31,7 +33,6 @@ public class Account extends Timestamped {
 
     @Column(nullable = false)
     private String password;
-
 
     @OneToOne(mappedBy = "account", orphanRemoval = true)
     @JoinColumn(name = "profile_image")
@@ -51,10 +52,12 @@ public class Account extends Timestamped {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @OneToMany(mappedBy = "account")
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Goods> goodsList;
 
-    @OneToMany(mappedBy = "account", orphanRemoval = true)
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Wish> wishLists;
 
     @Builder

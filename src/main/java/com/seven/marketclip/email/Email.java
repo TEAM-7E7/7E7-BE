@@ -1,5 +1,6 @@
 package com.seven.marketclip.email;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "email_verification")
 @Getter
-@NoArgsConstructor
 public class Email {
 
     @Id

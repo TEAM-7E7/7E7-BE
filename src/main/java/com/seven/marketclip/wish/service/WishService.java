@@ -8,13 +8,9 @@ import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.wish.repository.WishRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
-import java.util.List;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 
@@ -52,18 +48,5 @@ public class WishService {
             }
         }
         return SUCCESS;
-    }
-
-    // 내가 즐겨찾기 한 게시글 보기 - GoodsService 에서 호출
-    public Page<Wish> findMyWish(Long accountId, Pageable pageable){
-        return wishRepository.findAllByAccountIdOrderByCreatedAtDesc(accountId, pageable);
-    }
-
-//    public List<Wish> goodsWishLists(Long goodsId) {
-//        return wishRepository.findAllByGoodsId(goodsId);
-//    }
-
-    public List<Long> goodsWishLists(Long goodsId) {
-        return wishRepository.findAllAccountIdByGoodsId(goodsId);
     }
 }

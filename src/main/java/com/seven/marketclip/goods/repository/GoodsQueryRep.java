@@ -47,7 +47,8 @@ public class GoodsQueryRep {
                     .fetch();
 
             count = queryFactory
-                    .selectFrom(goods)
+                    .select(goods.id)
+                    .from(goods)
                     .leftJoin(wish)
                     .on(wish.goods.eq(goods))
                     .where(categoriesToExpression(goodsCategories))
@@ -64,7 +65,8 @@ public class GoodsQueryRep {
                     .fetch();
 
             count = queryFactory
-                    .selectFrom(goods)
+                    .select(goods.id)
+                    .from(goods)
                     .where(categoriesToExpression(goodsCategories))
                     .fetch()
                     .size();
