@@ -39,22 +39,22 @@ public class ChatMessageController {
     public void message(ChatMessageReq message) {
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
-    @PostMapping("/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
+    @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
     public List<ChatMessagesDto> chatMessageList(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return chatMessageService.messageList(roomInfo.getRoomId(), userDetails.getId());
     }
-    @PostMapping("/chat-read-check")       //메세지 읽음 처리
+    @PostMapping("/api/chat-read-check")       //메세지 읽음 처리
     public String chatReadModify(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         chatMessageService.modifyCheckRead(roomInfo.getRoomId(), userDetails.getId());
         return "읽음 처리 완료";
     }
 
     //테스트 후 삭제
-    @GetMapping("/read-chk-cnt")
+    @GetMapping("/api/read-chk-cnt")
     public Long checkReadCntDetails(@RequestBody ChatMessageInfo roomInfo){
         return chatMessageService.findCheckReadCnt(roomInfo.getRoomId(), roomInfo.getPartnerId());
     }
-    @PostMapping("/read-chk-modify")
+    @PostMapping("/api/read-chk-modify")
     public String checkReadModify(@RequestBody ChatMessageInfo roomInfo){
         chatMessageService.modifyCheckRead(roomInfo.getRoomId(), roomInfo.getPartnerId());  //로그인한 아이디로 변경
         return "성공";

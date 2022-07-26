@@ -3,12 +3,14 @@ package com.seven.marketclip.goods.dto;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
+import com.seven.marketclip.image.domain.GoodsImage;
+import com.seven.marketclip.wish.domain.Wish;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -41,26 +43,24 @@ public class GoodsTitleResDTO {
     }
 
     public GoodsTitleResDTO(Goods goods) {
+        String firstImageUrl = null;
+        for(GoodsImage goodsImage : goods.getGoodsImages()){
+            if(goodsImage.getSequence() == 1){
+                firstImageUrl = goodsImage.getImageUrl();
+                break;
+            }
+        }
         this.id = goods.getId();
+        this.viewCount = goods.getViewCount();
+        this.wishIds = goods.getWishLists().stream().map(Wish::getId).collect(Collectors.toList());
         this.nickname = goods.getAccount().getNickname();
+        this.accountImageUrl = goods.getAccount().getProfileImgUrl().getImageUrl();
         this.title = goods.getTitle();
         this.category = goods.getCategory();
-        this.createdAt = goods.getCreatedAt();
-        this.viewCount = goods.getViewCount();
         this.sellPrice = goods.getSellPrice();
+        this.goodsImageUrl = firstImageUrl;
         this.status = goods.getStatus();
-    }
-
-    public void setGoodsImageUrl(String goodsFirstImageUrl){
-        this.goodsImageUrl = goodsFirstImageUrl;
-    }
-
-    public void setAccountImageUrl(String accountImageUrl) {
-        this.accountImageUrl = accountImageUrl;
-    }
-
-    public void setWishIds(List<Long> wishIds) {
-        this.wishIds = wishIds;
+        this.createdAt = goods.getCreatedAt();
     }
 
 }
