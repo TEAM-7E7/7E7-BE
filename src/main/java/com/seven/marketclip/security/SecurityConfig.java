@@ -75,7 +75,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
+//        configuration.addAllowedOriginPattern("*");
+        List<String> asd = new ArrayList<>();
+        asd.add("http://localhost:8080");//서버에서 -> 프론트  //프론트 -> 서버
+        asd.add("localhost:8080");
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(asd);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("X-ACCESS-TOKEN");
