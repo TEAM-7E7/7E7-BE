@@ -68,6 +68,12 @@ public class ChatRoomService {
         if(chatRoom.isEmpty()) {return false;}
         return true;
     }
+    @Transactional
+    public ChatRoom findChatRoomObject(Long goodsId, Long buyerId) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findByAccountIdAndGoodsId(buyerId, goodsId);
+        if(chatRoom.isEmpty()) {return null;}
+        return chatRoom.get();
+    }
 
     @Transactional  //채팅방 check box 삭제 API 4번
     public void removeChatRoom(List<Long> listChatRoomId){

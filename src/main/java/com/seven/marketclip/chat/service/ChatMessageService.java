@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomService chatRoomService;
     @Transactional
     public String saveChatMessage(ChatMessageReq messages) {
         ChatMessages cm = ChatMessages.builder()
@@ -35,10 +36,11 @@ public class ChatMessageService {
         return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public List<ChatMessagesDto> messageList(String chatRoomId,Long loginId) {      //전체 메시지 불러오기
-        modifyCheckRead(chatRoomId, loginId);
+    public List<ChatMessagesDto> messageList(Long goodsId,Long loginId) {      //전체 메시지 불러오기
+        ChatRoom room = chatRoomService.findChatRoomObject(goodsId, loginId);
+        modifyCheckRead(room.getId(), loginId);
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
-                                                                        ChatRoom.builder().id(chatRoomId).build());
+                                                                        ChatRoom.builder().id(room.getId()).build());
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());
