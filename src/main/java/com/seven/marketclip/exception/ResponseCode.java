@@ -83,6 +83,7 @@ public enum ResponseCode {
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),
+    GOODS_IMAGE_REQUIRED(NOT_FOUND, "게시글에 하나 이상의 이미지가 필요합니다."),
     GOODS_IMAGE_NOT_FOUND(NOT_FOUND, "게시글의 이미지를 찾을 수 없습니다."),
     ACCOUNT_IMAGE_NOT_FOUND(NOT_FOUND, "사용자의 프로필 사진을 찾을 수 없습니다."),
 
