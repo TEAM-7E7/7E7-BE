@@ -78,8 +78,10 @@ public class GoodsQueryRep {
             return null;
         }
         BooleanExpression result = goods.category.eq(goodsCategories.get(0));
-        for (int i = 1; i < goodsCategories.size(); i++) {
-            result.or(goods.category.eq(goodsCategories.get(i)));
+        if (goodsCategories.size() > 1) {
+            for (int i = 1; i < goodsCategories.size(); i++) {
+                result = result.or(goods.category.eq(goodsCategories.get(i)));
+            }
         }
         return result;
     }
