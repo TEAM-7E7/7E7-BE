@@ -19,6 +19,7 @@ import com.seven.marketclip.image.repository.GoodsImageRepository;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
+import com.seven.marketclip.wish.repository.WishRepository;
 import com.seven.marketclip.wish.service.WishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,20 +38,21 @@ public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
-    private final WishService wishService;
+    private final WishRepository wishRepository;
     private final GoodsQueryRep goodsQueryRep;
     private final GoodsImageRepository goodsImageRepository;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishService wishService, GoodsQueryRep goodsQueryRep, GoodsImageRepository goodsImageRepository) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep, GoodsImageRepository goodsImageRepository) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
-        this.wishService = wishService;
+        this.wishRepository = wishRepository;
         this.goodsQueryRep = goodsQueryRep;
         this.goodsImageRepository = goodsImageRepository;
     }
 
     // 게시글 전체 조회 -> 동적 쿼리
+    @Transactional
     public DataResponseCode pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
         Page<Goods> goodsPage = goodsQueryRep.pagingGoods(orderByDTO, pageable);
 
@@ -103,7 +105,7 @@ public class GoodsService {
         plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
         goodsResDTO.setImageMapList(goodsImageRepository.findAllByGoodsIdSequence(goodsId));
-        goodsResDTO.setWishIds(wishService.goodsWishLists(goodsId));
+        goodsResDTO.setWishIds(wishRepository.findAllAccountIdByGoodsId(goodsId));
         goodsResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
         return new DataResponseCode(SUCCESS, goodsResDTO);
     }
@@ -139,7 +141,7 @@ public class GoodsService {
 
     // 내가 즐겨찾기 한 글 보기
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
-        Page<Wish> wishList = wishService.findMyWish(userDetails.getId(), pageable);
+        Page<Wish> wishList = wishRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Page<Goods> goodsList = wishList.map(Wish::getGoods);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
@@ -175,7 +177,7 @@ public class GoodsService {
             GoodsTitleResDTO goodsTitleResDTO = new GoodsTitleResDTO(goods);
             goodsTitleResDTO.setGoodsImageUrl(goodsImageRepository.findFirstByGoodsId(goods.getId()).getImageUrl());
             goodsTitleResDTO.setAccountImageUrl(goods.getAccount().getProfileImgUrl().getImageUrl());
-            goodsTitleResDTO.setWishIds(wishService.goodsWishLists(goods.getId()));
+            goodsTitleResDTO.setWishIds(wishRepository.findAllAccountIdByGoodsId(goods.getId()));
             goodsTitleResDTOList.add(goodsTitleResDTO);
         }
         resultMap.put("endPage", goodsList.isLast());

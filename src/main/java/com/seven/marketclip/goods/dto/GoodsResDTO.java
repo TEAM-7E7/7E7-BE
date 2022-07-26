@@ -62,15 +62,15 @@ public class GoodsResDTO {
     }
 
     public void setImageMapList(List<GoodsImage> goodsImages) {
-        List<Map<String, Object>> imageMapList = new ArrayList<>();
+        List<Map<String, Object>> mapArrayList = new ArrayList<>();
         for (GoodsImage goodsImage : goodsImages) {
             Map<String, Object> tempMap = new HashMap<>();
             tempMap.put("id", goodsImage.getId());
             tempMap.put("url", goodsImage.getImageUrl());
 
-            imageMapList.add(tempMap);
+            mapArrayList.add(tempMap);
         }
-        this.imageMapList = imageMapList;
+        this.imageMapList = mapArrayList;
     }
 
     public void setAccountImageUrl(String accountImageUrl) {

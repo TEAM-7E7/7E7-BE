@@ -3,6 +3,7 @@ package com.seven.marketclip.goods.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.seven.marketclip.account.QAccount;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.OrderByDTO;
 import com.seven.marketclip.goods.enums.GoodsCategory;
@@ -15,8 +16,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.seven.marketclip.goods.domain.QGoods.goods;
-import static com.seven.marketclip.goods.enums.GoodsOrderBy.ORDER_BY_WISHLIST_COUNT;
 import static com.seven.marketclip.wish.domain.QWish.wish;
+import static com.seven.marketclip.image.domain.QGoodsImage.goodsImage;
+import static com.seven.marketclip.goods.enums.GoodsOrderBy.ORDER_BY_WISHLIST_COUNT;
 
 
 @Repository
@@ -33,10 +35,12 @@ public class GoodsQueryRep {
 
         List<Goods> queryResult;
         int count;
+//        QAccount subAccount = new QAccount("subAccount");
 
         if (goodsOrderBy == ORDER_BY_WISHLIST_COUNT) {
             queryResult = queryFactory
-                    .selectFrom(goods)
+                    .select(goods)
+                    .from(goods)
                     .leftJoin(wish)
                     .on(wish.goods.eq(goods))
                     .groupBy(goods.id)
@@ -56,7 +60,10 @@ public class GoodsQueryRep {
 
         } else {
             queryResult = queryFactory
-                    .selectFrom(goods)
+                    .select(goods)
+                    .from(goods)
+//                    .leftJoin(goodsImage)
+//                    .on(goods.eq(goodsImage.goods))
                     .where(categoriesToExpression(goodsCategories))
                     .orderBy(orderByToExpression(goodsOrderBy))
                     .offset(pageable.getOffset())
@@ -64,7 +71,8 @@ public class GoodsQueryRep {
                     .fetch();
 
             count = queryFactory
-                    .selectFrom(goods)
+                    .select(goods.id)
+                    .from(goods)
                     .where(categoriesToExpression(goodsCategories))
                     .fetch()
                     .size();
