@@ -108,13 +108,13 @@ public class ChatRoomService {
         return respRoomList;
     }
 
-    public void enterChatRoom(String roomId) {
-        String parseId = roomId;
-        ChannelTopic topic = topics.get(roomId);
+    public void enterChatRoom(String chatRoomId) {
+        String parseId = chatRoomId;
+        ChannelTopic topic = topics.get(chatRoomId);
         if (topic == null) {
             topic = new ChannelTopic(parseId);
             redisMessageListener.addMessageListener(redisSubscriber, topic);
-            topics.put(roomId, topic);
+            topics.put(chatRoomId, topic);
         }
     }
 

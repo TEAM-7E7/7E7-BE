@@ -35,10 +35,10 @@ public class ChatMessageService {
         return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public List<ChatMessagesDto> messageList(String roomId,Long loginId) {      //전체 메시지 불러오기
-        modifyCheckRead(roomId, loginId);
+    public List<ChatMessagesDto> messageList(String chatRoomId,Long loginId) {      //전체 메시지 불러오기
+        modifyCheckRead(chatRoomId, loginId);
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
-                                                                        ChatRoom.builder().id(roomId).build());
+                                                                        ChatRoom.builder().id(chatRoomId).build());
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());

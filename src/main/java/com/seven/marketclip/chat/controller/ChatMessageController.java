@@ -41,22 +41,22 @@ public class ChatMessageController {
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
     public List<ChatMessagesDto> chatMessageList(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return chatMessageService.messageList(roomInfo.getRoomId(), userDetails.getId());
+        return chatMessageService.messageList(roomInfo.getChatRoomId(), userDetails.getId());
     }
     @PostMapping("/api/chat-read-check")       //메세지 읽음 처리
     public String chatReadModify(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        chatMessageService.modifyCheckRead(roomInfo.getRoomId(), userDetails.getId());
+        chatMessageService.modifyCheckRead(roomInfo.getChatRoomId(), userDetails.getId());
         return "읽음 처리 완료";
     }
 
     //테스트 후 삭제
     @GetMapping("/api/read-chk-cnt")
     public Long checkReadCntDetails(@RequestBody ChatMessageInfo roomInfo){
-        return chatMessageService.findCheckReadCnt(roomInfo.getRoomId(), roomInfo.getPartnerId());
+        return chatMessageService.findCheckReadCnt(roomInfo.getChatRoomId(), roomInfo.getPartnerId());
     }
     @PostMapping("/api/read-chk-modify")
     public String checkReadModify(@RequestBody ChatMessageInfo roomInfo){
-        chatMessageService.modifyCheckRead(roomInfo.getRoomId(), roomInfo.getPartnerId());  //로그인한 아이디로 변경
+        chatMessageService.modifyCheckRead(roomInfo.getChatRoomId(), roomInfo.getPartnerId());  //로그인한 아이디로 변경
         return "성공";
     }
 }
