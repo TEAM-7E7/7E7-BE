@@ -4,6 +4,7 @@ import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
 import com.seven.marketclip.chat.dto.ChatRoomId;
 import com.seven.marketclip.chat.dto.ChatRoomReq;
+import com.seven.marketclip.chat.dto.RoomMake;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,11 @@ import java.util.List;
 @RestController
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
+
+    @PostMapping("/api/room")   //채팅방 만들기 API 1번
+    public void chatRoomSave(@RequestBody RoomMake room, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        chatRoomService.saveChatRoom(room, userDetails.getId());
+    }
     @DeleteMapping ("/api/room")
     public void chatRoomRemove(@RequestParam List<Long> chatRoomId){
         chatRoomService.removeChatRoom(chatRoomId);

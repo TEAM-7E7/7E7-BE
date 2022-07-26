@@ -10,15 +10,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 public class ChatRoom implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     @ManyToOne
     @JoinColumn(name="GOODS_ID")
     private Goods goods;
@@ -26,13 +25,13 @@ public class ChatRoom implements Serializable{
     @JoinColumn(name="ACCOUNT_ID")
     private Account account;
 
-    @CreatedDate // 생성일자임을 나타냅니다. 프론트에서 생성하는 경우 제거
-    private LocalDateTime createdAt;
+    private Date createdAt;
     @Builder
-    public ChatRoom(Long id, Goods goods, Account account){
+    public ChatRoom(String id, Goods goods, Account account, Date createdAt){
         this.id = id;
         this.goods = goods;
         this.account = account;
+        this.createdAt = createdAt;
     }
 
 }
