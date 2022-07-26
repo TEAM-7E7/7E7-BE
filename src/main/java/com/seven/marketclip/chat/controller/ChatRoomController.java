@@ -1,16 +1,13 @@
 package com.seven.marketclip.chat.controller;
 
-import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
-import com.seven.marketclip.chat.dto.ChatRoomId;
-import com.seven.marketclip.chat.dto.ChatRoomReq;
 import com.seven.marketclip.chat.dto.RoomMake;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RequiredArgsConstructor

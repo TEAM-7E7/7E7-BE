@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessages, Long> {
-    List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtDesc(ChatRoom roomId);
+    List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtDesc(ChatRoom chatRoomId);
     Long countByChatRoomIdAndSenderIdAndCheckRead(ChatRoom chatRoomId, Account partnerId, Boolean bool);
     @Query("select m from ChatMessages m where m.chatRoomId = :id and " +
             "m.createdAt = (select max(m.createdAt) from ChatMessages m)")
     Optional<ChatMessages> latestMessage(@Param("id") ChatRoom chatRoomId);
     @Modifying
     @Query("update ChatMessages c set c.checkRead = true where c.chatRoomId = :roomId and not c.senderId = :loginId")
-    int checkReadFlipOver(ChatRoom roomId, Account loginId);
+    int checkReadFlipOver(ChatRoom chatRoomId, Account loginId);
 
 
 }
