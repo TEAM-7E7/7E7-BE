@@ -7,16 +7,18 @@ import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.wish.domain.Wish;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@NoArgsConstructor
 public class Goods extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -42,10 +44,12 @@ public class Goods extends Timestamped {
 
     private Integer viewCount = 0;
 
-    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GoodsImage> goodsImages;
 
-    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wish> wishLists;
 
     @Builder
