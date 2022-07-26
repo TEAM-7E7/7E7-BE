@@ -10,6 +10,7 @@ import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +25,13 @@ public class ChatMessageController {
     private final RedisPublisher redisPublisher;
 
     @MessageMapping("/chat/first-message")       // 첫 번째 메세지 전송
-    public void firstMessage(ChatMessageReq message) {
+    public Long firstMessage(ChatMessageReq message) {
+        Long chatRoomId = null;
         if(!chatRoomService.findChatRoom(message.getGoodsId(), message.getSenderId())){
-            chatRoomService.saveChatRoom(message.getGoodsId(), message.getSenderId());
+            chatRoomId = chatRoomService.saveChatRoom(message.getGoodsId(), message.getSenderId());
         }
-        redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
+        redisPublisher.publish(chatRoomService.getTopic(chatRoomId), message);
+        return chatRoomId;
     }
 
     // websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
@@ -44,5 +47,16 @@ public class ChatMessageController {
     public String chatReadModify(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         chatMessageService.modifyCheckRead(roomInfo.getRoomId(), userDetails.getId());
         return "읽음 처리 완료";
+    }
+
+    //테스트 후 삭제
+    @GetMapping("/read-chk-cnt")
+    public Long checkReadCntDetails(@RequestBody ChatMessageInfo roomInfo){
+        return chatMessageService.findCheckReadCnt(roomInfo.getRoomId(), roomInfo.getPartnerId());
+    }
+    @PostMapping("/read-chk-modify")
+    public String checkReadModify(@RequestBody ChatMessageInfo roomInfo){
+        chatMessageService.modifyCheckRead(roomInfo.getRoomId(), roomInfo.getPartnerId());  //로그인한 아이디로 변경
+        return "성공";
     }
 }
