@@ -1,6 +1,8 @@
 package com.seven.marketclip.chat.repository;
 
+import com.seven.marketclip.account.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
+import com.seven.marketclip.chat.domain.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessages, Long> {
-    List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtDesc(Long roomId);
-    Long countBySenderIdAndChatRoomIdAndCheckRead(Long chatRoomId, Long partnerId,Boolean bool);
+    List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtDesc(ChatRoom roomId);
+    Long countByChatRoomIdAndSenderIdAndCheckRead(ChatRoom chatRoomId, Account partnerId, Boolean bool);
     @Query("select m from ChatMessages m where m.chatRoomId = :id and " +
             "m.createdAt = (select max(m.createdAt) from ChatMessages m)")
-    Optional<ChatMessages> latestMessage(@Param("id") Long chatRoomId);
+    Optional<ChatMessages> latestMessage(@Param("id") ChatRoom chatRoomId);
     @Modifying
     @Query("update ChatMessages c set c.checkRead = true where c.chatRoomId = :roomId and not c.senderId = :loginId")
-    int checkReadFlipOver(Long roomId, Long loginId);
+    int checkReadFlipOver(ChatRoom roomId, Account loginId);
 
 
 }
