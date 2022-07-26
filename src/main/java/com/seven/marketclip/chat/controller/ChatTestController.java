@@ -17,10 +17,6 @@ public class ChatTestController {       //테스트 후 삭제 클래스
     public void chatRoomSave(@RequestBody ChatRoomId req) {
         chatRoomService.saveChatRoom(req.getBuyerId(), req.getGoodsId());
     }
-    @DeleteMapping("/room")
-    public void chatRoomRemove(@RequestParam List<Long> chatRoomId){
-        chatRoomService.removeChatRoom(chatRoomId);
-    }
 
     @GetMapping("/chat-rooms/{id}")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
     public List<ChatRoomGoods> chatRooms(@PathVariable Long id) {
