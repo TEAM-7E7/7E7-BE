@@ -32,7 +32,7 @@ public class RedisSubscriber implements MessageListener {
             // Websocket 구독자에게 채팅 메시지 Send
             String parseString = roomMessage.getChatRoomId();
             messagingTemplate.convertAndSend("/sub/chat/room/" + parseString, roomMessage);
-            messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage, "api 요청해주세요");
+            messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "api 요청해주세요");
             chatMessageService.saveChatMessage(roomMessage);    //DB에 저장 API 5번
         } catch (Exception e) {
             log.error(e.getMessage());
