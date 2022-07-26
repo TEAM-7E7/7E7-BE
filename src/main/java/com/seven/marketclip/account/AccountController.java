@@ -24,7 +24,6 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class AccountController {
 
-    //    private final AccountReqDtoValidation accountReqDtoValidation;
     private final AccountService accountService;
 
     @ApiOperation(value = "회원가입", notes = "회원가입 하는 API")

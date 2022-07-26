@@ -105,10 +105,10 @@ public class EmailService {
         javaMailSender.send(simpleMessage);
     }
 
-    public void findEmail(String email) throws CustomException{
+/*    public void findEmail(String email) throws CustomException{
         if(accountRepository.findByEmail(email).isEmpty()){
             throw new CustomException(EMAIL_NOT_FOUND);
         }
-    }
+    }*/
 
 }

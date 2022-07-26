@@ -2,6 +2,7 @@ package com.seven.marketclip.wish.domain;
 
 import com.seven.marketclip.account.Account;
 import com.seven.marketclip.goods.domain.Goods;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "wish_lists")
 @Getter
-@NoArgsConstructor
 public class Wish {
 
     @Id
