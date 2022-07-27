@@ -7,6 +7,7 @@ import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.dto.ChatMessagesDto;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
+import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
-    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
     @Transactional
     public String saveChatMessage(ChatMessageReq messages) {
         ChatMessages cm = ChatMessages.builder()
@@ -37,14 +38,18 @@ public class ChatMessageService {
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
     public List<ChatMessagesDto> messageList(Long goodsId,Long loginId) {      //전체 메시지 불러오기
-        ChatRoom room = chatRoomService.findChatRoomObject(goodsId, loginId);
-        modifyCheckRead(room.getId(), loginId);
+        Optional<ChatRoom> room = chatRoomRepository.findByAccountIdAndGoodsId(goodsId, loginId);
+        if(room.isEmpty()){
+            return null;
+        }else{
+        modifyCheckRead(room.get().getId(), loginId);
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
-                                                                        ChatRoom.builder().id(room.getId()).build());
+                                                                        ChatRoom.builder().id(room.get().getId()).build());
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());
         return result;
+        }
     }
     @Transactional
     public Long findCheckReadCnt(String chatRoomId, Long partnerId){   // 안읽은 메시지 가져오기
