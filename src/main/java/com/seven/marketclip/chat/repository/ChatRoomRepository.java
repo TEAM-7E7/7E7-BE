@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-    Optional<ChatRoom> findByAccountIdAndGoodsId(Long buyerId, Long goodsId);
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
+    Optional<ChatRoom> findByGoodsIdAndAccountId(Long goodsId, Long buyerId);
     @Query("select c from ChatRoom c where c.account.id = :id or c.goods.account.id = :id")
     List<ChatRoom> roomsFindQuery(@Param("id") Long id);
 }
