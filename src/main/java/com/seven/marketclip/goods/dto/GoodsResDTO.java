@@ -1,10 +1,9 @@
 package com.seven.marketclip.goods.dto;
 
-import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
-import com.seven.marketclip.wish.domain.Wish;
+import com.seven.marketclip.image.domain.GoodsImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,9 +58,11 @@ public class GoodsResDTO {
 
             mapArrayList.add(tempMap);
         }
+
         this.id = goods.getId();
         this.viewCount = goods.getViewCount();
-        this.wishIds = goods.getWishLists().stream().map(Wish::getId).collect(Collectors.toList());
+        this.wishIds = goods.getWishLists().stream().map(wish -> wish.getAccount().getId()).collect(Collectors.toList());
+        this.accountId = goods.getAccount().getId();
         this.nickname = goods.getAccount().getNickname();
         this.accountImageUrl = goods.getAccount().getProfileImgUrl().getImageUrl();
         this.title = goods.getTitle();
