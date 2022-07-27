@@ -51,7 +51,7 @@ public class ChatRoomService {
                 .goods(gd)
                 .build();
         chatRoomRepository.save(chatRoom);
-        enterChatRoom(chatRoom.getId());
+        enterChatRoom(roomMake.getId());
         ChatRoomId redisRoom = ChatRoomId.builder()
                 .buyerId(loginId)
                 .goodsId(roomMake.getGoodsId())
