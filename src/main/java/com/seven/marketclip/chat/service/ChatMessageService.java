@@ -67,7 +67,7 @@ public class ChatMessageService {
         }
     }
     @Transactional
-    public Long findCheckReadCnt(String chatRoomId, Long partnerId){   // 안읽은 메시지 가져오기
+    public Long findCheckReadCnt(String chatRoomId, Long partnerId){   // 안읽은 메시지 개수
         return chatMessageRepository.countByChatRoomIdAndSenderIdAndCheckRead(
                 ChatRoom.builder().id(chatRoomId).build(),
                 Account.builder().id(partnerId).build(),
