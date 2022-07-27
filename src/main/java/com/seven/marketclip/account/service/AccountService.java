@@ -154,6 +154,14 @@ public class AccountService {
         return SUCCESS;
     }
 
+    // 회원 탈퇴
+    public ResponseCode deleteUser(Long id) {
+        accountVerification.checkVerificationId(id);
+        accountRepository.deleteById(id);
+
+        return SUCCESS;
+    }
+
     //리프레쉬 토큰 재발급
     public ResponseCode reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String refresh = request.getHeader("X-REFRESH-TOKEN");

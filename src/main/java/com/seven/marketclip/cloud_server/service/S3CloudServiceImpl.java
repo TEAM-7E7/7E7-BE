@@ -24,7 +24,6 @@ import java.util.UUID;
 import static com.seven.marketclip.exception.ResponseCode.FILE_UPLOAD_ERROR;
 import static com.seven.marketclip.exception.ResponseCode.WRONG_FILE_TYPE;
 
-
 @Slf4j
 @Component
 public class S3CloudServiceImpl implements FileCloudService {
