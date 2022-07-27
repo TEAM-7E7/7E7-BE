@@ -18,7 +18,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessages, Long>
             "m.createdAt = (select max(m.createdAt) from ChatMessages m)")
     Optional<ChatMessages> latestMessage(@Param("id") ChatRoom chatRoomId);
     @Modifying
-    @Query("update ChatMessages c set c.checkRead = true where c.chatRoomId = :roomId and not c.senderId = :loginId")
+    @Query("update ChatMessages c set c.checkRead = true where c.chatRoomId = :chatRoomId and not c.senderId = :loginId")
     int checkReadFlipOver(ChatRoom chatRoomId, Account loginId);
 
 
