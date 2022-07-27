@@ -27,7 +27,7 @@ public class ChatRoom implements Serializable, Persistable<String> {
     @JoinColumn(name="ACCOUNT_ID")
     private Account account;
     @CreatedDate
-    private Date createdDate;
+    private LocalDateTime createdDate;
     @Builder
     public ChatRoom(String id, Goods goods, Account account){
         this.id = id;
