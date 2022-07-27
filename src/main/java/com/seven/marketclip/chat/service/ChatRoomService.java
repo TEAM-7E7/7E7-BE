@@ -2,6 +2,7 @@ package com.seven.marketclip.chat.service;
 
 
 import com.seven.marketclip.account.Account;
+import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
 import com.seven.marketclip.chat.dto.ChatRoomId;
@@ -84,6 +85,9 @@ public class ChatRoomService {
     @Transactional
     public List<ChatRoomGoods> findChatRooms(Long loginId){
         List<ChatRoom> chatRoomList = chatRoomRepository.roomsFindQuery(loginId);
+        if(chatRoomList.isEmpty()){
+            return new ArrayList<ChatRoomGoods>();
+        }
         List<ChatRoomGoods> respRoomList = new ArrayList<>();
         for (ChatRoom room:chatRoomList) {
             Long partnerId;
@@ -91,6 +95,10 @@ public class ChatRoomService {
                 partnerId = room.getAccount().getId();
             }else{
                 partnerId = room.getGoods().getAccount().getId();
+            }
+            ChatMessages message = chatMessageService.findLastMessage(room.getId());
+            if(message == null){
+
             }
             ChatRoomGoods chatRoomGoods = ChatRoomGoods
                     .builder()
