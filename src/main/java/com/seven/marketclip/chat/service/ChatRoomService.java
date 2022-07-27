@@ -49,9 +49,10 @@ public class ChatRoomService {
                 .id(roomMake.getId())
                 .account(ac)
                 .goods(gd)
-                .createdAt(roomMake.getCreatedAt())
                 .build();
+        System.out.println("다");
         chatRoomRepository.save(chatRoom);
+        System.out.println("여기");
         enterChatRoom(chatRoom.getId());
         ChatRoomId redisRoom = ChatRoomId.builder()
                 .buyerId(loginId)
