@@ -6,6 +6,7 @@ import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.dto.ChatMessagesDto;
+import com.seven.marketclip.chat.dto.ChatRoomTwo;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,18 +38,26 @@ public class ChatMessageService {
         return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public List<ChatMessagesDto> messageList(Long goodsId,Long loginId) {      //전체 메시지 불러오기
+    public ChatRoomTwo messageList(Long goodsId,Long loginId) {      //전체 메시지 불러오기
         Optional<ChatRoom> room = chatRoomRepository.findByAccountIdAndGoodsId(goodsId, loginId);
         if(room.isEmpty()){
             return null;
         }else{
-        modifyCheckRead(room.get().getId(), loginId);
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
                                                                         ChatRoom.builder().id(room.get().getId()).build());
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());
-        return result;
+        String chatRoomId = result.get(0).getChatRoomId();
+        if(chatRoomId == null || chatRoomId.isEmpty()){
+            chatRoomId = "비었습니다.";
+        }
+        ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
+                .chatRoomId(chatRoomId)
+                .messages(result)
+                .build();
+        modifyCheckRead(room.get().getId(), loginId);
+        return chatRoomTwo;
         }
     }
     @Transactional
