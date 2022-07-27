@@ -49,7 +49,7 @@ public class ChatMessageService {
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
                 ChatRoom.builder().id(room.get().getId()).build());
         if(chatMessagesList.isEmpty()){
-            return new ChatRoomTwo();
+            return ChatRoomTwo.builder().chatRoomId(room.get().getId()).build();
         }
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
