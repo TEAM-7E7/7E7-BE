@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +47,10 @@ public class ChatMessageService {
             throw new CustomException(ResponseCode.GOODS_NOT_FOUND);
         }else{
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
-                                                                        ChatRoom.builder().id(room.get().getId()).build());
+                ChatRoom.builder().id(room.get().getId()).build());
+        if(chatMessagesList.isEmpty()){
+            return new ChatRoomTwo();
+        }
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());
