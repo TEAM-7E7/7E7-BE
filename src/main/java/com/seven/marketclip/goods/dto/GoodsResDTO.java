@@ -59,9 +59,11 @@ public class GoodsResDTO {
 
             mapArrayList.add(tempMap);
         }
+
         this.id = goods.getId();
         this.viewCount = goods.getViewCount();
         this.wishIds = goods.getWishLists().stream().map(Wish::getId).collect(Collectors.toList());
+        this.accountId = goods.getAccount().getId();
         this.nickname = goods.getAccount().getNickname();
         this.accountImageUrl = goods.getAccount().getProfileImgUrl().getImageUrl();
         this.title = goods.getTitle();
