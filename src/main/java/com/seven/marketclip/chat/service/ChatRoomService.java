@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -117,14 +118,11 @@ public class ChatRoomService {
             }
             respRoomList.add(chatRoomGoods);
         }
-        Collections.sort(respRoomList, (o1, o2) -> {
-            if(o1.getLastDate().after(o2.getLastDate())){ //o1이 o2보다 최근 날짜이면
-                return -1;  //o1을 앞으로
-            } else if (o1.getLastDate().before(o2.getLastDate())) {
-                return 1;   //o1을 뒤로
-            }
-            return 0;
-        });
+
+        respRoomList.stream()
+                .sorted(Comparator.comparing(ChatRoomGoods::getLastDate,
+                        Comparator.nullsFirst(Comparator.reverseOrder())))
+                .collect(Collectors.toList());
         return respRoomList;
     }
 
