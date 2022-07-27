@@ -16,6 +16,7 @@ import java.util.Date;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class ChatRoom implements Serializable, Persistable<String> {
     @Id
     private String id;
@@ -25,17 +26,17 @@ public class ChatRoom implements Serializable, Persistable<String> {
     @ManyToOne
     @JoinColumn(name="ACCOUNT_ID")
     private Account account;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdDate;
     @Builder
     public ChatRoom(String id, Goods goods, Account account){
         this.id = id;
         this.goods = goods;
         this.account = account;
-        this.createdAt = LocalDateTime.now();
+        this.createdDate = LocalDateTime.now();
     }
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return createdDate == null;
     }
 }
