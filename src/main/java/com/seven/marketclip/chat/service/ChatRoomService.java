@@ -122,7 +122,6 @@ public class ChatRoomService {
             topics.put(chatRoomId, topic);
         }
     }
-    public void helooe(){ enterChatRoom("1658908141672탱글덕희");}
 
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
