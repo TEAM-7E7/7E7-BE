@@ -97,16 +97,24 @@ public class ChatRoomService {
                 partnerId = room.getGoods().getAccount().getId();
             }
             ChatMessages message = chatMessageService.findLastMessage(room.getId());
+            ChatRoomGoods chatRoomGoods;
             if(message == null){
-
+                chatRoomGoods = ChatRoomGoods
+                        .builder()
+                        .chatRoom(room)
+                        .chatMessages(new ChatMessages())
+                        .loginId(loginId)
+                        .checkReadCnt(0L)
+                        .build();
+            }else{
+                chatRoomGoods = ChatRoomGoods
+                        .builder()
+                        .chatRoom(room)
+                        .chatMessages(chatMessageService.findLastMessage(room.getId()))
+                        .loginId(loginId)
+                        .checkReadCnt(chatMessageService.findCheckReadCnt(room.getId(), partnerId))
+                        .build();
             }
-            ChatRoomGoods chatRoomGoods = ChatRoomGoods
-                    .builder()
-                    .chatRoom(room)
-                    .chatMessages(chatMessageService.findLastMessage(room.getId()))
-                    .loginId(loginId)
-                    .checkReadCnt(chatMessageService.findCheckReadCnt(room.getId(), partnerId))
-                    .build();
             respRoomList.add(chatRoomGoods);
         }
         Collections.sort(respRoomList, (o1, o2) -> {
@@ -117,7 +125,6 @@ public class ChatRoomService {
             }
             return 0;
         });
-
         return respRoomList;
     }
 
