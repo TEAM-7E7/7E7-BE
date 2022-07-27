@@ -1,9 +1,6 @@
 package com.seven.marketclip.chat.controller;
 
-import com.seven.marketclip.chat.dto.ChatMessageInfo;
-import com.seven.marketclip.chat.dto.ChatMessageReq;
-import com.seven.marketclip.chat.dto.ChatMessagesDto;
-import com.seven.marketclip.chat.dto.ChatRoomReq;
+import com.seven.marketclip.chat.dto.*;
 import com.seven.marketclip.chat.service.ChatMessageService;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.chat.subpub.RedisPublisher;
@@ -41,7 +38,7 @@ public class ChatMessageController {
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
-    public List<ChatMessagesDto> chatMessageList(@RequestBody ChatRoomReq roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ChatRoomTwo chatMessageList(@RequestBody ChatRoomReq roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails.getId());
     }
     @PostMapping("/api/chat-read-check")       //메세지 읽음 처리
