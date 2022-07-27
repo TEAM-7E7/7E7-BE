@@ -63,7 +63,7 @@ public class ChatRoomService {
     // 단일 채팅방 조회(채팅방 생성시 로직) API 및 메서드 2번
     @Transactional
     public boolean findChatRoom(Long goodsId, Long buyerId) {
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findByAccountIdAndGoodsId(buyerId, goodsId);
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findByGoodsIdAndAccountId(buyerId, goodsId);
         if(chatRoom.isEmpty()) {return false;}
         return true;
     }
@@ -75,8 +75,8 @@ public class ChatRoomService {
 //    }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeChatRoom(List<Long> listChatRoomId){
-        for (Long chatRoomId:listChatRoomId) {
+    public void removeChatRoom(List<String> listChatRoomId){
+        for (String chatRoomId:listChatRoomId) {
             chatRoomRepository.deleteById(chatRoomId);
         }
     }
@@ -122,6 +122,7 @@ public class ChatRoomService {
             topics.put(chatRoomId, topic);
         }
     }
+    public void helooe(){ enterChatRoom("1658908141672탱글덕희");}
 
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
