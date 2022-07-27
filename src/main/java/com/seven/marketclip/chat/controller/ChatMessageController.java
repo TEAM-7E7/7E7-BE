@@ -36,7 +36,6 @@ public class ChatMessageController {
     // websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
     @MessageMapping("/chat/message")            //메세지 전송
     public void message(ChatMessageReq message) {
-        log.info("여기역이");
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
