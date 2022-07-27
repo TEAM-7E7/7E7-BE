@@ -12,6 +12,5 @@ import java.util.Date;
 public class RoomMake {
     String id;
     Long goodsId;
-    Long accountId;
     Date createdAt;
 }

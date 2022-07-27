@@ -49,7 +49,6 @@ public class ChatRoomService {
                 .id(roomMake.getId())
                 .account(ac)
                 .goods(gd)
-                .createdAt(roomMake.getCreatedAt())
                 .build();
         chatRoomRepository.save(chatRoom);
         enterChatRoom(chatRoom.getId());
