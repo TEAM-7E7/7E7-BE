@@ -41,7 +41,7 @@ public class ChatMessageService {
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
     public ChatRoomTwo messageList(Long goodsId,Long loginId) throws CustomException {      //전체 메시지 불러오기
-        Optional<ChatRoom> room = chatRoomRepository.findByAccountIdAndGoodsId(goodsId, loginId);
+        Optional<ChatRoom> room = chatRoomRepository.findByGoodsIdAndAccountId(goodsId, loginId);
         if(room.isEmpty()){
             throw new CustomException(ResponseCode.GOODS_NOT_FOUND);
         }else{
