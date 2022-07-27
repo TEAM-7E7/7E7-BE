@@ -9,6 +9,8 @@ import com.seven.marketclip.chat.dto.ChatMessagesDto;
 import com.seven.marketclip.chat.dto.ChatRoomTwo;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
+import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.exception.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +40,10 @@ public class ChatMessageService {
         return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public ChatRoomTwo messageList(Long goodsId,Long loginId) {      //전체 메시지 불러오기
+    public ChatRoomTwo messageList(Long goodsId,Long loginId) throws CustomException {      //전체 메시지 불러오기
         Optional<ChatRoom> room = chatRoomRepository.findByAccountIdAndGoodsId(goodsId, loginId);
         if(room.isEmpty()){
-            return null;
+            throw new CustomException(ResponseCode.GOODS_NOT_FOUND);
         }else{
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
                                                                         ChatRoom.builder().id(room.get().getId()).build());
