@@ -60,13 +60,6 @@ public class AccountController {
         return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
     }
 
-    // 비밀번호 찾기 (이메일)
-    @ApiOperation(value = "비밀번호 찾기 신청", notes = "회원 비밀번호 찾기 신청")
-    @PostMapping("/password-search")
-    public ResponseEntity<HttpResponse> searchPassword(@RequestBody EmailDTO emailDTO) {
-        return HttpResponse.toResponseEntity(accountService.findPassword(emailDTO));
-    }
-
     // 비밀번호 변경 (이메일)
     @ApiOperation(value = "비밀번호 변경 신청", notes = "회원 비밀번호 찾기 신청 후 변경")
     @PutMapping("/password-search")
@@ -74,7 +67,7 @@ public class AccountController {
         return HttpResponse.toResponseEntity(accountService.changePassword(emailPassword.get("email"), emailPassword.get("password")));
     }
 
-    // 비밀번호 변경 (로그인)
+    // 비밀번호 변경 (마이페이지)
     @ApiOperation(value = "마이페이지 비밀번호 변경", notes = "회원 비밀번호 수정하기")
     @PutMapping("/password-update")
     public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> password) {

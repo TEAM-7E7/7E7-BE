@@ -70,12 +70,28 @@ public class S3CloudServiceImpl implements FileCloudService {
     @Override
     @Transactional
     public void scheduledClearance() {
-        List<GoodsImage> unusedIdUrls = goodsImageRepository.findAllByGoodsIdIsNull(LocalDateTime.now().minusMinutes(60));
-        for (GoodsImage goodsImage : unusedIdUrls) {
+        List<GoodsImage> unusedUrls = goodsImageRepository.findAllByGoodsIdIsNull(LocalDateTime.now().minusMinutes(60));
+        for (GoodsImage goodsImage : unusedUrls) {
             deleteFile(goodsImage.getImageUrl());
             goodsImageRepository.deleteById(goodsImage.getId());
         }
     }
+
+    @Override
+    public void cascadeGoodsImage(Long goodsId){
+        List<GoodsImage> cascadeUrls = goodsImageRepository.findAllByAccount(goodsId);
+        for (GoodsImage goodsImage : cascadeUrls) {
+            deleteFile(goodsImage.getImageUrl());
+            goodsImageRepository.deleteById(goodsImage.getId());
+        }
+    }
+
+    @Override
+    public void cascadeAccountImage(Long goodsId){
+
+    }
+
+
 
     private String getFileExtension(String fileName) throws CustomException {
         String lowerCase = fileName.toLowerCase();
