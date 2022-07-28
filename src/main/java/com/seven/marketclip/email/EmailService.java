@@ -54,8 +54,6 @@ public class EmailService {
             throw new CustomException(USER_ALREADY_EXISTS);
         }
 
-        /* 이메일의 형식 검사 필요(정규식) */
-
         if (receivedToken.isEmpty()) {
             // 이메일로만 API 호출
             if (emailOpt.isEmpty()) {
@@ -88,6 +86,54 @@ public class EmailService {
         }
     }
 
+    @Transactional
+    public ResponseCode findPassword(EmailDTO emailDTO) throws CustomException {
+
+        String emailToken = RandomStringUtils.random(8, true, true);
+        String receivedEmail = emailDTO.getEmail();
+        String receivedToken = emailDTO.getEmailToken();
+
+        if (accountRepository.findByEmail(receivedEmail).isEmpty()) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
+
+        Optional<Email> emailOpt = emailRepository.findByUserEmail(receivedEmail);
+
+        if (receivedToken.isEmpty()) {
+            // 이메일로만 API 호출
+            if (emailOpt.isEmpty()) {
+                sendEmail(receivedEmail, emailToken);
+                Email email = Email.builder()
+                        .userEmail(receivedEmail)
+                        .emailToken(emailToken)
+                        .build();
+                emailRepository.save(email);
+            } else {
+                Email email = emailOpt.get();
+                sendEmail(receivedEmail, emailToken);
+                email.update(LocalDateTime.now(), emailToken);
+            }
+            return EMAIL_DISPATCH_SUCCESS;
+        } else {
+            Email email = emailOpt.orElseThrow(
+                    () -> new CustomException(EMAIL_ALREADY_EXPIRED)
+            );
+            if (email.checkExpired(LocalDateTime.now())) {
+                throw new CustomException(EMAIL_ALREADY_EXPIRED);
+            } else if (!email.getEmailToken().equals(receivedToken)) {
+                throw new CustomException(INVALID_EMAIL_TOKEN);
+            } else {
+                email.verified();
+                return EMAIL_VALIDATION_SUCCESS;
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteEmailVerified(String email){
+        emailRepository.deleteByUserEmail(email);
+    }
+
     public void checkVerified(String email) throws CustomException {
         Email emailFound = emailRepository.findByUserEmail(email).orElseThrow(
                 () -> new CustomException(EMAIL_CHECK_NOT_FOUND)
@@ -100,15 +146,9 @@ public class EmailService {
     public void sendEmail(String email, String emailToken) {
         SimpleMailMessage simpleMessage = new SimpleMailMessage();
         simpleMessage.setTo(email);
-        simpleMessage.setSubject("marketClip 이메일 인증");
-        simpleMessage.setText("이메일 인증번호=" + emailToken);
+        simpleMessage.setSubject("MarketClip 이메일 인증");
+        simpleMessage.setText("이메일 인증번호 = " + emailToken);
         javaMailSender.send(simpleMessage);
     }
-
-/*    public void findEmail(String email) throws CustomException{
-        if(accountRepository.findByEmail(email).isEmpty()){
-            throw new CustomException(EMAIL_NOT_FOUND);
-        }
-    }*/
 
 }
