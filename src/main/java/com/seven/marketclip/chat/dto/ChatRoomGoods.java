@@ -28,6 +28,7 @@ public class ChatRoomGoods {
     private Long checkReadCnt;   //읽지 않은 알림 개수
 
     //대화 상대
+    private Long partnerId;
     private String partner;             //대화 상대 닉네임
     private String partnerProfileUrl;   //대화 상대 프로필 사진
 
@@ -42,9 +43,11 @@ public class ChatRoomGoods {
         this.lastDate = chatMessages.getCreatedAt();
         this.checkReadCnt = checkReadCnt;
         if(buyer.getId() != loginId){                 //대화 상대 구분
+            this.partnerId = buyer.getId();
             this.partner = buyer.getNickname();
             this.partnerProfileUrl = buyer.getProfileImgUrl().getImageUrl();
         }else{
+            this.partnerId = goods.getAccount().getId();
             this.partner = goods.getAccount().getNickname();
             this.partnerProfileUrl = goods.getAccount().getProfileImgUrl().getImageUrl();
         }

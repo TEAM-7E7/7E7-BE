@@ -10,6 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ChatMessageReq {
     private Long partnerId;
+    private String nickName;
     //상품 ID
     private Long goodsId;
     //채팅방 ID
