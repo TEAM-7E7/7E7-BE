@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.service.ChatMessageService;
+import com.seven.marketclip.notifications.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -21,6 +22,7 @@ public class RedisSubscriber implements MessageListener {
     private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageService chatMessageService;
+    private final NotificationService notificationService;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -35,6 +37,7 @@ public class RedisSubscriber implements MessageListener {
             messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "api 요청해주세요");
             messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), "api 요청해주세요");
             chatMessageService.saveChatMessage(roomMessage);    //DB에 저장 API 5번
+//            notificationService.send(roomMessage.getSenderId(), roomMessage.getNickName(), roomMessage.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
         }

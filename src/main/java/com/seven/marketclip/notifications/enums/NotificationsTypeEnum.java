@@ -1,4 +1,4 @@
-package com.seven.marketclip.notifications.domain;
+package com.seven.marketclip.notifications.enums;
 
 public enum NotificationsTypeEnum {
     CHAT(NotificationsType.CHAT),
