@@ -129,12 +129,6 @@ public class AccountService {
         return SUCCESS;
     }
 
-    // 비밀번호 찾기 (이메일)
-    public ResponseCode findPassword(EmailDTO emailDTO) {
-        emailService.findPassword(emailDTO);
-        return SUCCESS;
-    }
-
     // 비밀번호 변경 (이메일 확인 이후)
     @Transactional
     public ResponseCode changePassword(String email, String password) {
@@ -161,6 +155,8 @@ public class AccountService {
     @Transactional
     public ResponseCode deleteUser(Long accountId) {
         accountVerification.checkAccount(accountId);
+        fileCloudService.cascadeGoodsImage(accountId);
+        fileCloudService.cascadeAccountImage(accountId);
         accountRepository.deleteById(accountId);
 
         return SUCCESS;
@@ -170,7 +166,6 @@ public class AccountService {
     @Transactional
     public ResponseCode reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String refresh = request.getHeader("X-REFRESH-TOKEN");
-        System.out.println("dasasffffffffffffffffffff");
         if (refresh == null) {
             return REFRESH_TOKEN_NO_HEADER;
         }

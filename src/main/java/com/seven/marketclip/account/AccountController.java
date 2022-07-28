@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "프로필 이미지 파일 S3 업로드", notes = "")
-    @PostMapping(value = "/profile-img")
+    @PostMapping(value = "/profile-img", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId()));
     }
@@ -59,25 +60,18 @@ public class AccountController {
         return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
     }
 
-    // 비밀번호 찾기 (이메일)
-    @ApiOperation(value = "비밀번호 찾기 신청", notes = "회원 비밀번호 찾기 신청")
-    @PostMapping("/password-search")
-    public ResponseEntity<HttpResponse> searchPassword(@RequestBody EmailDTO emailDTO) {
-        return HttpResponse.toResponseEntity(accountService.findPassword(emailDTO));
-    }
-
     // 비밀번호 변경 (이메일)
-    @ApiOperation(value = "비밀번호 찾기 신청", notes = "회원 비밀번호 찾기 신청 후 변경")
+    @ApiOperation(value = "비밀번호 변경 신청", notes = "회원 비밀번호 찾기 신청 후 변경")
     @PutMapping("/password-search")
     public ResponseEntity<HttpResponse> changePassword(@RequestBody Map<String, String> emailPassword) {
         return HttpResponse.toResponseEntity(accountService.changePassword(emailPassword.get("email"), emailPassword.get("password")));
     }
 
-    // 비밀번호 변경 (로그인)
-    @ApiOperation(value = "비밀번호 변경", notes = "회원 비밀번호 수정하기")
+    // 비밀번호 변경 (마이페이지)
+    @ApiOperation(value = "마이페이지 비밀번호 변경", notes = "회원 비밀번호 수정하기")
     @PutMapping("/password-update")
-    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("password") String password) {
-        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails, password));
+    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> password) {
+        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails, password.get("password")));
     }
 
     @ApiOperation(value = "회원 탈퇴", notes = "")

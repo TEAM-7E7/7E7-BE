@@ -134,7 +134,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
                 .mvcMatchers("/**").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/api/goods").permitAll()
-                .mvcMatchers("/api/user/sign-up", "/api/user/refresh-re", "/api/email-validation", "/api/user/nickname-check", "/api/user/nickname", "api/goods/dynamic-paging").permitAll()
+                .mvcMatchers("/api/user/sign-up", "/api/user/refresh-re", "/api/email-verification", "/api/user/nickname-check", "/api/user/nickname", "api/goods/dynamic-paging").permitAll()
                 .antMatchers("/login/oauth2/code/google", "/login/oauth2/code/naver", "/login/oauth2/code/kakao").permitAll()
                 .antMatchers("/api/manager", "/api/profile-img").hasRole("USER")
                 .anyRequest().authenticated();
@@ -193,12 +193,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO 여기에 로그인을 뚫면 안될듯? -> 시큐리티 컨텍스트에 안넣어도 된다?
         // 회원 관리 API 허용
-        skipPathList.add("POST,/api/email-validation");
+        skipPathList.add("POST,/api/email-verification");
         skipPathList.add("POST,/api/user/nickname-check");
         skipPathList.add("POST,/api/user/sign-up");
         skipPathList.add("GET,/api/user/refresh-re");
         skipPathList.add("POST,/api/goods/dynamic-paging/**");
         skipPathList.add("GET,/api/goods/details/**");
+        skipPathList.add("POST,/api/user/password-search");
+        skipPathList.add("PUT,/api/user/password-search");
+
 
         //소셜 콜백 주소
         //KAKAO
