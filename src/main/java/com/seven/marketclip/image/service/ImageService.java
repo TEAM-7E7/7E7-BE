@@ -59,7 +59,7 @@ public class ImageService {
             }
             goodsImages.add(goodsImage);
         }
-        softDeleteGoods(goods.getId());
+        softDeleteGoodsImages(goods.getId());
 
         for (int i = 0; i < idList.size(); i++) {
             GoodsImage goodsImage = goodsImages.get(i);
@@ -69,7 +69,7 @@ public class ImageService {
     }
 
     @Transactional
-    public void softDeleteGoods(Long goodsId) {
+    public void softDeleteGoodsImages(Long goodsId) {
         List<GoodsImage> goodsImages = goodsImageRepository.findAllByGoodsId(goodsId);
         for (GoodsImage goodsImage : goodsImages) {
             goodsImage.softDeleteGoods();

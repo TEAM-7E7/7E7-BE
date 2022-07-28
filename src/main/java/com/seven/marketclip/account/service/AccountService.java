@@ -12,6 +12,7 @@ import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.validation.AccountVerification;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
+import com.seven.marketclip.email.EmailDTO;
 import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
@@ -61,9 +62,7 @@ public class AccountService {
 
     //닉네임 증복체크
     public ResponseCode checkNickname(String nickname) throws CustomException {
-        if (accountRepository.findByNickname(nickname).isPresent()) {
-            throw new CustomException(NICKNAME_ALREADY_EXISTS);
-        }
+        accountVerification.checkNickname(nickname);
         return SUCCESS;
     }
 
@@ -72,12 +71,9 @@ public class AccountService {
     public ResponseCode addUser(AccountReqDTO accountReqDTO) throws CustomException {
         String encodedPassword = bCryptPasswordEncoder.encode(accountReqDTO.getPassword());
 
-        if (accountRepository.findByEmail(accountReqDTO.getEmail()).isPresent()) {
-            throw new CustomException(USER_ALREADY_EXISTS);
-        }
-        if (accountRepository.findByNickname(accountReqDTO.getNickname()).isPresent()) {
-            throw new CustomException(NICKNAME_ALREADY_EXISTS);
-        }
+        accountVerification.checkEmail(accountReqDTO.getEmail());
+        accountVerification.checkNickname(accountReqDTO.getNickname());
+        emailService.checkVerified(accountReqDTO.getEmail());
 
         Account account = Account.builder()
                 .email(accountReqDTO.getEmail())
@@ -87,10 +83,9 @@ public class AccountService {
                 .type(AccountTypeEnum.MARKETCLIP)
                 .build();
 
-        emailService.checkVerified(accountReqDTO.getEmail());
-
         accountRepository.save(account);
         imageService.saveAccountImage(DEFAULT_PROFILE_IMAGE, account);
+        emailService.deleteEmailVerified(accountReqDTO.getEmail());
 
         return SUCCESS;
     }
@@ -104,12 +99,10 @@ public class AccountService {
         idUrlMap.put("url", profileUrl);
 
         AccountImage accountImage = imageService.findAccountImage(accountId);
-        if (accountImage.getImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
-            accountImage.updateUrl(profileUrl);
-        } else {
+        if (!accountImage.getImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
             fileCloudService.deleteFile(accountImage.getImageUrl());
-            accountImage.updateUrl(profileUrl);
         }
+        accountImage.updateUrl(profileUrl);
         return new DataResponseCode(SUCCESS, idUrlMap);
     }
 
@@ -127,37 +120,44 @@ public class AccountService {
         return SUCCESS;
     }
 
-    //프로필 닉네임 수정
+    // 닉네임 변경
     @Transactional
     public ResponseCode updateNickname(Long id, String nickname) {
-        Account account = accountVerification.checkVerificationId(id);
+        Account account = accountVerification.checkAccount(id);
+        accountVerification.checkNickname(nickname);
         account.changeNickname(nickname);
-
-        //여기에 JWT 재발급? -> 다른 수정들도...
-
-        return NICKNAME_UPDATE_SUCCESS;
+        return SUCCESS;
     }
 
-    //프로필 비밀번호 수정
+    // 비밀번호 변경 (이메일 확인 이후)
     @Transactional
-    public ResponseCode updatePassword(Long id, String password) {
-        Account account = accountVerification.checkVerificationId(id);
+    public ResponseCode changePassword(String email, String password) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(
+                ()-> new CustomException(EMAIL_NOT_FOUND)
+        );
+        emailService.checkVerified(email);
         account.changePassword(password);
         account.encodePassword(bCryptPasswordEncoder);
-        return PASSWORD_VALIDATION_SUCCESS;
+        emailService.deleteEmailVerified(email);
+        return SUCCESS;
     }
 
-    //프로필 비밀번호 찾기
+    // 비밀번호 변경 (로그인 상태)
     @Transactional
-    public ResponseCode findPassword(String email) {
-//        emailService.checkEmail();
+    public ResponseCode updatePassword(UserDetailsImpl userDetails, String password) {
+        Account account = accountVerification.checkAccount(userDetails.getId());
+        account.changePassword(password);
+        account.encodePassword(bCryptPasswordEncoder);
         return SUCCESS;
     }
 
     // 회원 탈퇴
-    public ResponseCode deleteUser(Long id) {
-        accountVerification.checkVerificationId(id);
-        accountRepository.deleteById(id);
+    @Transactional
+    public ResponseCode deleteUser(Long accountId) {
+        accountVerification.checkAccount(accountId);
+        fileCloudService.cascadeGoodsImage(accountId);
+        fileCloudService.cascadeAccountImage(accountId);
+        accountRepository.deleteById(accountId);
 
         return SUCCESS;
     }
@@ -166,7 +166,6 @@ public class AccountService {
     @Transactional
     public ResponseCode reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String refresh = request.getHeader("X-REFRESH-TOKEN");
-        System.out.println("dasasffffffffffffffffffff");
         if (refresh == null) {
             return REFRESH_TOKEN_NO_HEADER;
         }

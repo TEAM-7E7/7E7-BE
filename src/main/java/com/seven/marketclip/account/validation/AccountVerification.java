@@ -16,23 +16,23 @@ public class AccountVerification {
     private final AccountRepository accountRepository;
 
     //유저 아이디 중복 체크
-    public Account checkVerificationId(Long id) throws CustomException{
+    public Account checkAccount(Long id) throws CustomException {
         return accountRepository.findById(id).orElseThrow(
-                ()-> new CustomException(USER_NOT_FOUND)
+                () -> new CustomException(USER_NOT_FOUND)
         );
     }
 
     //이메일 중복 체크
-    public void checkVerificationEmail(String email) throws CustomException {
-        if(!accountRepository.existsByEmail(email)){
-            throw new CustomException(VERIFICATION_EMAIL);
+    public void checkEmail(String email) throws CustomException {
+        if (accountRepository.existsByEmail(email)) {
+            throw new CustomException(EMAIL_ALREADY_EXISTS);
         }
     }
 
     //닉네임 중복 체크
-    public void checkVerificationNickname(String email) throws CustomException {
-        if(!accountRepository.existsByNickname(email)){
-            throw new CustomException(VERIFICATION_NICKNAME);
+    public void checkNickname(String nickname) throws CustomException {
+        if (accountRepository.existsByNickname(nickname)) {
+            throw new CustomException(NICKNAME_ALREADY_EXISTS);
         }
     }
 

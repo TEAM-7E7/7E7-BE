@@ -2,12 +2,14 @@ package com.seven.marketclip.account;
 
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.service.AccountService;
+import com.seven.marketclip.email.EmailDTO;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.UserDetailsImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +42,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "프로필 이미지 파일 S3 업로드", notes = "")
-    @PostMapping(value = "/profile-img")
+    @PostMapping(value = "/profile-img", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId()));
     }
@@ -51,32 +53,31 @@ public class AccountController {
         return HttpResponse.toResponseEntity(accountService.profileImgDelete(userDetails.getId()));
     }
 
-    //프로필 닉네임 수정
-    @ApiOperation(value = "닉네임 수정", notes = "회원 닉네임 수정하기")
-    @PostMapping("/profile-nickname")
-    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String nickname) {
+    // 닉네임 수정
+    @ApiOperation(value = "닉네임 변경", notes = "회원 닉네임 수정하기")
+    @PutMapping("/nickname-update")
+    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("nickname") String nickname) {
         return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
     }
 
-    //비밀번호 변경
-    @ApiOperation(value = "비밀번호 수정", notes = "회원 비밀번호 수정하기")
-    @PutMapping("/password")
-    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String password) {
-//        SecurityContextHolder.getContext().setAuthentication((Authentication) userDetails);
-        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails.getId(), password));
+    // 비밀번호 변경 (이메일)
+    @ApiOperation(value = "비밀번호 변경 신청", notes = "회원 비밀번호 찾기 신청 후 변경")
+    @PutMapping("/password-search")
+    public ResponseEntity<HttpResponse> changePassword(@RequestBody Map<String, String> emailPassword) {
+        return HttpResponse.toResponseEntity(accountService.changePassword(emailPassword.get("email"), emailPassword.get("password")));
+    }
+
+    // 비밀번호 변경 (마이페이지)
+    @ApiOperation(value = "마이페이지 비밀번호 변경", notes = "회원 비밀번호 수정하기")
+    @PutMapping("/password-update")
+    public ResponseEntity<HttpResponse> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody Map<String, String> password) {
+        return HttpResponse.toResponseEntity(accountService.updatePassword(userDetails, password.get("password")));
     }
 
     @ApiOperation(value = "회원 탈퇴", notes = "")
     @DeleteMapping("/sign-out")
     public ResponseEntity<HttpResponse> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return HttpResponse.toResponseEntity(accountService.deleteUser(userDetails.getId()));
-    }
-
-    // 비밀번호 찾기 -> 해당 이메일로 인증번호 전송
-    @ApiOperation(value = "비밀번호 찾기 기능", notes = "회원 프로필 비밀번호 찾기")
-    @GetMapping("/find-password")
-    public ResponseEntity<HttpResponse> findPassword(@RequestParam String email) {
-        return HttpResponse.toResponseEntity(accountService.findPassword(email));
     }
 
     @ApiOperation(value = "리프레쉬 토큰 재발급", notes = "리프레쉬 토큰 재발급")
