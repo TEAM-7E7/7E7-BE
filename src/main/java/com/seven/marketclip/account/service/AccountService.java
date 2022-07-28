@@ -162,7 +162,8 @@ public class AccountService {
         return SUCCESS;
     }
 
-    //리프레쉬 토큰 재발급
+    //리프레쉬 토큰 재발
+    @Transactional
     public ResponseCode reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String refresh = request.getHeader("X-REFRESH-TOKEN");
         System.out.println("dasasffffffffffffffffffff");
