@@ -15,7 +15,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessages, Long>
     List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtDesc(ChatRoom chatRoomId);
     Long countByChatRoomIdAndSenderIdAndCheckRead(ChatRoom chatRoomId, Account partnerId, Boolean bool);
     @Query("select m from ChatMessages m where m.chatRoomId = :id and " +
-            "m.createdAt = (select max(m.createdAt) from ChatMessages m)")
+            "m.createdAt = (select max(m.createdAt) from ChatMessages m where m.chatRoomId = :id)")
     Optional<ChatMessages> latestMessage(@Param("id") ChatRoom chatRoomId);
     @Modifying
     @Query("update ChatMessages c set c.checkRead = true where c.chatRoomId = :chatRoomId and not c.senderId = :loginId")
