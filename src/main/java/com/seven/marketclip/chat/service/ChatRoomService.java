@@ -9,7 +9,9 @@ import com.seven.marketclip.chat.dto.ChatRoomId;
 import com.seven.marketclip.chat.dto.RoomMake;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
+import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,11 +24,14 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.seven.marketclip.exception.ResponseCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageService chatMessageService;
+    private final GoodsRepository goodsRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -44,6 +49,15 @@ public class ChatRoomService {
     }
     @Transactional      //채팅방 생성
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
+        Optional<Goods> goods = goodsRepository.findById(roomMake.getGoodsId());
+        if (goods.isEmpty()){                                         // 게시글이 없는 경우
+            throw new CustomException(GOODS_NOT_FOUND);
+        }
+        Long room = chatRoomRepository.myRoomFindQuery(
+                roomMake.getId(), roomMake.getGoodsId(), loginId);
+        if(room != 0L || goods.get().getAccount().getId() == loginId){// 위 쿼리문 조건 + 내가 나의 채팅방을 만든경우
+            throw new CustomException(CHAT_ROOM_NOT_SAVE);
+        }
         Account ac = Account.builder()
                 .id(loginId)
                 .build();

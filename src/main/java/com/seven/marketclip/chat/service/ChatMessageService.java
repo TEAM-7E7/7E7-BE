@@ -43,7 +43,7 @@ public class ChatMessageService {
     public ChatRoomTwo messageList(Long goodsId,Long loginId, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정
         Optional<ChatRoom> room = chatRoomRepository.roomFindQuery(goodsId, loginId, partnerId);               //임시 수정
         if(room.isEmpty()){
-            throw new CustomException(ResponseCode.GOODS_NOT_FOUND);
+            throw new CustomException(ResponseCode.CHAT_ROOM_NOT_FOUND);
         }else{
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
                 ChatRoom.builder().id(room.get().getId()).build());
