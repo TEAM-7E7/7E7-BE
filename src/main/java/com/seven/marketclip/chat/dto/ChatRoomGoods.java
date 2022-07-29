@@ -44,7 +44,7 @@ public class ChatRoomGoods {
 
         if(messages.isEmpty() || messages.size() == 1){
             this.lastMessage = "";
-            this.lastDate = null;
+            this.lastDate = new Date();
         }else{
             this.lastMessage = messages.get(messages.size()-1).getMessage();
             this.lastDate = messages.get(messages.size()-1).getCreatedAt();
