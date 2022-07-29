@@ -1,6 +1,6 @@
 package com.seven.marketclip.goods.service;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.exception.CustomException;

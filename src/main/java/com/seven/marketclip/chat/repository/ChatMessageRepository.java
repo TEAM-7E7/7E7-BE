@@ -1,6 +1,6 @@
 package com.seven.marketclip.chat.repository;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;

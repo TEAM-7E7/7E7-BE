@@ -1,7 +1,7 @@
 package com.seven.marketclip.security;
 
-import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.account.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

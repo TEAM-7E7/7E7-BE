@@ -1,7 +1,7 @@
 package com.seven.marketclip.security.provider;
 
-import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.account.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountRepository;
+import com.seven.marketclip.account.repository.AccountRoleEnum;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.jwt.JwtPreProcessingToken;

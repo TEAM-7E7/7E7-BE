@@ -1,6 +1,6 @@
 package com.seven.marketclip.wish.repository;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.wish.domain.Wish;
 import org.springframework.data.domain.Page;

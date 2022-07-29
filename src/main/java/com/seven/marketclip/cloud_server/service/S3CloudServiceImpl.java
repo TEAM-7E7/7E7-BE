@@ -31,12 +31,10 @@ public class S3CloudServiceImpl implements FileCloudService {
 
     private final AmazonS3 amazonS3;
     private final GoodsImageRepository goodsImageRepository;
-    private final AccountImageRepository accountImageRepository;
 
-    public S3CloudServiceImpl(AmazonS3 amazonS3, GoodsImageRepository goodsImageRepository, AccountImageRepository accountImageRepository) {
+    public S3CloudServiceImpl(AmazonS3 amazonS3, GoodsImageRepository goodsImageRepository) {
         this.amazonS3 = amazonS3;
         this.goodsImageRepository = goodsImageRepository;
-        this.accountImageRepository = accountImageRepository;
     }
 
     @Value("${cloud.aws.s3.bucket}")
@@ -79,25 +77,6 @@ public class S3CloudServiceImpl implements FileCloudService {
             goodsImageRepository.deleteById(goodsImage.getId());
         }
     }
-
-    @Override
-    public void cascadeGoodsImage(Long accountId){
-        List<GoodsImage> cascadeUrls = goodsImageRepository.findAllByUploaderId(accountId);
-        for (GoodsImage goodsImage : cascadeUrls) {
-            deleteFile(goodsImage.getImageUrl());
-//            goodsImageRepository.deleteById(goodsImage.getId());
-        }
-    }
-
-    @Override
-    public void cascadeAccountImage(Long goodsId){
-        AccountImage accountImage = accountImageRepository.findByAccountId(goodsId).orElseThrow(
-                ()-> new CustomException(ACCOUNT_IMAGE_NOT_FOUND)
-        );
-        deleteFile(accountImage.getImageUrl());
-    }
-
-
 
     private String getFileExtension(String fileName) throws CustomException {
         String lowerCase = fileName.toLowerCase();

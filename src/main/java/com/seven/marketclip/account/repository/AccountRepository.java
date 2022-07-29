@@ -1,5 +1,6 @@
-package com.seven.marketclip.account;
+package com.seven.marketclip.account.repository;
 
+import com.seven.marketclip.account.domain.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

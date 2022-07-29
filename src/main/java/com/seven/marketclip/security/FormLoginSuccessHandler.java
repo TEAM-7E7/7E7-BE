@@ -1,7 +1,7 @@
 package com.seven.marketclip.security;
 
-import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.account.repository.AccountRepository;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
