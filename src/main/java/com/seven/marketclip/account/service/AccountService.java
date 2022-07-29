@@ -4,26 +4,26 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.account.AccountRoleEnum;
-import com.seven.marketclip.account.AccountTypeEnum;
+import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.account.repository.AccountRepository;
+import com.seven.marketclip.account.repository.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.validation.AccountVerification;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
-import com.seven.marketclip.email.EmailDTO;
 import com.seven.marketclip.email.EmailService;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
+import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.image.domain.AccountImage;
+import com.seven.marketclip.image.domain.GoodsImage;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.FormLoginSuccessHandler;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,10 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 import static com.seven.marketclip.image.service.ImageService.DEFAULT_PROFILE_IMAGE;
@@ -134,7 +132,7 @@ public class AccountService {
     @Transactional
     public ResponseCode changePassword(String email, String password) {
         Account account = accountRepository.findByEmail(email).orElseThrow(
-                ()-> new CustomException(EMAIL_NOT_FOUND)
+                () -> new CustomException(EMAIL_NOT_FOUND)
         );
         emailService.checkVerified(email);
         account.changePassword(password);
@@ -155,12 +153,33 @@ public class AccountService {
     // 회원 탈퇴
     @Transactional
     public ResponseCode deleteUser(Long accountId) {
-        accountVerification.checkAccount(accountId);
-        fileCloudService.cascadeGoodsImage(accountId);
-        fileCloudService.cascadeAccountImage(accountId);
-        accountRepository.deleteById(accountId);
+        Account account = accountVerification.checkAccount(accountId);
+        List<Goods> goodsList = account.getGoodsList();
+        AccountImage accountImage = account.getProfileImgUrl();
 
+        if (goodsList.isEmpty() || accountImage.getImageUrl().equals("default")) {
+            deleteByAccountId(accountId);
+        } else {
+            List<List<GoodsImage>> cascadeUrlsList = goodsList.stream().map(Goods::getGoodsImages).collect(Collectors.toList());
+            List<GoodsImage> cascadeUrls = cascadeUrlsList.stream().flatMap(List::stream).collect(Collectors.toList());
+
+            try {
+                deleteByAccountId(accountId);
+            } catch (Exception e){
+                return SUCCESS;
+            }
+
+            fileCloudService.deleteFile(accountImage.getImageUrl());
+            for (GoodsImage goodsImage : cascadeUrls) {
+                fileCloudService.deleteFile(goodsImage.getImageUrl());
+            }
+        }
         return SUCCESS;
+    }
+
+    @Transactional
+    public void deleteByAccountId(Long accountId) {
+        accountRepository.deleteById(accountId);
     }
 
     //리프레쉬 토큰 재발
@@ -174,8 +193,6 @@ public class AccountService {
         //TODO Decoder에 있는거 같은 함수로 빼기
         //올바른 토큰인지 확인
         refresh = headerTokenExtractor.extract(refresh, request, response);
-        System.out.println("리프레쉬 토큰 확인");
-        System.out.println("헤더에서 받은 jwt 확인 " + refresh);
 
 
         //만료된 토큰인지 확인 -> JWT필터에서도 해줘야함.
@@ -198,13 +215,11 @@ public class AccountService {
         Date expiredDate = jwt
                 .getClaim(CLAIM_EXPIRED_DATE)
                 .asDate();
-        System.out.println("before");
 
         Date now = new Date();
         if (expiredDate.before(now)) {
             return REFRESH_TOKEN_EXPIRED;
         }
-        System.out.println("after");
         id = jwt
                 .getClaim(CLAIM_USER_ID)
                 .asLong();
@@ -218,8 +233,6 @@ public class AccountService {
         if (!refresh.equals(account.getRefreshToken())) {
             return REFRESH_TOKEN_NOT_EXIST_DB;
         }
-
-        System.out.println("유저 디테일스 : " + account.getProfileImgUrl().getImageUrl());
 
         UserDetailsImpl userDetails = UserDetailsImpl.builder()
                 .id(account.getId())
@@ -237,7 +250,6 @@ public class AccountService {
 
         response.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceJWT);
         response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + reissuanceRefreshToken);
-        System.out.println("리프레시 필터 끝");
 
         return SUCCESS;
     }

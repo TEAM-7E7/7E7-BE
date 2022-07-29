@@ -20,8 +20,8 @@ public class Scheduler {
         this.fileCloudService = s3CloudService;
     }
 
-    // 두시간마다 폐기된 이메일 데이터 삭제
-    @Scheduled(cron = "0 0 0/2 * * *")
+    // 여섯시간마다 폐기된 이메일 데이터 삭제
+    @Scheduled(cron = "0 0 0/6 * * *")
     @Transactional
     public void emailClearance() {
         emailRepository.deleteAllByExpireDateBefore(LocalDateTime.now());

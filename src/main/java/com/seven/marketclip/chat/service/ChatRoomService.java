@@ -1,7 +1,7 @@
 package com.seven.marketclip.chat.service;
 
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
@@ -42,10 +42,10 @@ public class ChatRoomService {
     private void init() {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
-        List<ChatRoom> list = chatRoomRepository.findAll();
-        for (ChatRoom chat:list) {
-            enterChatRoom(chat.getId());
-        }
+//        List<ChatRoom> list = chatRoomRepository.findAll();
+//        for (ChatRoom chat:list) {
+//            enterChatRoom(chat.getId());
+//        }
     }
     @Transactional      //채팅방 생성
     public String saveChatRoom(RoomMake roomMake, Long loginId) {

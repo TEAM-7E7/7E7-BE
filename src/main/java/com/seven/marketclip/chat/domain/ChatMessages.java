@@ -1,6 +1,6 @@
 package com.seven.marketclip.chat.domain;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +17,10 @@ public class ChatMessages {
     private Long id;
     //채팅방 ID
     @ManyToOne
-    @JoinColumn(name="CHATROOM_ID")
+    @JoinColumn(name="chat_room_id")
     private ChatRoom chatRoomId;
     @ManyToOne
-    @JoinColumn(name="ACCOUNT_ID")
+    @JoinColumn(name="account_id")
     //발신 회원
     private Account senderId;
     //내용

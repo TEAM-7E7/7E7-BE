@@ -1,6 +1,6 @@
 package com.seven.marketclip.account.oauth;
 
-import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;

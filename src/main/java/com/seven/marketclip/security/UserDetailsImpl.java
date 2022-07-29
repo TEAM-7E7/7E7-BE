@@ -1,7 +1,7 @@
 package com.seven.marketclip.security;
 
 
-import com.seven.marketclip.account.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountRoleEnum;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

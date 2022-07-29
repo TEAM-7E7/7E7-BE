@@ -1,9 +1,9 @@
 package com.seven.marketclip.account.oauth;
 
-import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
-import com.seven.marketclip.account.AccountRoleEnum;
-import com.seven.marketclip.account.AccountTypeEnum;
+import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.account.repository.AccountRepository;
+import com.seven.marketclip.account.repository.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.image.repository.AccountImageRepository;

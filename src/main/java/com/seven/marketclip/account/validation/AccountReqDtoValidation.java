@@ -1,7 +1,7 @@
 package com.seven.marketclip.account.validation;
 
-import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.account.repository.AccountRepository;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

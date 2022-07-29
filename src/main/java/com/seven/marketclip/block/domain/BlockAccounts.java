@@ -1,7 +1,7 @@
 /*
 package com.seven.marketclip.block.domain;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

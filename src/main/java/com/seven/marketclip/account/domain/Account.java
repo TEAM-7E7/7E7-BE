@@ -1,7 +1,11 @@
-package com.seven.marketclip.account;
+package com.seven.marketclip.account.domain;
 
 import com.seven.marketclip.Timestamped;
+import com.seven.marketclip.account.repository.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import com.seven.marketclip.account.dto.AccountReqDTO;
+import com.seven.marketclip.chat.domain.ChatMessages;
+import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -59,6 +63,14 @@ public class Account extends Timestamped {
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Wish> wishLists;
+
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatRoom> chatRooms;
+
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "senderId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessages> chatMessages;
 
     @Builder
     public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {
