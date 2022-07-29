@@ -67,8 +67,8 @@ public class ChatRoomService {
 
     // 단일 채팅방 조회(채팅방 생성시 로직) API 및 메서드 2번
     @Transactional
-    public boolean findChatRoom(Long goodsId, Long buyerId) {
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findByGoodsIdAndAccountId(buyerId, goodsId);
+    public boolean findChatRoom(Long goodsId, Long loginId, Long partnerId) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.roomFindQuery(goodsId, loginId, partnerId);
         if(chatRoom.isEmpty()) {return false;}
         return true;
     }
