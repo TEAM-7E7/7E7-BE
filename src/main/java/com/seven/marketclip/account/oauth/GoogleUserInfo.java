@@ -1,6 +1,6 @@
 package com.seven.marketclip.account.oauth;
 
-import com.seven.marketclip.account.AccountTypeEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import lombok.Getter;
 
 import java.util.Map;

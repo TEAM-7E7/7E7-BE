@@ -1,7 +1,7 @@
 package com.seven.marketclip.chat.service;
 
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatMessageReq;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

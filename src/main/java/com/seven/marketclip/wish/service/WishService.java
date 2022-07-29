@@ -1,6 +1,6 @@
 package com.seven.marketclip.wish.service;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.goods.domain.Goods;

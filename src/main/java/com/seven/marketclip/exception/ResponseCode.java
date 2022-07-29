@@ -86,8 +86,7 @@ public enum ResponseCode {
 
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 상태입니다 다시 로그인 해주세요."),
     NULL_POINT_EXCEPTION(NOT_FOUND, "Null Point Exception 발생."),
-    ORDER_BY_NOT_FOUND(NOT_FOUND, "약속된 정렬 요청이 아닙니다"),
-
+    ORDER_BY_NOT_FOUND(NOT_FOUND, "약속된 정렬 요청이 아닙니다."),
 
     /** 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     USER_ALREADY_EXISTS(CONFLICT, "이미 존재하는 사용자입니다."),

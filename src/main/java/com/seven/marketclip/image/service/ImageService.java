@@ -1,6 +1,6 @@
 package com.seven.marketclip.image.service;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.image.domain.AccountImage;

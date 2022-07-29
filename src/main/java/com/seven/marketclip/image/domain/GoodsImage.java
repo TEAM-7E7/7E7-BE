@@ -1,6 +1,6 @@
 package com.seven.marketclip.image.domain;
 
-import com.seven.marketclip.account.Account;
+import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.goods.domain.Goods;
 import lombok.AccessLevel;
 import lombok.Builder;

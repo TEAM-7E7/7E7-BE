@@ -1,6 +1,6 @@
 package com.seven.marketclip.account.oauth;
 
-import com.seven.marketclip.account.AccountTypeEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 
 public interface OAuth2UserInfo {
 

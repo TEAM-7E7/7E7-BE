@@ -1,4 +1,4 @@
-package com.seven.marketclip.account;
+package com.seven.marketclip.account.controller;
 
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.service.AccountService;

@@ -1,4 +1,4 @@
-package com.seven.marketclip.account;
+package com.seven.marketclip.account.repository;
 
 public enum AccountTypeEnum {
     MARKETCLIP(AccountType.MARKETCLIP),

@@ -1,7 +1,7 @@
 package com.seven.marketclip.account.oauth;
 
-import com.seven.marketclip.account.Account;
-import com.seven.marketclip.account.AccountRepository;
+import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.account.repository.AccountRepository;
 import com.seven.marketclip.security.FormLoginSuccessHandler;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
