@@ -119,7 +119,7 @@ public class ChatRoomService {
 
         List<ChatRoomGoods> list = respRoomList.stream()
                 .sorted(Comparator.comparing(ChatRoomGoods::getLastDate,
-                        Comparator.nullsFirst(Comparator.naturalOrder())))
+                        Comparator.nullsFirst(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         return list;
     }
