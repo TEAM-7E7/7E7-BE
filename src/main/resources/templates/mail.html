@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-
+<div style="margin-left: 15px; padding-top: 15px">
+    <div>
+        <img src="https://whitewise.s3.ap-northeast-2.amazonaws.com/static/email.jpg" loading="lazy" alt="MarketClip 이메일 인증번호 이미지1">
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <span style="padding-bottom: 10px; font-size: 35px; font-family: 'Roboto', sans-serif;" th:text="${emailToken}"></span>
+    </div>
+    <div style="padding-top: 10px">
+        <img src="https://whitewise.s3.ap-northeast-2.amazonaws.com/static/email2.jpg" loading="lazy" alt="MarketClip 이메일 인증번호 이미지2">
+    </div>
+</div>
 </body>
 </html>

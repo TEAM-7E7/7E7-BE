@@ -6,7 +6,9 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.seven.marketclip.exception.CustomException;
+import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.image.domain.GoodsImage;
+import com.seven.marketclip.image.repository.AccountImageRepository;
 import com.seven.marketclip.image.repository.GoodsImageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static com.seven.marketclip.exception.ResponseCode.FILE_UPLOAD_ERROR;
-import static com.seven.marketclip.exception.ResponseCode.WRONG_FILE_TYPE;
+import static com.seven.marketclip.exception.ResponseCode.*;
 
 @Slf4j
 @Component
@@ -30,10 +31,12 @@ public class S3CloudServiceImpl implements FileCloudService {
 
     private final AmazonS3 amazonS3;
     private final GoodsImageRepository goodsImageRepository;
+    private final AccountImageRepository accountImageRepository;
 
-    public S3CloudServiceImpl(AmazonS3 amazonS3, GoodsImageRepository goodsImageRepository) {
+    public S3CloudServiceImpl(AmazonS3 amazonS3, GoodsImageRepository goodsImageRepository, AccountImageRepository accountImageRepository) {
         this.amazonS3 = amazonS3;
         this.goodsImageRepository = goodsImageRepository;
+        this.accountImageRepository = accountImageRepository;
     }
 
     @Value("${cloud.aws.s3.bucket}")
@@ -78,17 +81,20 @@ public class S3CloudServiceImpl implements FileCloudService {
     }
 
     @Override
-    public void cascadeGoodsImage(Long goodsId){
-        List<GoodsImage> cascadeUrls = goodsImageRepository.findAllByAccount(goodsId);
+    public void cascadeGoodsImage(Long accountId){
+        List<GoodsImage> cascadeUrls = goodsImageRepository.findAllByUploaderId(accountId);
         for (GoodsImage goodsImage : cascadeUrls) {
             deleteFile(goodsImage.getImageUrl());
-            goodsImageRepository.deleteById(goodsImage.getId());
+//            goodsImageRepository.deleteById(goodsImage.getId());
         }
     }
 
     @Override
     public void cascadeAccountImage(Long goodsId){
-
+        AccountImage accountImage = accountImageRepository.findByAccountId(goodsId).orElseThrow(
+                ()-> new CustomException(ACCOUNT_IMAGE_NOT_FOUND)
+        );
+        deleteFile(accountImage.getImageUrl());
     }
 
 
