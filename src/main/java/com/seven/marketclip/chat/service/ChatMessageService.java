@@ -41,8 +41,8 @@ public class ChatMessageService {
         return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public ChatRoomTwo messageList(Long goodsId,Long loginId) throws CustomException {      //전체 메시지 불러오기
-        Optional<ChatRoom> room = chatRoomRepository.findByGoodsIdAndAccountId(goodsId, loginId);
+    public ChatRoomTwo messageList(Long goodsId,Long loginId, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정
+        Optional<ChatRoom> room = chatRoomRepository.roomFindQuery(goodsId, loginId, partnerId);               //임시 수정
         if(room.isEmpty()){
             throw new CustomException(ResponseCode.GOODS_NOT_FOUND);
         }else{
@@ -60,6 +60,7 @@ public class ChatMessageService {
         }
         ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
                 .chatRoomId(chatRoomId)
+                .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
                 .messages(result)
                 .build();
         modifyCheckRead(room.get().getId(), loginId);

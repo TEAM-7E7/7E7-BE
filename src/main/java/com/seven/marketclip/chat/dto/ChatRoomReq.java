@@ -10,4 +10,5 @@ import lombok.Setter;
 public class ChatRoomReq {
     private Long goodsId;
     private Long buyerId;
+    private Long partnerId;
 }
