@@ -46,7 +46,7 @@ public class ChatMessageService {
         if(room.isEmpty()){
             throw new CustomException(ResponseCode.GOODS_NOT_FOUND);
         }else{
-        List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
+        List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
                 ChatRoom.builder().id(room.get().getId()).build());
         if(chatMessagesList.isEmpty()){
             return ChatRoomTwo.builder().chatRoomId(room.get().getId()).build();

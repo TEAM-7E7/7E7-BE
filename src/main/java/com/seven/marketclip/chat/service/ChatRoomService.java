@@ -70,15 +70,11 @@ public class ChatRoomService {
     @Transactional
     public boolean findChatRoom(Long goodsId, Long loginId, Long partnerId) {
         Optional<ChatRoom> chatRoom = chatRoomRepository.roomFindQuery(goodsId, loginId, partnerId);
-        if(chatRoom.isEmpty()) {return false;}
+        if (chatRoom.isEmpty()) {
+            return false;
+        }
         return true;
     }
-//    @Transactional
-//    public ChatRoom findChatRoomObject(Long goodsId, Long buyerId) {
-//        Optional<ChatRoom> chatRoom = chatRoomRepository.findByAccountIdAndGoodsId(buyerId, goodsId);
-//        if(chatRoom.isEmpty()) {return null;}
-//        return chatRoom.get();
-//    }
 
     @Transactional  //채팅방 check box 삭제 API 4번
     public void removeChatRoom(List<String> listChatRoomId){
@@ -107,7 +103,6 @@ public class ChatRoomService {
                 chatRoomGoods = ChatRoomGoods
                         .builder()
                         .chatRoom(room)
-                        .chatMessages(new ChatMessages())
                         .loginId(loginId)
                         .checkReadCnt(0L)
                         .build();
@@ -115,7 +110,6 @@ public class ChatRoomService {
                 chatRoomGoods = ChatRoomGoods
                         .builder()
                         .chatRoom(room)
-                        .chatMessages(chatMessageService.findLastMessage(room.getId()))
                         .loginId(loginId)
                         .checkReadCnt(chatMessageService.findCheckReadCnt(room.getId(), partnerId))
                         .build();
@@ -123,11 +117,11 @@ public class ChatRoomService {
             respRoomList.add(chatRoomGoods);
         }
 
-        respRoomList.stream()
+        List<ChatRoomGoods> list = respRoomList.stream()
                 .sorted(Comparator.comparing(ChatRoomGoods::getLastDate,
-                        Comparator.nullsFirst(Comparator.reverseOrder())))
+                        Comparator.nullsFirst(Comparator.naturalOrder())))
                 .collect(Collectors.toList());
-        return respRoomList;
+        return list;
     }
 
     public void enterChatRoom(String chatRoomId) {
