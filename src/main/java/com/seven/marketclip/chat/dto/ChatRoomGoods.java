@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,14 +34,21 @@ public class ChatRoomGoods {
     private String partnerProfileUrl;   //대화 상대 프로필 사진
 
     @Builder
-    public ChatRoomGoods(ChatRoom chatRoom, ChatMessages chatMessages, Long loginId, Long checkReadCnt){
+    public ChatRoomGoods(ChatRoom chatRoom, Long loginId, Long checkReadCnt){
         Goods goods = chatRoom.getGoods();
         Account buyer = chatRoom.getAccount();
+        List<ChatMessages> messages = chatRoom.getMessages();
         this.chatRoomId = chatRoom.getId();
         this.goodsId = goods.getId();
         this.goodsFileUrl = goods.getGoodsImages().get(0).getImageUrl(); // 사진 없을때 예외처리
-        this.lastMessage = chatMessages.getMessage();
-        this.lastDate = chatMessages.getCreatedAt();
+
+        if(messages.isEmpty() || messages.size() == 1){
+            this.lastMessage = "";
+            this.lastDate = null;
+        }else{
+            this.lastMessage = messages.get(messages.size()-1).getMessage();
+            this.lastDate = messages.get(messages.size()-1).getCreatedAt();
+        }
         this.checkReadCnt = checkReadCnt;
         if(buyer.getId() != loginId){                 //대화 상대 구분
             this.partnerId = buyer.getId();

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessages, Long> {
-    List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtDesc(ChatRoom chatRoomId);
+    List<ChatMessages> findAllByChatRoomIdOrderByCreatedAtAsc(ChatRoom chatRoomId);
     Long countByChatRoomIdAndSenderIdAndCheckRead(ChatRoom chatRoomId, Account partnerId, Boolean bool);
     @Query("select m from ChatMessages m where m.chatRoomId = :id and " +
             "m.createdAt = (select max(m.createdAt) from ChatMessages m where m.chatRoomId = :id)")
