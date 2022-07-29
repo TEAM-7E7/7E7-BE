@@ -23,6 +23,7 @@ import com.seven.marketclip.security.FormLoginSuccessHandler;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
