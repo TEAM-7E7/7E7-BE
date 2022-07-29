@@ -40,7 +40,7 @@ public class ChatMessageController {
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
     public ChatRoomTwo chatMessageList(@RequestBody ChatRoomReq roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails.getId());
+        return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails.getId(), roomInfo.getPartnerId());
     }
     @PostMapping("/api/chat-read-check")       //메세지 읽음 처리
     public String chatReadModify(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
