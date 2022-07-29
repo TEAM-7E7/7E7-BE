@@ -5,6 +5,7 @@ import com.seven.marketclip.goods.domain.Goods;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,6 +28,11 @@ public class ChatRoom implements Serializable, Persistable<String> {
     @ManyToOne
     @JoinColumn(name="ACCOUNT_ID")
     private Account account;
+
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "chatRoomId", fetch = FetchType.LAZY)
+    private List<ChatMessages> messages;
+
     private LocalDateTime createdDate;
     @Builder
     public ChatRoom(String id, Goods goods, Account account){
