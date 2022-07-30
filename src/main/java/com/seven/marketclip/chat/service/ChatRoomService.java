@@ -100,7 +100,7 @@ public class ChatRoomService {
     public List<ChatRoomGoods> findChatRooms(Long loginId){
         List<ChatRoom> chatRoomList = chatRoomRepository.roomsFindQuery(loginId);
         if(chatRoomList.isEmpty()){
-            return new ArrayList<ChatRoomGoods>();
+            return new ArrayList<>();
         }
         List<ChatRoomGoods> respRoomList = new ArrayList<>();
         for (ChatRoom room:chatRoomList) {

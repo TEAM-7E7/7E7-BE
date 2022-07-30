@@ -20,7 +20,7 @@ public class GoodsImage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uploader_id")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
