@@ -39,7 +39,7 @@ public class Account extends Timestamped {
     private String password;
 
     @OneToOne(mappedBy = "account", orphanRemoval = true)
-    @JoinColumn(name = "profile_image")
+    @JoinColumn(name = "account_image")
     private AccountImage profileImgUrl;
 
     @Column(nullable = false)
@@ -55,22 +55,21 @@ public class Account extends Timestamped {
 
     @Column(name = "refresh_token")
     private String refreshToken;
-
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Goods> goodsList;
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wish> wishLists;
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<ChatRoom> chatRooms;
 
-    @BatchSize(size = 100)
-    @OneToMany(mappedBy = "senderId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessages> chatMessages;
+//    @BatchSize(size = 100)
+//    @OneToMany(mappedBy = "senderId", fetch = FetchType.LAZY)
+//    private List<ChatMessages> chatMessages;
 
     @Builder
     public Account(Long id, String nickname, String email, String password, AccountRoleEnum role, AccountTypeEnum type) {
