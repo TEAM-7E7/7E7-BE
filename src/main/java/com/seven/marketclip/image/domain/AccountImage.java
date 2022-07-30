@@ -19,7 +19,7 @@ public class AccountImage {
 
     @MapsId
     @OneToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
     @Column(nullable = false)

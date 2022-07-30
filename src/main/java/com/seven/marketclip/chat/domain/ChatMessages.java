@@ -17,11 +17,11 @@ public class ChatMessages {
     private Long id;
     //채팅방 ID
     @ManyToOne
-    @JoinColumn(name="chat_room_id")
+    @JoinColumn(name="chat_room_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private ChatRoom chatRoomId;
     //발신 회원
     @ManyToOne
-    @JoinColumn(name="account_id")
+    @JoinColumn(name="account_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Account senderId;
     //내용
     private String message;

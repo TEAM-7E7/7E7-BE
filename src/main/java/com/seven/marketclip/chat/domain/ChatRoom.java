@@ -23,13 +23,12 @@ public class ChatRoom implements Serializable, Persistable<String> {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name="goods_id")
+    @JoinColumn(name="goods_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Goods goods;
     @ManyToOne
-    @JoinColumn(name="account_id")
+    @JoinColumn(name="account_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "chatRoomId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChatMessages> messages;
 
