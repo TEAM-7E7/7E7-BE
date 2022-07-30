@@ -30,10 +30,10 @@ public class Goods extends Timestamped {
     private Account account;
 
     @Column(nullable = false, length = 20)
-    private String title;//제목
+    private String title;
 
     @Column(nullable = false)
-    private String description;//내용
+    private String description;
 
     @Enumerated(value = EnumType.STRING)
     private GoodsCategory category;
@@ -46,11 +46,11 @@ public class Goods extends Timestamped {
     private Integer viewCount = 0;
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GoodsImage> goodsImages;
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Wish> wishLists;
 
     @BatchSize(size = 100)

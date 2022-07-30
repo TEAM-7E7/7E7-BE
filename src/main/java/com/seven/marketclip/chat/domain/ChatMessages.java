@@ -19,9 +19,9 @@ public class ChatMessages {
     @ManyToOne
     @JoinColumn(name="chat_room_id")
     private ChatRoom chatRoomId;
+    //발신 회원
     @ManyToOne
     @JoinColumn(name="account_id")
-    //발신 회원
     private Account senderId;
     //내용
     private String message;

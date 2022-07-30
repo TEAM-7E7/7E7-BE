@@ -21,6 +21,7 @@ import java.util.List;
 public class ChatRoom implements Serializable, Persistable<String> {
     @Id
     private String id;
+
     @ManyToOne
     @JoinColumn(name="goods_id")
     private Goods goods;
