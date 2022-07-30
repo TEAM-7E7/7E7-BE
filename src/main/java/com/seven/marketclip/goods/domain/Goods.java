@@ -3,16 +3,15 @@ package com.seven.marketclip.goods.domain;
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatRoom;
+import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.image.domain.GoodsImage;
-import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.wish.domain.Wish;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,7 +25,7 @@ public class Goods extends Timestamped {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
     @Column(nullable = false, length = 20)
@@ -45,15 +44,12 @@ public class Goods extends Timestamped {
 
     private Integer viewCount = 0;
 
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GoodsImage> goodsImages;
 
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Wish> wishLists;
 
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoom> chatRooms;
 
