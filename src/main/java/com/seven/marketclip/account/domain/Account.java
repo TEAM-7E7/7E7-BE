@@ -39,7 +39,7 @@ public class Account extends Timestamped {
     private String password;
 
     @OneToOne(mappedBy = "account", orphanRemoval = true)
-    @JoinColumn(name = "account_image")
+    @JoinColumn(name = "account_image", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private AccountImage profileImgUrl;
 
     @Column(nullable = false)
@@ -55,15 +55,12 @@ public class Account extends Timestamped {
 
     @Column(name = "refresh_token")
     private String refreshToken;
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Goods> goodsList;
 
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wish> wishLists;
 
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<ChatRoom> chatRooms;
 
