@@ -92,6 +92,7 @@ public enum ResponseCode {
     ORDER_BY_NOT_FOUND(NOT_FOUND, "약속된 정렬 요청이 아닙니다."),
 
     CHAT_ROOM_NOT_FOUND(NOT_FOUND, "채팅방이 존재하지 않습니다."),
+    CHAT_MESSAGE_NOT_FOUND(NOT_FOUND, "채팅방의 메세지가 존재하지 않습니다."),
 
     /** 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     USER_ALREADY_EXISTS(CONFLICT, "이미 존재하는 사용자입니다."),
