@@ -1,9 +1,6 @@
 package com.seven.marketclip.chat.controller;
 
-import com.seven.marketclip.chat.dto.ChatRoomGoods;
-import com.seven.marketclip.chat.dto.ChatRoomReq;
-import com.seven.marketclip.chat.dto.ChatRoomTwo;
-import com.seven.marketclip.chat.dto.RoomMake;
+import com.seven.marketclip.chat.dto.*;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +20,8 @@ public class ChatRoomController {
         chatRoomService.saveChatRoom(room, userDetails.getId());
     }
     @DeleteMapping ("/api/room")
-    public void chatRoomRemove(@RequestBody Map<String, List<String>> chatRoomId){
-        chatRoomService.removeChatRoom(chatRoomId.get("chatRoomId"));
+    public void chatRoomRemove(@RequestBody ChatRoomDeletes room){
+        chatRoomService.removeChatRoom(room.getChatRoomId());
     }
 
 //    @PostMapping("/api/find-room")          //방만들기 위한 true false

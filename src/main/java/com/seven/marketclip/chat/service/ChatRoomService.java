@@ -42,10 +42,10 @@ public class ChatRoomService {
     private void init() {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
-//        List<ChatRoom> list = chatRoomRepository.findAll();
-//        for (ChatRoom chat:list) {
-//            enterChatRoom(chat.getId());
-//        }
+        List<ChatRoom> list = chatRoomRepository.findAll();
+        for (ChatRoom chat:list) {
+            enterChatRoom(chat.getId());
+        }
     }
     @Transactional      //채팅방 생성
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
@@ -92,6 +92,9 @@ public class ChatRoomService {
     @Transactional  //채팅방 check box 삭제 API 4번
     public void removeChatRoom(List<String> listChatRoomId){
         for (String chatRoomId:listChatRoomId) {
+            if(chatRoomRepository.findById(chatRoomId).isEmpty()){
+                throw new CustomException(CHAT_ROOM_NOT_FOUND);
+            }
             chatRoomRepository.deleteById(chatRoomId);
         }
     }
