@@ -11,6 +11,7 @@ import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
+import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,16 +41,18 @@ public class ChatMessageService {
         return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public ChatRoomTwo messageList(Long goodsId,Long loginId, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정
-        Optional<ChatRoom> room = chatRoomRepository.roomFindQuery(goodsId, loginId, partnerId);               //임시 수정
+    public ChatRoomTwo messageList(Long goodsId, UserDetailsImpl userDetails, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정
+        Optional<ChatRoom> room = chatRoomRepository.roomFindQuery(goodsId, userDetails.getId(), partnerId);               //임시 수정
         if(room.isEmpty()){
             throw new CustomException(ResponseCode.CHAT_ROOM_NOT_FOUND);
         }else{
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
                 ChatRoom.builder().id(room.get().getId()).build());
         if(chatMessagesList.isEmpty()){
-            return ChatRoomTwo.builder().chatRoomId(room.get().getId()).build();
+            throw new CustomException(ResponseCode.CHAT_MESSAGE_NOT_FOUND);
         }
+        modifyCheckRead(room.get().getId(), userDetails.getId()); //메시지 읽음처리
+        
         List<ChatMessagesDto> result = chatMessagesList.stream()
                 .map(r -> new ChatMessagesDto(r))
                 .collect(Collectors.toList());
@@ -57,13 +60,27 @@ public class ChatMessageService {
         if(chatRoomId == null || chatRoomId.isEmpty()){
             chatRoomId = "비었습니다.";
         }
-        ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
-                .chatRoomId(chatRoomId)
-                .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
-                .messages(result)
-                .build();
-        modifyCheckRead(room.get().getId(), loginId);
-        return chatRoomTwo;
+            modifyCheckRead(room.get().getId(), userDetails.getId());
+        if(room.get().getAccount().getId() == userDetails.getId()){
+            ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
+                    .chatRoomId(chatRoomId)
+                    .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
+                    .myProfileUrl(userDetails.getProfileImgUrl())
+                    .partnerProfileUrl(room.get().getGoods().getAccount().getProfileImgUrl().getImageUrl())
+                    .messages(result)
+                    .build();
+            return chatRoomTwo;
+        }else{
+            ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
+                    .chatRoomId(chatRoomId)
+                    .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
+                    .myProfileUrl(userDetails.getProfileImgUrl())
+                    .partnerProfileUrl(userDetails.getProfileImgUrl())
+                    .messages(result)
+                    .build();
+            return chatRoomTwo;
+        }
+
         }
     }
     @Transactional
