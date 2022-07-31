@@ -7,6 +7,7 @@ import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
 import com.seven.marketclip.chat.dto.ChatRoomId;
 import com.seven.marketclip.chat.dto.RoomMake;
+import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
 import com.seven.marketclip.exception.CustomException;
@@ -32,6 +33,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageService chatMessageService;
     private final GoodsRepository goodsRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -149,6 +151,9 @@ public class ChatRoomService {
     }
 
     public ChannelTopic getTopic(String roomId) {
+        if(chatRoomRepository.findById(roomId).isEmpty()){
+            throw new CustomException(CHAT_ROOM_NOT_FOUND);
+        }
         return topics.get(roomId);
     }
 }

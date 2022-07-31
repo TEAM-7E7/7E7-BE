@@ -46,42 +46,42 @@ public class ChatMessageService {
         if(room.isEmpty()){
             throw new CustomException(ResponseCode.CHAT_ROOM_NOT_FOUND);
         }else{
-        List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
-                ChatRoom.builder().id(room.get().getId()).build());
-        if(chatMessagesList.isEmpty()){
-            throw new CustomException(ResponseCode.CHAT_MESSAGE_NOT_FOUND);
-        }
-        modifyCheckRead(room.get().getId(), userDetails.getId()); //메시지 읽음처리
-        
-        List<ChatMessagesDto> result = chatMessagesList.stream()
-                .map(r -> new ChatMessagesDto(r))
-                .collect(Collectors.toList());
-        String chatRoomId = result.get(0).getChatRoomId();
-        if(chatRoomId == null || chatRoomId.isEmpty()){
-            chatRoomId = "비었습니다.";
-        }
+            List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
+                    ChatRoom.builder().id(room.get().getId()).build());
+            if(chatMessagesList.isEmpty()){
+                throw new CustomException(ResponseCode.CHAT_MESSAGE_NOT_FOUND);
+            }
+            modifyCheckRead(room.get().getId(), userDetails.getId()); //메시지 읽음처리
 
-        if(room.get().getAccount().getId() == userDetails.getId()){
-            ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
-                    .chatRoomId(chatRoomId)
-                    .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
-                    .partnerNickname(room.get().getGoods().getAccount().getNickname())
-                    .myProfileUrl(userDetails.getProfileImgUrl())
-                    .partnerProfileUrl(room.get().getGoods().getAccount().getProfileImgUrl().getImageUrl())
-                    .messages(result)
-                    .build();
-            return chatRoomTwo;
-        }else{
-            ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
-                    .chatRoomId(chatRoomId)
-                    .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
-                    .partnerNickname(userDetails.getNickname())
-                    .myProfileUrl(userDetails.getProfileImgUrl())
-                    .partnerProfileUrl(userDetails.getProfileImgUrl())
-                    .messages(result)
-                    .build();
-            return chatRoomTwo;
-        }
+            List<ChatMessagesDto> result = chatMessagesList.stream()
+                    .map(r -> new ChatMessagesDto(r))
+                    .collect(Collectors.toList());
+            String chatRoomId = result.get(0).getChatRoomId();
+            if(chatRoomId == null || chatRoomId.isEmpty()){
+                chatRoomId = "비었습니다.";
+            }
+
+            if(room.get().getAccount().getId() == userDetails.getId()){
+                ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
+                        .chatRoomId(chatRoomId)
+                        .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
+                        .partnerNickname(room.get().getGoods().getAccount().getNickname())
+                        .myProfileUrl(userDetails.getProfileImgUrl())
+                        .partnerProfileUrl(room.get().getGoods().getAccount().getProfileImgUrl().getImageUrl())
+                        .messages(result)
+                        .build();
+                return chatRoomTwo;
+            }else{
+                ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
+                        .chatRoomId(chatRoomId)
+                        .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
+                        .partnerNickname(userDetails.getNickname())
+                        .myProfileUrl(userDetails.getProfileImgUrl())
+                        .partnerProfileUrl(userDetails.getProfileImgUrl())
+                        .messages(result)
+                        .build();
+                return chatRoomTwo;
+            }
 
         }
     }
@@ -104,7 +104,7 @@ public class ChatMessageService {
     @Transactional
     public void modifyCheckRead(String chatRoomId, Long loginId){
         chatMessageRepository.checkReadFlipOver(ChatRoom.builder().id(chatRoomId).build(),
-                                                Account.builder().id(loginId).build());
+                Account.builder().id(loginId).build());
     }
 
 }
