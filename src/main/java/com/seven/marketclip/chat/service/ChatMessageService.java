@@ -60,11 +60,12 @@ public class ChatMessageService {
         if(chatRoomId == null || chatRoomId.isEmpty()){
             chatRoomId = "비었습니다.";
         }
-            modifyCheckRead(room.get().getId(), userDetails.getId());
+
         if(room.get().getAccount().getId() == userDetails.getId()){
             ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
                     .chatRoomId(chatRoomId)
                     .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
+                    .partnerNickname(room.get().getGoods().getAccount().getNickname())
                     .myProfileUrl(userDetails.getProfileImgUrl())
                     .partnerProfileUrl(room.get().getGoods().getAccount().getProfileImgUrl().getImageUrl())
                     .messages(result)
@@ -74,6 +75,7 @@ public class ChatMessageService {
             ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
                     .chatRoomId(chatRoomId)
                     .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
+                    .partnerNickname(userDetails.getNickname())
                     .myProfileUrl(userDetails.getProfileImgUrl())
                     .partnerProfileUrl(userDetails.getProfileImgUrl())
                     .messages(result)
