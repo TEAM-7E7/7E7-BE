@@ -1,20 +1,19 @@
 package com.seven.marketclip.account.domain;
 
 import com.seven.marketclip.Timestamped;
+import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.repository.AccountRoleEnum;
 import com.seven.marketclip.account.repository.AccountTypeEnum;
-import com.seven.marketclip.account.dto.AccountReqDTO;
-import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
-import com.seven.marketclip.image.domain.AccountImage;
+import com.seven.marketclip.comments.entity.TradeReview;
 import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
@@ -55,6 +54,7 @@ public class Account extends Timestamped {
 
     @Column(name = "refresh_token")
     private String refreshToken;
+
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Goods> goodsList;
 
@@ -63,6 +63,9 @@ public class Account extends Timestamped {
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<ChatRoom> chatRooms;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<TradeReview> tradeReviews;
 
 //    @BatchSize(size = 100)
 //    @OneToMany(mappedBy = "senderId", fetch = FetchType.LAZY)
