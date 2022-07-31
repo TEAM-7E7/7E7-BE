@@ -15,14 +15,16 @@ public class ChatRoomTwo {
     private String goodsTitle;
     private String myProfileUrl;
     private String partnerProfileUrl;
+    private String partnerNickname;
     private List<ChatMessagesDto> messages;
 
     @Builder
-    public ChatRoomTwo(String chatRoomId, String goodsTitle, String myProfileUrl, String partnerProfileUrl, List<ChatMessagesDto> messages){
+    public ChatRoomTwo(String chatRoomId, String goodsTitle, String myProfileUrl, String partnerNickname, String partnerProfileUrl, List<ChatMessagesDto> messages){
         this.goodsTitle = goodsTitle;
         this.chatRoomId = chatRoomId;
         this.messages = messages;
         this.myProfileUrl = myProfileUrl;
+        this.partnerNickname = partnerNickname;
         this.partnerProfileUrl = partnerProfileUrl;
     }
 }

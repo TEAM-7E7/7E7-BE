@@ -20,7 +20,7 @@ public class ChatRoomController {
         chatRoomService.saveChatRoom(room, userDetails.getId());
     }
     @DeleteMapping ("/api/room")
-    public void chatRoomRemove(@RequestBody ChatRoomDeletes room){
+    public void chatRoomRemove(@RequestBody ChatMessageInfo room){
         chatRoomService.removeChatRoom(room.getChatRoomId());
     }
 
