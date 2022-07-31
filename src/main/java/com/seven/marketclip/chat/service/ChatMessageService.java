@@ -40,7 +40,6 @@ public class ChatMessageService {
                     .checkRead(true)
                     .createdAt(messages.getCreatedAt())
                     .build();
-            return;
         }else{
             cm = ChatMessages.builder()
                     .chatRoomId(ChatRoom.builder()
