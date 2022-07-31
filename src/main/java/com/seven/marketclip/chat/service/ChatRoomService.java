@@ -104,7 +104,7 @@ public class ChatRoomService {
         if(loginId == room.get().getAccount().getId()){
             partnerId = room.get().getGoods().getAccount().getId();
         }else{
-            partnerId = loginId;
+            partnerId = room.get().getAccount().getId();
         }
         chatRoomRepository.deleteById(chatRoomId);
         redisPublisher.publish(getTopic(chatRoomId),
