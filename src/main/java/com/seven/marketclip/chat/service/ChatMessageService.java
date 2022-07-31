@@ -89,9 +89,9 @@ public class ChatMessageService {
                 ChatRoomTwo chatRoomTwo = ChatRoomTwo.builder()
                         .chatRoomId(chatRoomId)
                         .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
-                        .partnerNickname(userDetails.getNickname())
+                        .partnerNickname(room.get().getAccount().getNickname())
                         .myProfileUrl(userDetails.getProfileImgUrl())
-                        .partnerProfileUrl(userDetails.getProfileImgUrl())
+                        .partnerProfileUrl(room.get().getAccount().getProfileImgUrl().getImageUrl())
                         .messages(result)
                         .build();
                 return chatRoomTwo;
