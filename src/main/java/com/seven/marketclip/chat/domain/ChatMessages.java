@@ -30,11 +30,12 @@ public class ChatMessages {
     private Date createdAt;
 
     @Builder
-    public ChatMessages(ChatRoom chatRoomId, Account senderId, String message, Date createdAt){
+    public ChatMessages(ChatRoom chatRoomId, Account senderId, String message, Date createdAt, boolean checkRead){
         this.chatRoomId = chatRoomId;
         this.senderId = senderId;
         this.message = message;
         this.createdAt = createdAt;
+        this.checkRead = checkRead;
     }
 
 }

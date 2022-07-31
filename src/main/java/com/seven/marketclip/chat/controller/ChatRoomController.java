@@ -20,8 +20,8 @@ public class ChatRoomController {
         chatRoomService.saveChatRoom(room, userDetails.getId());
     }
     @DeleteMapping ("/api/room")
-    public void chatRoomRemove(@RequestBody ChatMessageInfo room){
-        chatRoomService.removeChatRoom(room.getChatRoomId());
+    public void chatRoomRemove(@RequestBody ChatMessageInfo room, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        chatRoomService.removeChatRoom(room.getChatRoomId(), userDetails.getId());
     }
 
 //    @PostMapping("/api/find-room")          //방만들기 위한 true false

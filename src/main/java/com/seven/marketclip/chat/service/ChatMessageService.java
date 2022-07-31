@@ -26,19 +26,34 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     @Transactional
-    public String saveChatMessage(ChatMessageReq messages) {
-        ChatMessages cm = ChatMessages.builder()
-                .chatRoomId(ChatRoom.builder()
-                        .id(messages.getChatRoomId())
-                        .build())
-                .senderId(Account.builder()
-                        .id(messages.getSenderId())
-                        .build())
-                .message(messages.getMessage())
-                .createdAt(messages.getCreatedAt())
-                .build();
+    public void saveChatMessage(ChatMessageReq messages) {
+        ChatMessages cm;
+        if(messages.getMessage().equals("marketclipchatstarter")){
+            cm = ChatMessages.builder()
+                    .chatRoomId(ChatRoom.builder()
+                            .id(messages.getChatRoomId())
+                            .build())
+                    .senderId(Account.builder()
+                            .id(messages.getSenderId())
+                            .build())
+                    .message(messages.getMessage())
+                    .checkRead(true)
+                    .createdAt(messages.getCreatedAt())
+                    .build();
+            return;
+        }else{
+            cm = ChatMessages.builder()
+                    .chatRoomId(ChatRoom.builder()
+                            .id(messages.getChatRoomId())
+                            .build())
+                    .senderId(Account.builder()
+                            .id(messages.getSenderId())
+                            .build())
+                    .message(messages.getMessage())
+                    .createdAt(messages.getCreatedAt())
+                    .build();
+        }
         chatMessageRepository.save(cm);
-        return "";
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
     public ChatRoomTwo messageList(Long goodsId, UserDetailsImpl userDetails, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정

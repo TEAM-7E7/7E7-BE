@@ -4,11 +4,13 @@ package com.seven.marketclip.chat.service;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
+import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
 import com.seven.marketclip.chat.dto.ChatRoomId;
 import com.seven.marketclip.chat.dto.RoomMake;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
+import com.seven.marketclip.chat.subpub.RedisPublisher;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
@@ -38,6 +40,7 @@ public class ChatRoomService {
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
+    private final RedisPublisher redisPublisher;
     private Map<String, ChannelTopic> topics;
 
     @PostConstruct
@@ -92,11 +95,24 @@ public class ChatRoomService {
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeChatRoom(String chatRoomId){
-        if(chatRoomRepository.findById(chatRoomId).isEmpty()){
+    public void removeChatRoom(String chatRoomId, Long loginId){
+        Optional<ChatRoom> room = chatRoomRepository.findById(chatRoomId);
+        if(room.isEmpty()){
             throw new CustomException(CHAT_ROOM_NOT_FOUND);
         }
+        Long partnerId;
+        if(loginId == room.get().getAccount().getId()){
+            partnerId = room.get().getGoods().getAccount().getId();
+        }else{
+            partnerId = loginId;
+        }
         chatRoomRepository.deleteById(chatRoomId);
+        redisPublisher.publish(getTopic(chatRoomId),
+                ChatMessageReq.builder()
+                        .chatRoomId("삭제된채팅방")
+                        .partnerId(partnerId)
+                        .message(chatRoomId)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                        .build());
     }
 
     @Transactional
@@ -150,10 +166,5 @@ public class ChatRoomService {
         }
     }
 
-    public ChannelTopic getTopic(String roomId) {
-        if(chatRoomRepository.findById(roomId).isEmpty()){
-            throw new CustomException(CHAT_ROOM_NOT_FOUND);
-        }
-        return topics.get(roomId);
-    }
+    public ChannelTopic getTopic(String roomId) {return topics.get(roomId);}
 }
