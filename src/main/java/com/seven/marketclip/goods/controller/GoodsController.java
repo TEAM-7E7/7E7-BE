@@ -16,6 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,7 +49,7 @@ public class GoodsController {
 
     @ApiOperation(value = "게시글 작성", notes = "게시글을 작성하는 api")
     @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<HttpResponse> goodsAdd(@RequestBody GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<HttpResponse> goodsAdd(@Validated @RequestBody GoodsReqDTO goodsReqDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return HttpResponse.toResponseEntity(goodsService.addGoods(goodsReqDTO, userDetails));
     }
 

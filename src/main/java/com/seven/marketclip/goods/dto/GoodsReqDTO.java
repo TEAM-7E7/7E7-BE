@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 public class GoodsReqDTO {
     private String title;
+
+    @NotBlank
+    @Length(min = 10, max = 200)
     private String description;
     private List<Long> fileIdList = new ArrayList<>();
     private GoodsCategory category;
