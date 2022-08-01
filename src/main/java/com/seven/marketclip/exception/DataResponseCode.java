@@ -2,8 +2,10 @@ package com.seven.marketclip.exception;
 
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
-public class DataResponseCode {
+public class DataResponseCode implements Serializable {
     private final ResponseCode responseCode;
     private final Object data;
 

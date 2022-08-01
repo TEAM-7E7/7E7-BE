@@ -32,7 +32,7 @@ public class ChatRoomController {
 //        return chatRoomService.findChatRoom(roomInfo.getGoodsId(), userDetails.getId(), roomInfo.getPartnerId());
 //    }
     @GetMapping("/api/chat-rooms")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
-    @Cacheable(key = "#userDetails.id", cacheNames = "chatRoomCache")
+//    @Cacheable(key = "#userDetails.id", cacheNames = "chatRoomCache")
     public List<ChatRoomGoods> chatRooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return chatRoomService.findChatRooms(userDetails.getId());
     }
