@@ -48,9 +48,9 @@ public class ChatRoomService {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
         List<ChatRoom> list = chatRoomRepository.findAll();
-        for (ChatRoom chat:list) {
-            enterChatRoom(chat.getId());
-        }
+//        for (ChatRoom chat:list) {
+//            enterChatRoom(chat.getId());
+//        }
     }
     @Transactional      //채팅방 생성
     public String saveChatRoom(RoomMake roomMake, Long loginId) {

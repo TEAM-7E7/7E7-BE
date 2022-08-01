@@ -1,5 +1,6 @@
 package com.seven.marketclip.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.redis.spring.RedisLockProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableCaching
@@ -33,6 +36,8 @@ public class RedisConfig {
     @Value("${spring.redis.password}")
     private String redisPassword;
 
+    private ObjectMapper objectMapper;
+
 
     // 스케줄 lockProvider
     @Bean
@@ -41,34 +46,35 @@ public class RedisConfig {
     }
 
     // 캐싱
-    @Bean
-    public CacheManager userCacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .entryTtl(Duration.ofMinutes(5L));
-
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(redisCacheConfiguration).build();
-    }
-    //    @Bean
+//    @Bean
+//    public CacheManager userCacheManager(RedisConnectionFactory connectionFactory) {
+//        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+//                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+//                .entryTtl(Duration.ofMinutes(5L));
+//
+//        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(redisCacheConfiguration).build();
+//    }
+//
+//    @Bean
 //    public RedisCacheConfiguration cacheConfiguration() {
 //        return RedisCacheConfiguration.defaultCacheConfig()
 //                .entryTtl(Duration.ofMinutes(20))
 //                .disableCachingNullValues()
 //                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 //    }
-    @Bean
-    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-        return (builder) -> builder
-                .withCacheConfiguration("chatMessageCache",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(30)))
-                .withCacheConfiguration("chatRoomCache",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(20)))
-                .withCacheConfiguration("goodsCache",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(20)))
-                .withCacheConfiguration("myGoodsCache",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)));
-    }
+//    @Bean
+//    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
+//        return (builder) -> builder
+//                .withCacheConfiguration("chatMessageCache",
+//                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(30)))
+//                .withCacheConfiguration("chatRoomCache",
+//                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(20)))
+//                .withCacheConfiguration("goodsCache",
+//                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(20)))
+//                .withCacheConfiguration("myGoodsCache",
+//                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)));
+//    }
 
     /**
      * redis pub/sub 메시지를 처리하는 listener 설정
