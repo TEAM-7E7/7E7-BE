@@ -14,8 +14,8 @@ import javax.validation.constraints.Pattern;
 public class AccountReqDTO {
 
     @NotBlank
-    @Length(min = 3, max = 20)
-    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9]{3,20}$")
+    @Length(min = 2, max = 10)
+    @Pattern(regexp = "^[0-9가-힣a-zA-Z]{2,10}$")
     private String nickname;
 
     @Email
@@ -24,6 +24,7 @@ public class AccountReqDTO {
 
     @NotBlank
     @Length(min = 8, max = 20)
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])\\S*$" )
     private String password;
 
     @Builder

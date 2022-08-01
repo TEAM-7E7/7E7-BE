@@ -22,6 +22,8 @@ public enum ResponseCode {
 
     /** 400 BAD_REQUEST 잘못된 요청 */
 
+    VALIDATION_FAIL(BAD_REQUEST,"VALIDATION_FAIL"),
+
     //JWT, Refresh Token **************************************************************
     REFRESH_TOKEN_VERIFY(BAD_REQUEST, "RefreshFilter-verify"),
     REFRESH_TOKEN_NO_HEADER(BAD_REQUEST, "RefreshFilter-Refresh-No_Header"),

@@ -11,14 +11,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Pattern;
 import java.util.Map;
 
+import static com.seven.marketclip.exception.ResponseCode.VALIDATION_FAIL;
+
 @Slf4j
+@Validated
 @Api(tags = "유저 컨트롤러")
 @RequiredArgsConstructor
 @RestController
@@ -29,7 +35,10 @@ public class AccountController {
 
     @ApiOperation(value = "회원가입", notes = "")
     @PostMapping("/sign-up")
-    public ResponseEntity<HttpResponse> signUp(@RequestBody AccountReqDTO accountReqDTO) {
+    public ResponseEntity<HttpResponse> signUp(@Validated @RequestBody AccountReqDTO accountReqDTO, Errors error) {
+        if(error.hasErrors()){
+            return HttpResponse.toResponseEntity(VALIDATION_FAIL);
+        }
         return HttpResponse.toResponseEntity(accountService.addUser(accountReqDTO));
     }
 
@@ -55,7 +64,11 @@ public class AccountController {
     // 닉네임 수정
     @ApiOperation(value = "닉네임 변경", notes = "회원 닉네임 수정하기")
     @PutMapping("/nickname-update")
-    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("nickname") String nickname) {
+    @Validated
+    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("nickname") @Pattern(regexp = "^[0-9가-힣a-zA-Z][^!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?\\sㄱ-ㅎㅏ-ㅣ]*$") String nickname, Errors errors) {
+        if(errors.hasErrors()){
+            return HttpResponse.toResponseEntity(VALIDATION_FAIL);
+        }
         return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
     }
 
