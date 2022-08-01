@@ -96,15 +96,14 @@ public class ChatRoomService {
 
     @Transactional  //채팅방 check box 삭제 API 4번
     public void removeChatRoom(String chatRoomId, Long loginId){
-        Optional<ChatRoom> room = chatRoomRepository.findById(chatRoomId);
-        if(room.isEmpty()){
-            throw new CustomException(CHAT_ROOM_NOT_FOUND);
-        }
+        ChatRoom room = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                ()->new CustomException(CHAT_ROOM_NOT_FOUND)
+        );
         Long partnerId;
-        if(loginId == room.get().getAccount().getId()){
-            partnerId = room.get().getGoods().getAccount().getId();
+        if(loginId == room.getAccount().getId()){
+            partnerId = room.getGoods().getAccount().getId();
         }else{
-            partnerId = room.get().getAccount().getId();
+            partnerId = room.getAccount().getId();
         }
         chatRoomRepository.deleteById(chatRoomId);
         redisPublisher.publish(getTopic(chatRoomId),
@@ -113,6 +112,26 @@ public class ChatRoomService {
                         .partnerId(partnerId)
                         .message(chatRoomId)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                         .build());
+    }
+
+    @Transactional  //채팅방 check box 삭제 API 4번
+    public void removeAllChatRoom(Long loginId){
+        List<ChatRoom> rooms = chatRoomRepository.roomsFindQuery(loginId);
+        Long partnerId;
+        for(ChatRoom room:rooms){
+            if(loginId == room.getAccount().getId()){
+                partnerId = room.getGoods().getAccount().getId();
+            }else{
+                partnerId = room.getAccount().getId();
+            }
+            chatRoomRepository.deleteById(room.getId());
+            redisPublisher.publish(getTopic(room.getId()),
+                    ChatMessageReq.builder()
+                            .chatRoomId("삭제된채팅방")
+                            .partnerId(partnerId)
+                            .message(room.getId())        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                            .build());
+        }
     }
 
     @Transactional
