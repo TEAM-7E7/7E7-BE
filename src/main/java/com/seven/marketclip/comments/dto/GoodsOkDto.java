@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GoodsOkDto {
-
+    private String chatRoomId;
     //게시글 아이디
     private Long goodsId;
 

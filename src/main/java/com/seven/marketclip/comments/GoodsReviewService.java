@@ -1,5 +1,7 @@
 package com.seven.marketclip.comments;
 
+import com.seven.marketclip.chat.dto.ChatMessageReq;
+import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.comments.domain.GoodsReview;
 import com.seven.marketclip.comments.dto.GoodsDealDto;
 import com.seven.marketclip.comments.dto.GoodsOkDto;
@@ -19,10 +21,13 @@ public class GoodsReviewService {
 
     private final GoodsReviewRepository goodsReviewRepository;
     private final GoodsRepository goodsRepository;
+    private final ChatRoomService chatRoomService;
 
-    public GoodsReviewService(GoodsReviewRepository goodsReviewRepository, GoodsRepository goodsRepository) {
+    public GoodsReviewService(GoodsReviewRepository goodsReviewRepository, GoodsRepository goodsRepository, ChatRoomService chatRoomService) {
         this.goodsReviewRepository = goodsReviewRepository;
         this.goodsRepository = goodsRepository;
+
+        this.chatRoomService = chatRoomService;
     }
     @Transactional
     public ResponseCode sendReview(UserDetailsImpl userDetails, GoodsDealDto goodsReviewId) {
@@ -37,7 +42,12 @@ public class GoodsReviewService {
 
         //알림 보내 벌이기!
         //상대방에게 메시지 보내기.(재호님이) -> 받은 사람이 거래 후기 남기는것,거래 상태 변경
-
+        chatRoomService.sendToPubReview(ChatMessageReq.builder()
+                                    .chatRoomId("TRADE")
+                                    .senderId(userDetails.getId())
+                                    .partnerId(goodsReviewId.getBuyerId())
+                                    .message(goodsReviewId.getChatRoomId())
+                                    .build(), goodsReviewId.getChatRoomId());
         return SUCCESS;
     }
 
@@ -46,6 +56,7 @@ public class GoodsReviewService {
         GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getReviewId()).orElseThrow(
                 ()-> new CustomException(GOODS_REVIEW_NOT_FOUND)
         );
+        String state = "none";
         if(goodsOkDto.isStatus()){
             goodsReview.writeReview(goodsOkDto);
             goodsReview.getGoods().updateStatusSoldOut();
@@ -53,7 +64,12 @@ public class GoodsReviewService {
             goodsReview.cancelReview();
             goodsReview.getGoods().updateStatusSale();
         }
-
+        chatRoomService.sendToPubReview(ChatMessageReq.builder()
+                .chatRoomId("TRADE")
+                .senderId(userDetails.getId())
+                .partnerId(goodsOkDto.getBuyerId())
+                .message(goodsOkDto.getChatRoomId())        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                .build(), goodsOkDto.getChatRoomId());
         //알림!! (구메자가 판매자에게 후기를 남겼다는 알림)
 
         return SUCCESS;
