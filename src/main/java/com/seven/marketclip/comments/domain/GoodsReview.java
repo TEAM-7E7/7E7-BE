@@ -16,16 +16,15 @@ public class GoodsReview extends Timestamped {
     @Id
     private Long id;
 
-    //상대 회원 아이디
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-    private Account account;
-
-    //자기 자신
     @MapsId
     @OneToOne
     @JoinColumn(name = "goods_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Goods goods;
+
+    //상대 회원 아이디
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    private Account account;
 
     private String message; //후기 메시지
 
