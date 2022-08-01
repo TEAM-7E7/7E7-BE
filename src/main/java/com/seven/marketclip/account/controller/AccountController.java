@@ -65,10 +65,11 @@ public class AccountController {
     @ApiOperation(value = "닉네임 변경", notes = "회원 닉네임 수정하기")
     @PutMapping("/nickname-update")
     @Validated
-    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("nickname") @Pattern(regexp = "^[0-9가-힣a-zA-Z][^!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?\\sㄱ-ㅎㅏ-ㅣ]*$") String nickname, Errors errors) {
-        if(errors.hasErrors()){
-            return HttpResponse.toResponseEntity(VALIDATION_FAIL);
-        }
+    public ResponseEntity<HttpResponse> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @Validated @RequestParam("nickname") @Pattern(regexp = "^[0-9가-힣a-zA-Z]{2,10}$") String nickname) {
+//        if(errors.hasErrors()){
+//            System.out.println("Sd");
+//            return HttpResponse.toResponseEntity(VALIDATION_FAIL);
+//        }
         return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
     }
 
