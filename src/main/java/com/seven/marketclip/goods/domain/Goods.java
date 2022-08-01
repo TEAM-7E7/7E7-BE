@@ -3,7 +3,7 @@ package com.seven.marketclip.goods.domain;
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatRoom;
-import com.seven.marketclip.comments.entity.TradeReview;
+import com.seven.marketclip.comments.domain.GoodsReview;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -56,7 +55,7 @@ public class Goods extends Timestamped {
     private List<ChatRoom> chatRooms;
 
     @OneToOne(mappedBy = "goods")
-    private TradeReview tradeReview;
+    private GoodsReview goodsReview;
 
     @Builder
     public Goods(Long id, Account account, String title, String description, GoodsCategory category, Integer sellPrice) {

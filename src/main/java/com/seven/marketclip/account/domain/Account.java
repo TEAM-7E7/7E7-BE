@@ -5,7 +5,7 @@ import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.repository.AccountRoleEnum;
 import com.seven.marketclip.account.repository.AccountTypeEnum;
 import com.seven.marketclip.chat.domain.ChatRoom;
-import com.seven.marketclip.comments.entity.TradeReview;
+import com.seven.marketclip.comments.domain.GoodsReview;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.image.domain.AccountImage;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -65,7 +65,7 @@ public class Account extends Timestamped {
     private List<ChatRoom> chatRooms;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-    private List<TradeReview> tradeReviews;
+    private List<GoodsReview> goodsReviews;
 
 //    @BatchSize(size = 100)
 //    @OneToMany(mappedBy = "senderId", fetch = FetchType.LAZY)
