@@ -3,6 +3,7 @@ package com.seven.marketclip.goods.domain;
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatRoom;
+import com.seven.marketclip.comments.entity.TradeReview;
 import com.seven.marketclip.goods.dto.GoodsReqDTO;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
@@ -52,6 +53,9 @@ public class Goods extends Timestamped {
 
     @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoom> chatRooms;
+
+    @OneToOne(mappedBy = "goods")
+    private TradeReview tradeReview;
 
     @Builder
     public Goods(Long id, Account account, String title, String description, GoodsCategory category, Integer sellPrice) {

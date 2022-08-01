@@ -32,11 +32,16 @@ public class RedisSubscriber implements MessageListener {
             // ChatMessage 객채로 맵핑
             ChatMessageReq roomMessage = objectMapper.readValue(publishMessage, ChatMessageReq.class);
             // Websocket 구독자에게 채팅 메시지 Send
-            String parseString = roomMessage.getChatRoomId();
-            messagingTemplate.convertAndSend("/sub/chat/room/" + parseString, roomMessage);
-            messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "api 요청해주세요");
-            messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), "api 요청해주세요");
-            chatMessageService.saveChatMessage(roomMessage);    //DB에 저장 API 5번
+
+            if(roomMessage.getChatRoomId().equals("삭제된채팅방")){
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), roomMessage.getMessage() + " 채팅방 삭제");
+            }else {
+                messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getChatRoomId(), roomMessage);
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "api 요청해주세요");
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), "api 요청해주세요");
+                chatMessageService.saveChatMessage(roomMessage);    //DB에 저장 API 5번
+            }
+
 //            notificationService.send(roomMessage.getSenderId(), roomMessage.getNickName(), roomMessage.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());

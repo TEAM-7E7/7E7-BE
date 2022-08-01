@@ -48,12 +48,12 @@ public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
 //        RedirectAttributes re;
 //        re.addAllAttributes("","");
 
-        response.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
-        response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
+//        response.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
+//        response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
 //        response.sendRedirect("http://localhost:3000?X-ACCESS-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
-//        response.sendRedirect("https://marketclip.kr?X-ACCESS-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
+        response.sendRedirect("https://marketclip.kr?X-ACCESS-TOKEN="+ FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
 
-        getRedirectStrategy().sendRedirect(request,response,"http://localhost:3000");
+//        getRedirectStrategy().sendRedirect(request,response,"http://localhost:3000");
 //        RedirectAttributes redirectAttributes = new
 //        getR
 

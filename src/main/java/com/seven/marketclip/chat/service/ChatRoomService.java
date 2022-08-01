@@ -4,10 +4,13 @@ package com.seven.marketclip.chat.service;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
+import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
 import com.seven.marketclip.chat.dto.ChatRoomId;
 import com.seven.marketclip.chat.dto.RoomMake;
+import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
+import com.seven.marketclip.chat.subpub.RedisPublisher;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
@@ -32,10 +35,12 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageService chatMessageService;
     private final GoodsRepository goodsRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
+    private final RedisPublisher redisPublisher;
     private Map<String, ChannelTopic> topics;
 
     @PostConstruct
@@ -43,9 +48,9 @@ public class ChatRoomService {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
         List<ChatRoom> list = chatRoomRepository.findAll();
-//        for (ChatRoom chat:list) {
-//            enterChatRoom(chat.getId());
-//        }
+        for (ChatRoom chat:list) {
+            enterChatRoom(chat.getId());
+        }
     }
     @Transactional      //채팅방 생성
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
@@ -90,10 +95,24 @@ public class ChatRoomService {
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeChatRoom(List<String> listChatRoomId){
-        for (String chatRoomId:listChatRoomId) {
-            chatRoomRepository.deleteById(chatRoomId);
+    public void removeChatRoom(String chatRoomId, Long loginId){
+        Optional<ChatRoom> room = chatRoomRepository.findById(chatRoomId);
+        if(room.isEmpty()){
+            throw new CustomException(CHAT_ROOM_NOT_FOUND);
         }
+        Long partnerId;
+        if(loginId == room.get().getAccount().getId()){
+            partnerId = room.get().getGoods().getAccount().getId();
+        }else{
+            partnerId = room.get().getAccount().getId();
+        }
+        chatRoomRepository.deleteById(chatRoomId);
+        redisPublisher.publish(getTopic(chatRoomId),
+                ChatMessageReq.builder()
+                        .chatRoomId("삭제된채팅방")
+                        .partnerId(partnerId)
+                        .message(chatRoomId)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                        .build());
     }
 
     @Transactional
@@ -147,7 +166,5 @@ public class ChatRoomService {
         }
     }
 
-    public ChannelTopic getTopic(String roomId) {
-        return topics.get(roomId);
-    }
+    public ChannelTopic getTopic(String roomId) {return topics.get(roomId);}
 }

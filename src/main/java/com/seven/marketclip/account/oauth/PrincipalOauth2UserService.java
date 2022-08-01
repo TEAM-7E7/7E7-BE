@@ -88,7 +88,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         System.out.println(oAuth2UserInfo.getSocialId());
         System.out.println(oAuth2UserInfo.getRole());
 
-        String randomNickname = RandomStringUtils.random(8, true, true);
+        String randomNickname = RandomStringUtils.random(11, true, true);
         Optional<Account> accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
         Optional<Account> accountOptNickname = accountRepository.findByNickname(randomNickname);
 
