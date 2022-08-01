@@ -31,7 +31,6 @@ public class ChatMessageController {
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
-    @Cacheable(key = "#userDetails.id", cacheNames = "chatMessageCache")
     public ChatRoomTwo chatMessageList(@RequestBody ChatRoomReq roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails, roomInfo.getPartnerId());
     }
