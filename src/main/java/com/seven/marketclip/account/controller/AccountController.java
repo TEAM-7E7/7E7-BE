@@ -2,7 +2,6 @@ package com.seven.marketclip.account.controller;
 
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.service.AccountService;
-import com.seven.marketclip.email.EmailDTO;
 import com.seven.marketclip.exception.HttpResponse;
 import com.seven.marketclip.security.UserDetailsImpl;
 import io.swagger.annotations.Api;

@@ -37,7 +37,13 @@ dependencies {
     // querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0'
     implementation 'com.querydsl:querydsl-apt:5.0.0'
+
+    // 이메일 템플릿
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.0'
+
+    // shedlock - 스케줄 락
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.36.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-redis-spring:4.36.0'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -50,6 +56,8 @@ dependencies {
 
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.redisson:redisson:3.17.5'
+
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
     implementation 'org.webjars:stomp-websocket:2.3.3-1'
@@ -65,10 +73,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-bootRun {
+/*bootRun {
     String activeProfile = System.properties['spring.profiles.active']
     systemProperty "spring.profiles.active", activeProfile
-}
+}*/
 
 def querydslDir = "$buildDir/generated/querydsl"
 // JPA 사용 여부와 사용할 경로를 설정
