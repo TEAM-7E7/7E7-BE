@@ -3,6 +3,8 @@ package com.seven.marketclip.goods.service;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
+import com.seven.marketclip.comments.GoodsReviewRepository;
+import com.seven.marketclip.comments.domain.GoodsReview;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.DataResponseCode;
 import com.seven.marketclip.exception.ResponseCode;
@@ -38,13 +40,15 @@ public class GoodsService {
     private final ImageService imageService;
     private final WishRepository wishRepository;
     private final GoodsQueryRep goodsQueryRep;
+    private final GoodsReviewRepository goodsReviewRepository;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep, GoodsReviewRepository goodsReviewRepository) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
         this.wishRepository = wishRepository;
         this.goodsQueryRep = goodsQueryRep;
+        this.goodsReviewRepository = goodsReviewRepository;
     }
 
     // 게시글 전체 조회 -> 동적 쿼리
@@ -86,6 +90,9 @@ public class GoodsService {
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
+        goodsReviewRepository.save(GoodsReview.builder()
+                        .goods(goods)
+                .build());
         imageService.updateGoodsImageList(goodsReqDTO.getFileIdList(), goods, detailsAccount);
         goodsRepository.save(goods);
         return SUCCESS;

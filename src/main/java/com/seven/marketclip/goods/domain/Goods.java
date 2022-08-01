@@ -83,6 +83,14 @@ public class Goods extends Timestamped {
         this.status = goodsReqDTO.getStatus();
         this.category = goodsReqDTO.getCategory();
     }
-
+    public void updateStatusReserved(){
+        this.status = GoodsStatus.RESERVED;
+    }
+    public void updateStatusSoldOut(){
+        this.status = GoodsStatus.SOLD_OUT;
+    }
+    public void updateStatusSale(){
+        this.status = GoodsStatus.SALE;
+    }
 
 }
