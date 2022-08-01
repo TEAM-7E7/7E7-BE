@@ -10,6 +10,7 @@ import com.seven.marketclip.account.repository.AccountRoleEnum;
 import com.seven.marketclip.account.repository.AccountTypeEnum;
 import com.seven.marketclip.account.dto.AccountReqDTO;
 import com.seven.marketclip.account.validation.AccountVerification;
+import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.email.EmailService;
@@ -48,8 +49,9 @@ public class AccountService {
     private final FileCloudService fileCloudService;
     private final ImageService imageService;
     private final HeaderTokenExtractor headerTokenExtractor;
+    private final ChatRoomService chatRoomService;
 
-    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, ImageService imageService, HeaderTokenExtractor headerTokenExtractor) {
+    public AccountService(EmailService emailService, AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountVerification accountVerification, S3CloudServiceImpl s3CloudService, ImageService imageService, HeaderTokenExtractor headerTokenExtractor, ChatRoomService chatRoomService) {
         this.emailService = emailService;
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -57,6 +59,7 @@ public class AccountService {
         this.fileCloudService = s3CloudService;
         this.imageService = imageService;
         this.headerTokenExtractor = headerTokenExtractor;
+        this.chatRoomService = chatRoomService;
     }
 
     //닉네임 증복체크
@@ -241,6 +244,7 @@ public class AccountService {
                 .email(account.getEmail())
                 .nickname(account.getNickname())
                 .profileImgUrl(account.getProfileImgUrl().getImageUrl())
+                .type(account.getType())
                 .role(account.getRole())
                 .build();
 
