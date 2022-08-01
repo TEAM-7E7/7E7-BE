@@ -36,6 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .email(account.getEmail())
                 .nickname(account.getNickname())
                 .profileImgUrl(account.getProfileImgUrl().getImageUrl())
+                .type(account.getType())
                 .role(account.getRole())
                 .build();
     }
