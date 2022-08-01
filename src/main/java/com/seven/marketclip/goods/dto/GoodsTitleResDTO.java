@@ -8,13 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-public class GoodsTitleResDTO {
+public class GoodsTitleResDTO implements Serializable {
     private Long id;
     private Integer viewCount;
     private List<Long> wishIds;
