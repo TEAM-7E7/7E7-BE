@@ -8,12 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "wish_lists")
 @Getter
-public class Wish {
+public class Wish implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,6 +7,7 @@ import com.seven.marketclip.chat.subpub.RedisPublisher;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,7 @@ public class ChatMessageController {
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
+    @Cacheable(key = "#userDetails.id", cacheNames = "chatMessageCache")
     public ChatRoomTwo chatMessageList(@RequestBody ChatRoomReq roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails, roomInfo.getPartnerId());
     }
