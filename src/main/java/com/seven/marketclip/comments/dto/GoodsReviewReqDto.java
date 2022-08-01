@@ -10,7 +10,7 @@ public class GoodsReviewReqDto {
 
     private String message; //후기 메시지
 
-    private Double kindess; //친절
+    private Double kindness; //친절
 
     private Double responseSpeed; //응답속도
 
@@ -19,9 +19,9 @@ public class GoodsReviewReqDto {
     private Double appointment; //시간약속
 
     @Builder
-    public GoodsReviewReqDto(String message, Double kindess, Double responseSpeed, Double quality, Double appointment) {
+    public GoodsReviewReqDto(String message, Double kindness, Double responseSpeed, Double quality, Double appointment) {
         this.message = message;
-        this.kindess = kindess;
+        this.kindness = kindness;
         this.responseSpeed = responseSpeed;
         this.quality = quality;
         this.appointment = appointment;
