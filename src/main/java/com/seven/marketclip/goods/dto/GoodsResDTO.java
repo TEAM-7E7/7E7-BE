@@ -72,7 +72,7 @@ public class GoodsResDTO implements Serializable {
         this.sellPrice = goods.getSellPrice();
         this.imageMapList = mapArrayList;
         this.status = goods.getStatus();
-//        this.createdAt = goods.getCreatedAt();
+        this.createdAt = goods.getCreatedAt();
     }
 
 }

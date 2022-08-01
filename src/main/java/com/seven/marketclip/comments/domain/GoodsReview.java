@@ -1,4 +1,4 @@
-package com.seven.marketclip.comments.entity;
+package com.seven.marketclip.comments.domain;
 
 import com.seven.marketclip.Timestamped;
 import com.seven.marketclip.account.domain.Account;
@@ -11,9 +11,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Entity
-public class TradeReview extends Timestamped {
+public class GoodsReview extends Timestamped {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
@@ -30,7 +29,7 @@ public class TradeReview extends Timestamped {
 
     private String message; //후기 메시지
 
-    private Double kindess; //친절
+    private Double kindness; //친절
 
     private Double responseSpeed; //응답속도
 
