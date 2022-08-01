@@ -82,6 +82,7 @@ public enum ResponseCode {
     EMAIL_NOT_FOUND(NOT_FOUND, "이메일이 등록되어 있지 않습니다."),
     EMAIL_NOT_EXIST(NOT_FOUND, "존재하지 않는 이메일 주소입니다."),
     GOODS_NOT_FOUND(NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    GOODS_REVIEW_NOT_FOUND(NOT_FOUND, "해당 거래후기를 찾을 수 없습니다."),
     USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
     FAVORITE_NOT_FOUND(NOT_FOUND, "찜한 상품을 찾을 수 없습니다."),
     GOODS_IMAGE_REQUIRED(NOT_FOUND, "게시글에 하나 이상의 이미지가 필요합니다."),
