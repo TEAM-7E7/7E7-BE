@@ -1,4 +1,4 @@
-package com.seven.marketclip.chat.config;
+package com.seven.marketclip.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

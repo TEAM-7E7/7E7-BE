@@ -1,12 +1,11 @@
 package com.seven.marketclip.chat.controller;
 
 import com.seven.marketclip.chat.dto.ChatRoomGoods;
-import com.seven.marketclip.chat.dto.ChatRoomReq;
-import com.seven.marketclip.chat.dto.ChatRoomTwo;
 import com.seven.marketclip.chat.dto.RoomMake;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +31,7 @@ public class ChatRoomController {
 //        return chatRoomService.findChatRoom(roomInfo.getGoodsId(), userDetails.getId(), roomInfo.getPartnerId());
 //    }
     @GetMapping("/api/chat-rooms")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기
+    @Cacheable(key = "#userDetails.id", cacheNames = "chatRoomCache")
     public List<ChatRoomGoods> chatRooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return chatRoomService.findChatRooms(userDetails.getId());
     }
