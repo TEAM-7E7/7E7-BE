@@ -2,6 +2,7 @@ package com.seven.marketclip.security.provider;
 
 import com.seven.marketclip.account.repository.AccountRepository;
 import com.seven.marketclip.account.repository.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.JwtDecoder;
 import com.seven.marketclip.security.jwt.JwtPreProcessingToken;
@@ -30,12 +31,14 @@ public class JWTAuthProvider implements AuthenticationProvider {
         String email = jwtDecoder.decodeUserEmail(token);
         String img = jwtDecoder.decodeImg(token);
         AccountRoleEnum role = jwtDecoder.decodeUserRole(token);
+        AccountTypeEnum type = jwtDecoder.decodeUserType(token);
 
         UserDetailsImpl userDetails = UserDetailsImpl.builder()
                 .id(id)
                 .email(email)
                 .nickname(nickname)
                 .profileImgUrl(img)
+                .type(type)
                 .role(role)
                 .build();
 

@@ -135,6 +135,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .email(email)
                     .nickname(nickname)
                     .profileImgUrl(imgUrl)
+                    .type(account.getType())
                     .role(role)
                     .build();
 
@@ -200,6 +201,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .email(account1.getEmail())
                     .nickname(account1.getNickname())
                     .profileImgUrl("default")
+                    .type(account1.getType())
                     .role(account1.getRole())
                     .build();
         }

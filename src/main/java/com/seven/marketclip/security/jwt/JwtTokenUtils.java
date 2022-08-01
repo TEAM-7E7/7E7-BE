@@ -29,6 +29,8 @@ public final class JwtTokenUtils {
     public static final String CLAIM_USER_PROFILE_IMG = "USER_PROFILE_IMG";
     public static final String CLAIM_USER_ROLE = "USER_ROLE";
 
+    public static final String CLAIM_USER_TYPE = "USER_TYPE";
+
     public static final String JWT_SECRET = "jwt_secret_!@#$%";
 
     public static String generateRefreshToken(UserDetailsImpl userDetails) {
@@ -59,6 +61,7 @@ public final class JwtTokenUtils {
                     .withClaim(CLAIM_USER_NAME, userDetails.getNickname())
                     .withClaim(CLAIM_USER_EMAIL, userDetails.getUsername())
                     .withClaim(CLAIM_USER_PROFILE_IMG, userDetails.getProfileImgUrl())
+                    .withClaim(CLAIM_USER_TYPE, String.valueOf(userDetails.getType()))
                     .withClaim(CLAIM_USER_ROLE, String.valueOf(userDetails.getRole()))
                     // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
                     .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))

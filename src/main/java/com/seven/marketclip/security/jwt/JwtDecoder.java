@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.seven.marketclip.account.repository.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -125,6 +126,27 @@ public class JwtDecoder {
         AccountRoleEnum accountRoleEnum = AccountRoleEnum.valueOf(Role);
 
         return accountRoleEnum;
+    }
+    public AccountTypeEnum decodeUserType(String token) {
+        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(
+                () -> new IllegalArgumentException("유효한 토큰이 아닙니다.")
+        );
+
+        Date expiredDate = decodedJWT
+                .getClaim(CLAIM_EXPIRED_DATE)
+                .asDate();
+
+        Date now = new Date();
+        if (expiredDate.before(now)) {
+            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+        }
+
+        String type = decodedJWT
+                .getClaim(CLAIM_USER_TYPE)
+                .asString();
+        AccountTypeEnum accountTypeEnum = AccountTypeEnum.valueOf(type);
+
+        return accountTypeEnum;
     }
 
 

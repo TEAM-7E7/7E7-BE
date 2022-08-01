@@ -2,6 +2,7 @@ package com.seven.marketclip.security;
 
 
 import com.seven.marketclip.account.repository.AccountRoleEnum;
+import com.seven.marketclip.account.repository.AccountTypeEnum;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,15 +29,19 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     private String profileImgUrl;
 
     @Enumerated(value = EnumType.STRING)
+    private AccountTypeEnum type;
+
+    @Enumerated(value = EnumType.STRING)
     private AccountRoleEnum role;
 
     @Builder
-    public UserDetailsImpl(Long id, String password, String nickname, String email, String profileImgUrl, AccountRoleEnum role) {
+    public UserDetailsImpl(Long id, String password, String nickname, String email,AccountTypeEnum type, String profileImgUrl, AccountRoleEnum role) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.password = password;
         this.role = role;
+        this.type = type;
         this.profileImgUrl = profileImgUrl;
     }
 
@@ -72,6 +77,9 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     public AccountRoleEnum getRole() {
         return this.role;
+    }
+    public AccountTypeEnum getType() {
+        return this.type;
     }
 
     public String getNickname() {
