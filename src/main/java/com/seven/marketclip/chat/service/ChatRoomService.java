@@ -54,13 +54,12 @@ public class ChatRoomService {
     }
     @Transactional      //채팅방 생성
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
-        Optional<Goods> goods = goodsRepository.findById(roomMake.getGoodsId());
-        if (goods.isEmpty()){                                         // 게시글이 없는 경우
-            throw new CustomException(GOODS_NOT_FOUND);
-        }
+        Goods goods = goodsRepository.findById(roomMake.getGoodsId()).orElseThrow(
+                ()->new CustomException(GOODS_NOT_FOUND)
+        );
         Long room = chatRoomRepository.myRoomFindQuery(
                 roomMake.getId(), roomMake.getGoodsId(), loginId);
-        if(room != 0L || goods.get().getAccount().getId() == loginId){// 위 쿼리문 조건 + 내가 나의 채팅방을 만든경우
+        if(room != 0L || goods.getAccount().getId() == loginId){// 위 쿼리문 조건 + 내가 나의 채팅방을 만든경우
             throw new CustomException(CHAT_ROOM_NOT_SAVE);
         }
         Account ac = Account.builder()
@@ -82,16 +81,6 @@ public class ChatRoomService {
                 .build();
         opsHashChatRoom.put("CHAT_ROOMS", chatRoom.getId(), redisRoom);
         return chatRoom.getId();
-    }
-
-    // 단일 채팅방 조회(채팅방 생성시 로직) API 및 메서드 2번
-    @Transactional
-    public boolean findChatRoom(Long goodsId, Long loginId, Long partnerId) {
-        Optional<ChatRoom> chatRoom = chatRoomRepository.roomFindQuery(goodsId, loginId, partnerId);
-        if (chatRoom.isEmpty()) {
-            return false;
-        }
-        return true;
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
