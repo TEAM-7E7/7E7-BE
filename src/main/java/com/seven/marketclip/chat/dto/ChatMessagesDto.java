@@ -2,10 +2,12 @@ package com.seven.marketclip.chat.dto;
 
 import com.seven.marketclip.chat.domain.ChatMessages;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
 public class ChatMessagesDto {
     private Long messageId;
     private String chatRoomId;
