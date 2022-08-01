@@ -15,7 +15,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
     @Query(value = "select * from chat_room", nativeQuery = true)
     List<ChatRoom> findAll();
 
-    //에러 말고 api 호출 있는건 어떤지?
     @Query("select c from ChatRoom c where c.account.id = :id or c.goods.account.id = :id")
     List<ChatRoom> roomsFindQuery(@Param("id") Long id);
 

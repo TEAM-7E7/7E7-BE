@@ -22,7 +22,6 @@ public class RedisSubscriber implements MessageListener {
     private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageService chatMessageService;
-    private final NotificationService notificationService;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -33,12 +32,15 @@ public class RedisSubscriber implements MessageListener {
             ChatMessageReq roomMessage = objectMapper.readValue(publishMessage, ChatMessageReq.class);
             // Websocket 구독자에게 채팅 메시지 Send
 
-            if(roomMessage.getChatRoomId().equals("삭제된채팅방")){
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), roomMessage.getMessage() + " 채팅방 삭제");
-            }else {
+            if(roomMessage.getChatRoomId().equals("CHAT_REMOVE")){
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), roomMessage.getMessage() + "_PARTNER_EXIT");
+            } else if (roomMessage.getChatRoomId().equals("TRADE")) {
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), roomMessage.getMessage() + "_TRADE");
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), roomMessage.getMessage() + "_TRADE");
+            } else{
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getChatRoomId(), roomMessage);
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "api 요청해주세요");
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), "api 요청해주세요");
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "CHAT_RELOAD");
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), "CHAT_RELOAD");
                 chatMessageService.saveChatMessage(roomMessage);    //DB에 저장 API 5번
             }
 

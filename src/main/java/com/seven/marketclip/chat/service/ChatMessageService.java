@@ -67,7 +67,7 @@ public class ChatMessageService {
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
                 ChatRoom.builder().id(room.getId()).build());
         if (chatMessagesList.isEmpty()) {
-            throw new CustomException(ResponseCode.CHAT_MESSAGE_NOT_FOUND);
+            throw new CustomException(CHAT_MESSAGE_NOT_FOUND);
         }
         modifyCheckRead(room.getId(), userDetails.getId()); //메시지 읽음처리
 
@@ -78,15 +78,15 @@ public class ChatMessageService {
         if (chatRoomId == null || chatRoomId.isEmpty()) {
             chatRoomId = "비었습니다.";
         }
-        
+
         SellStatus status = SellStatus.SOLD_OUT;
         ChatRoomTwo chatRoomTwo;
         if (room.getAccount().getId() == userDetails.getId()) { // 구매자
-           if (room.getGoods().getStatus() == GoodsStatus.SALE) {
-                status = SellStatus.BUYER_TRY;
-           } else if (room.getGoods().getStatus() == GoodsStatus.RESERVED) {
-               status = SellStatus.BUYER_CHECK_REQUEST;
-           }
+            if (room.getGoods().getStatus() == GoodsStatus.SALE) {
+                status = SellStatus.BUYER_WAITING;
+            } else if (room.getGoods().getStatus() == GoodsStatus.RESERVED) {
+                status = SellStatus.BUYER_CHECK_REQUEST;
+            }
             chatRoomTwo = ChatRoomTwo.builder()
                     .chatRoomId(chatRoomId)
                     .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())

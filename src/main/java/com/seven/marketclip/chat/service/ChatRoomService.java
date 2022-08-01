@@ -97,7 +97,7 @@ public class ChatRoomService {
         chatRoomRepository.deleteById(chatRoomId);
         redisPublisher.publish(getTopic(chatRoomId),
                 ChatMessageReq.builder()
-                        .chatRoomId("삭제된채팅방")
+                        .chatRoomId("CHAT_REMOVE")
                         .partnerId(partnerId)
                         .message(chatRoomId)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                         .build());
@@ -116,7 +116,7 @@ public class ChatRoomService {
             chatRoomRepository.deleteById(room.getId());
             redisPublisher.publish(getTopic(room.getId()),
                     ChatMessageReq.builder()
-                            .chatRoomId("삭제된채팅방")
+                            .chatRoomId("CHAT_REMOVE")
                             .partnerId(partnerId)
                             .message(room.getId())        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                             .build());
@@ -162,6 +162,9 @@ public class ChatRoomService {
                         Comparator.nullsFirst(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         return list;
+    }
+    public void sendToPubReview(ChatMessageReq message, String chatRoomId){
+        redisPublisher.publish(getTopic(chatRoomId), message);
     }
 
     public void enterChatRoom(String chatRoomId) {
