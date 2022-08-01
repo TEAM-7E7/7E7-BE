@@ -160,31 +160,31 @@ public class AccountService {
         List<Goods> goodsList = account.getGoodsList();
         AccountImage accountImage = account.getProfileImgUrl();
 
-        if (goodsList.isEmpty() || accountImage.getImageUrl().equals("default")) {
-            chatRoomService.removeAllChatRoom(accountId);
-            deleteByAccountId(accountId);
-        } else {
-            List<List<GoodsImage>> cascadeUrlsList = goodsList.stream().map(Goods::getGoodsImages).collect(Collectors.toList());
-            List<GoodsImage> cascadeUrls = cascadeUrlsList.stream().flatMap(List::stream).collect(Collectors.toList());
+        List<List<GoodsImage>> cascadeUrlsList;
+        List<GoodsImage> cascadeUrls;
 
-            try {
-                chatRoomService.removeAllChatRoom(accountId);
-                deleteByAccountId(accountId);
-            } catch (Exception e){
-                return SUCCESS;
+        if (goodsList.isEmpty() && accountImage.getImageUrl().equals("default")) {
+            accountRepository.deleteById(accountId);
+        } else if (goodsList.isEmpty()) {
+            accountRepository.deleteById(accountId);
+            fileCloudService.deleteFile(accountImage.getImageUrl());
+        } else if (accountImage.getImageUrl().equals("default")) {
+            cascadeUrlsList = goodsList.stream().map(Goods::getGoodsImages).collect(Collectors.toList());
+            cascadeUrls = cascadeUrlsList.stream().flatMap(List::stream).collect(Collectors.toList());
+            accountRepository.deleteById(accountId);
+            for (GoodsImage goodsImage : cascadeUrls) {
+                fileCloudService.deleteFile(goodsImage.getImageUrl());
             }
-
+        } else {
+            cascadeUrlsList = goodsList.stream().map(Goods::getGoodsImages).collect(Collectors.toList());
+            cascadeUrls = cascadeUrlsList.stream().flatMap(List::stream).collect(Collectors.toList());
+            accountRepository.deleteById(accountId);
             fileCloudService.deleteFile(accountImage.getImageUrl());
             for (GoodsImage goodsImage : cascadeUrls) {
                 fileCloudService.deleteFile(goodsImage.getImageUrl());
             }
         }
         return SUCCESS;
-    }
-
-    @Transactional
-    public void deleteByAccountId(Long accountId) {
-        accountRepository.deleteById(accountId);
     }
 
     //리프레쉬 토큰 재발

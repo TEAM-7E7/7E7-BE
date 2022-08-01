@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReqDto {
+public class GoodsReviewReqDto {
 
     private String message; //후기 메시지
 
@@ -19,7 +19,7 @@ public class ReqDto {
     private Double appointment; //시간약속
 
     @Builder
-    public ReqDto(String message, Double kindess, Double responseSpeed, Double quality, Double appointment) {
+    public GoodsReviewReqDto(String message, Double kindess, Double responseSpeed, Double quality, Double appointment) {
         this.message = message;
         this.kindess = kindess;
         this.responseSpeed = responseSpeed;
