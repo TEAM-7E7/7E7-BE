@@ -21,7 +21,7 @@
 <br />
 
 # 🗺 ER Diagram
-<center><img src="[https://user-images.githubusercontent.com/25544668/150820782-cee6883b-de1e-4608-906e-afa21764e1e3.png](https://wook-bucket.s3.ap-northeast-2.amazonaws.com/markeclip+erd.PNG)" width="800"></center>
+<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/markeclip+erd.PNG" width="800"></center>
   
 <br />
 
