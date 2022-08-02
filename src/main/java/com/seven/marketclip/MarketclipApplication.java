@@ -17,6 +17,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableScheduling
+@EnableCaching
 public class MarketclipApplication {
 
     @Bean

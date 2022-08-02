@@ -22,6 +22,8 @@ import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.wish.repository.WishRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -100,6 +102,7 @@ public class GoodsService {
 
     // 상세페이지
     @Transactional
+    @Cacheable(key = "#goodsId", cacheNames = "goodsCache")
     public DataResponseCode findGoodsDetail(Long goodsId) throws CustomException {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
@@ -111,6 +114,7 @@ public class GoodsService {
 
     // 게시글 삭제
     @Transactional
+    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
     public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         for (GoodsImage goodsImage : goods.getGoodsImages()) {
@@ -122,6 +126,7 @@ public class GoodsService {
 
     // 게시글 수정
     @Transactional
+    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
@@ -131,6 +136,7 @@ public class GoodsService {
     }
 
     // 내가 쓴 글 보기
+    @Cacheable(key = "#userDetails.id", cacheNames = "myGoodsCache")
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, GoodsStatus goodsStatus, Pageable pageable) {
         Page<Goods> goodsList = goodsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), goodsStatus.name(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
@@ -139,6 +145,7 @@ public class GoodsService {
     }
 
     // 내가 즐겨찾기 한 글 보기
+    @Cacheable(key = "#userDetails.id", cacheNames = "myWishCache")
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
         Page<Wish> wishList = wishRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Page<Goods> goodsList = wishList.map(Wish::getGoods);

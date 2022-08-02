@@ -1,7 +1,11 @@
 package com.seven.marketclip.exception;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -9,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 public class HttpResponse {
 
-    private final LocalDateTime timestamp = LocalDateTime.now();
+    private final LocalDateTime timestamp;
     private final Integer status;
     private final String response;
     private final String code;
@@ -18,6 +22,7 @@ public class HttpResponse {
 
     @Builder
     public HttpResponse(Integer status, String response, String code, String message, Object data) {
+        this.timestamp = LocalDateTime.now();
         this.status = status;
         this.response = response;
         this.code = code;

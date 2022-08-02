@@ -23,9 +23,7 @@ public class EmailController {
         return HttpResponse.toResponseEntity(emailService.checkEmail(emailDTO));
     }
 
-
-    // 비밀번호 찾기 (이메일)
-    @ApiOperation(value = "비밀번호 찾기를 위한 이메일 체크", notes = "")
+    @ApiOperation(value = "비밀번호 찾기를 위한 이메일 체크", notes = "이메일을 인증하는 API")
     @PostMapping("/password-search")
     public ResponseEntity<HttpResponse> searchPassword(@RequestBody EmailDTO emailDTO) {
         return HttpResponse.toResponseEntity(emailService.findPassword(emailDTO));
