@@ -23,6 +23,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
             "(c.goods.id = :goodsId and c.account.id = :partnerId)")
     Optional<ChatRoom> roomFindQuery(Long goodsId, Long loginId, Long partnerId);
 
+    @Query("select c from ChatRoom c " +
+            "where c.goods.id = :goodsId and c.account.id = :buyerId")
+    Optional<ChatRoom> oneRoomFindQuery(Long goodsId, Long buyerId);
     @Query("select count(c.id) from ChatRoom c " +
             "where c.id = :chatRoomId or " +
             "(c.goods.id = :goodsId and c.account.id = :loginId)")

@@ -10,4 +10,6 @@ import lombok.Setter;
 public class ChatMessageInfo {
     String chatRoomId;
     Long partnerId;
+    Long buyerId;
+    Long goodsId;
 }

@@ -4,10 +4,7 @@ package com.seven.marketclip.chat.service;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
-import com.seven.marketclip.chat.dto.ChatMessageReq;
-import com.seven.marketclip.chat.dto.ChatRoomGoods;
-import com.seven.marketclip.chat.dto.ChatRoomId;
-import com.seven.marketclip.chat.dto.RoomMake;
+import com.seven.marketclip.chat.dto.*;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.chat.subpub.RedisPublisher;
@@ -84,8 +81,8 @@ public class ChatRoomService {
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeChatRoom(String chatRoomId, Long loginId){
-        ChatRoom room = chatRoomRepository.findById(chatRoomId).orElseThrow(
+    public void removeChatRoom(ChatMessageInfo roomInfo, Long loginId){
+        ChatRoom room = chatRoomRepository.oneRoomFindQuery(roomInfo.getGoodsId(), roomInfo.getBuyerId()).orElseThrow(
                 ()->new CustomException(CHAT_ROOM_NOT_FOUND)
         );
         Long partnerId;
@@ -110,8 +107,8 @@ public class ChatRoomService {
         }
 
         Long goodsId = room.getGoods().getId();
-        chatRoomRepository.deleteById(chatRoomId);
-        redisPublisher.publish(getTopic(chatRoomId),
+        chatRoomRepository.deleteById(room.getId());
+        redisPublisher.publish(getTopic(room.getId()),
                 ChatMessageReq.builder()
                         .chatRoomId("CHAT_REMOVE")
                         .partnerId(partnerId)
