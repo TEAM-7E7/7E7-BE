@@ -44,9 +44,9 @@ public class GoodsReviewService {
         //상대방에게 메시지 보내기.(재호님이) -> 받은 사람이 거래 후기 남기는것,거래 상태 변경
         chatRoomService.sendToPubReview(ChatMessageReq.builder()
                                     .chatRoomId("TRADE")
-                                    .senderId(userDetails.getId())
+                                    .senderId(goods.getAccount().getId())
                                     .partnerId(goodsReviewId.getBuyerId())
-                                    .message(goodsReviewId.getChatRoomId())
+                                    .message("TRADE_CALL")
                                     .build(), goodsReviewId.getChatRoomId());
         return SUCCESS;
     }
@@ -56,19 +56,21 @@ public class GoodsReviewService {
         GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getGoodsId()).orElseThrow(
                 ()-> new CustomException(GOODS_REVIEW_NOT_FOUND)
         );
-        String state = "none";
+        String status = "none";
         if(goodsOkDto.isStatus()){
             goodsReview.writeReview(goodsOkDto);
             goodsReview.getGoods().updateStatusSoldOut();
+            status = "TRADE_SUCCESS";
         }else{
             goodsReview.cancelReview();
             goodsReview.getGoods().updateStatusSale();
+            status = "TRADE_FAIL";
         }
         chatRoomService.sendToPubReview(ChatMessageReq.builder()
                 .chatRoomId("TRADE")
-                .senderId(userDetails.getId())
+                .senderId(goodsReview.getGoods().getAccount().getId())
                 .partnerId(goodsOkDto.getBuyerId())
-                .message(goodsOkDto.getChatRoomId())        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                .message(status)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                 .build(), goodsOkDto.getChatRoomId());
         //알림!! (구메자가 판매자에게 후기를 남겼다는 알림)
 
