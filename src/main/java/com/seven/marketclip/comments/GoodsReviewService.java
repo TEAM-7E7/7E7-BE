@@ -29,7 +29,6 @@ public class GoodsReviewService {
     public GoodsReviewService(GoodsReviewRepository goodsReviewRepository, GoodsRepository goodsRepository, ChatRoomService chatRoomService) {
         this.goodsReviewRepository = goodsReviewRepository;
         this.goodsRepository = goodsRepository;
-
         this.chatRoomService = chatRoomService;
     }
 
