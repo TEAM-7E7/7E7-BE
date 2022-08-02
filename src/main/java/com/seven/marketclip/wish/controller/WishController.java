@@ -6,7 +6,6 @@ import com.seven.marketclip.wish.service.WishService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,6 @@ public class WishController {
         this.wishService = wishService;
     }
 
-    @CacheEvict(key = "#userDetails.id", cacheNames = "myWishCache")
     @ApiOperation(value = "게시글 찜하기 (토글)", notes = "게시글 찜하기 / 취소를 수행하는 토글 api")
     @RequestMapping(value = "/{goodsId}", method = {RequestMethod.POST, RequestMethod.DELETE})
     public ResponseEntity<HttpResponse> wishToggle(@PathVariable Long goodsId, @AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest httpServletRequest) {

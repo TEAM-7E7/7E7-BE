@@ -8,6 +8,7 @@ import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.wish.repository.WishRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,12 +26,13 @@ public class WishService {
     }
 
     @Transactional
-    public ResponseCode doWishList(Long goodsId, UserDetailsImpl account, String httpMethod) throws CustomException {
-        Account detailsAccount = new Account(account);
+    @CacheEvict(key = "#userDetails.id", cacheNames = "myWishCache")
+    public ResponseCode doWishList(Long goodsId, UserDetailsImpl userDetails, String httpMethod) throws CustomException {
+        Account account = new Account(userDetails);
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-        Wish wish = wishRepository.findByGoodsAndAccount(goods, detailsAccount).orElse(null);
+        Wish wish = wishRepository.findByGoodsAndAccount(goods, account).orElse(null);
         if (wish != null) {
             if (httpMethod.equals("DELETE")) {
                 wishRepository.delete(wish);
@@ -41,7 +43,7 @@ public class WishService {
             if (httpMethod.equals("POST")) {
                 wishRepository.save(Wish.builder()
                         .goods(goods)
-                        .account(detailsAccount)
+                        .account(account)
                         .build());
             } else {
                 throw new CustomException(WRONG_WISHLIST_DELETE_REQUEST);

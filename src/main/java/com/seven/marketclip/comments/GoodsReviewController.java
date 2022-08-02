@@ -20,15 +20,14 @@ public class GoodsReviewController {
 
     //거래완료신청(판매자 -> 구매자)
     @PostMapping("/deal")
-    public ResponseEntity<HttpResponse> sendReview(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody GoodsDealDto goodsReviewId){
+    public ResponseEntity<HttpResponse> sendReview(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody GoodsDealDto goodsReviewId) {
         return HttpResponse.toResponseEntity(goodsReviewService.sendReview(userDetails, goodsReviewId));
     }
 
     //후기 남기기(구매자 -> 판매자)
     @PutMapping("/ok")
-    public ResponseEntity<HttpResponse> writeReview(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody GoodsOkDto goodsOkDto){
+    public ResponseEntity<HttpResponse> writeReview(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody GoodsOkDto goodsOkDto) {
         return HttpResponse.toResponseEntity(goodsReviewService.writeReview(userDetails, goodsOkDto));
     }
-
 
 }
