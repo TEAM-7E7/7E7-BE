@@ -33,8 +33,10 @@ public class GoodsReviewService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache")})
+    @Caching(evict = {@CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:SALE'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "#goodsDealDto.goodsId", cacheNames = "goodsCache"),
+            @CacheEvict(key = "#goodsDealDto.buyerId", cacheNames = "myPurchaseCache")})
     public ResponseCode sendReview(UserDetailsImpl userDetails, GoodsDealDto goodsDealDto) {
         System.out.println(goodsDealDto.getGoodsId() + "//" + goodsDealDto.getBuyerId());
         //채팅방에서 판매자가 거래완료 버튼을 누름.
@@ -60,7 +62,8 @@ public class GoodsReviewService {
     @Transactional
     @Caching(evict = {@CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
             @CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "#goodsOkDto.goodsId", cacheNames = "goodsCache")})
+            @CacheEvict(key = "#goodsOkDto.goodsId", cacheNames = "goodsCache"),
+            @CacheEvict(key = "#goodsOkDto.buyerId", cacheNames = "myPurchaseCache")})
     public ResponseCode writeReview(UserDetailsImpl userDetails, GoodsOkDto goodsOkDto) {
         GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getGoodsId()).orElseThrow(
                 () -> new CustomException(GOODS_REVIEW_NOT_FOUND)

@@ -51,6 +51,8 @@ public class RedisConfig {
 
         cacheConfigurations.put("goodsCache",RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(24)));
+        cacheConfigurations.put("myPurchaseCache",RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(2)));
         cacheConfigurations.put("myGoodsCache",RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(30)));
         cacheConfigurations.put("myWishCache",RedisCacheConfiguration.defaultCacheConfig()
