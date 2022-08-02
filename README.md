@@ -75,3 +75,12 @@
   
 * 게시물 검색 인기순 top 10 
 <br />
+
+
+<details>
+    <summary>
+        <b>쇼츠 기능의 동영상 썸네일 처리</b>
+    </summary>
+해결 : 1초 대의 프레임을 가져와서 썸네일 이미지로 저장한 후, 동영상과 함께 프론트로 전달
+<br><b>자세히 보기 : https://beomin-sd.tistory.com/382</b>
+</details>
