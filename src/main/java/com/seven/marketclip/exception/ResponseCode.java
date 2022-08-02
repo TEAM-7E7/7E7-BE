@@ -33,6 +33,7 @@ public enum ResponseCode {
 
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰이 유효하지 않습니다."),
     MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다."),
+    SOLD_OUT_GOODS(BAD_REQUEST, "이미 판매된 상품입니다."),
 
     // 회원가입 + 로그인
     ALREADY_LOGIN(BAD_REQUEST, "이미 로그인이 되어있습니다."),

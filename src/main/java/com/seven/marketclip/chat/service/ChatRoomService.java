@@ -54,6 +54,9 @@ public class ChatRoomService {
         Goods goods = goodsRepository.findById(roomMake.getGoodsId()).orElseThrow(
                 ()->new CustomException(GOODS_NOT_FOUND)
         );
+        if(goods.getStatus() == GoodsStatus.SOLD_OUT){
+            throw new CustomException(SOLD_OUT_GOODS);
+        }
         Long room = chatRoomRepository.myRoomFindQuery(
                 roomMake.getId(), roomMake.getGoodsId(), loginId);
         if(room != 0L || goods.getAccount().getId() == loginId){// 위 쿼리문 조건 + 내가 나의 채팅방을 만든경우
