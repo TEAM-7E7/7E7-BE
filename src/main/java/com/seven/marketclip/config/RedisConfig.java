@@ -52,9 +52,9 @@ public class RedisConfig {
         cacheConfigurations.put("goodsCache",RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("myGoodsCache",RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(30)));
+                .entryTtl(Duration.ofMinutes(30)));
         cacheConfigurations.put("myWishCache",RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(30)));
+                .entryTtl(Duration.ofMinutes(30)));
 
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
@@ -88,7 +88,6 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
-//        redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         return redisTemplate;
     }
 }
