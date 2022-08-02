@@ -1,5 +1,6 @@
 package com.seven.marketclip.comments;
 
+import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.comments.domain.GoodsReview;
@@ -82,6 +83,16 @@ public class GoodsReviewService {
                 .partnerId(goodsOkDto.getBuyerId())
                 .message(status)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                 .build(), goodsOkDto.getChatRoomId());
+        for (ChatRoom cr:goodsReview.getGoods().getChatRooms()) {
+            if(!(cr.getGoods().getAccount().getId() == goodsReview.getGoods().getAccount().getId() &
+                    cr.getAccount().getId() == goodsReview.getAccount().getId())){
+                chatRoomService.sendToPubReview(ChatMessageReq.builder()
+                        .chatRoomId("TRADE_RELOAD")
+                        .partnerId(cr.getAccount().getId())
+                        .message("status")        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                        .build(), cr.getId());
+            }
+        }
         //알림!! (구메자가 판매자에게 후기를 남겼다는 알림)
 
         return SUCCESS;
