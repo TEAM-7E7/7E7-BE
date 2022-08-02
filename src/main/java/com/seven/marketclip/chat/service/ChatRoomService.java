@@ -13,6 +13,7 @@ import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -49,6 +50,7 @@ public class ChatRoomService {
         }
     }
     @Transactional      //채팅방 생성
+    @CacheEvict(key = "#roomMake.goodsId", cacheNames = "goodsCache")
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
         Goods goods = goodsRepository.findById(roomMake.getGoodsId()).orElseThrow(
                 ()->new CustomException(GOODS_NOT_FOUND)
