@@ -109,13 +109,13 @@ public class ChatRoomService {
             }
         }
 
-
+        Long goodsId = room.getGoods().getId();
         chatRoomRepository.deleteById(chatRoomId);
         redisPublisher.publish(getTopic(chatRoomId),
                 ChatMessageReq.builder()
                         .chatRoomId("CHAT_REMOVE")
                         .partnerId(partnerId)
-                        .message(chatRoomId)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                        .message(String.valueOf(goodsId))        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                         .build());
     }
 
@@ -129,12 +129,13 @@ public class ChatRoomService {
             }else{
                 partnerId = room.getAccount().getId();
             }
+            Long goodsId = room.getGoods().getId();
             chatRoomRepository.deleteById(room.getId());
             redisPublisher.publish(getTopic(room.getId()),
                     ChatMessageReq.builder()
                             .chatRoomId("CHAT_REMOVE")
                             .partnerId(partnerId)
-                            .message(room.getId())        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                            .message(String.valueOf(goodsId))        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                             .build());
         }
     }
