@@ -47,8 +47,10 @@ public class RedisSubscriber implements MessageListener {
                     messageSeller = "TRADE_FAIL_SELLER";
                     messageBuyer = "TRADE_FAIL_BUYER";
                 }
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), messageBuyer);
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), messageSeller);
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(),
+                                                    roomMessage.getGoodsId() + "_" + messageBuyer);
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(),
+                                                    roomMessage.getGoodsId() + "_" + messageSeller);
             } else{
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getChatRoomId(), roomMessage);
                 messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "CHAT_RELOAD");
