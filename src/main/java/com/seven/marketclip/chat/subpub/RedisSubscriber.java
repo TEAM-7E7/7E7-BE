@@ -38,8 +38,8 @@ public class RedisSubscriber implements MessageListener {
                 String messageSeller = "TRADE";
                 String messageBuyer = "TRADE";
                 if(roomMessage.getMessage().equals("TRADE_CALL")){
-                    messageSeller = "TRADE_SUCCESS_SELLER";
-                    messageBuyer = "TRADE_SUCCESS_BUYER";
+                    messageSeller = "TRADE_CALL_SELLER";
+                    messageBuyer = "TRADE_CALL_BUYER";
                 } else if(roomMessage.getMessage().equals("TRADE_SUCCESS")){
                     messageSeller = "TRADE_SUCCESS_SELLER";
                     messageBuyer = "TRADE_SUCCESS_BUYER";
