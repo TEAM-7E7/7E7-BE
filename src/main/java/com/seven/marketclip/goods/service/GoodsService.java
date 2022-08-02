@@ -136,7 +136,7 @@ public class GoodsService {
     }
 
     // 내가 쓴 글 보기
-    @Cacheable(key = "#userDetails.id", cacheNames = "myGoodsCache")
+    @Cacheable(key = "#userDetails.id+#goodsStatus", cacheNames = "myGoodsCache")
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, GoodsStatus goodsStatus, Pageable pageable) {
         Page<Goods> goodsList = goodsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), goodsStatus.name(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
