@@ -1,6 +1,5 @@
 package com.seven.marketclip.goods.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
@@ -8,7 +7,6 @@ import com.seven.marketclip.image.domain.GoodsImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-public class GoodsResDTO implements Serializable {
+public class GoodsResDTO{
     private Long id;
     private Integer viewCount;
     private List<Long> wishIds;
