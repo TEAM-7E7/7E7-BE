@@ -53,6 +53,7 @@ public class GoodsController {
     @ApiOperation(value = "게시글 상세페이지", notes = "게시글 상세페이지 api")
     @GetMapping("/details/{goodsId}")
     public ResponseEntity<HttpResponse> goodsDetails(@PathVariable Long goodsId) {
+        goodsService.plusView(goodsId);
         return HttpResponse.toResponseEntity(goodsService.findGoodsDetail(goodsId));
     }
 

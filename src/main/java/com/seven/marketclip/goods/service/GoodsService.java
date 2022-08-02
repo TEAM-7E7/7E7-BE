@@ -84,6 +84,7 @@ public class GoodsService {
 
     // 게시글 작성
     @Transactional
+    @CacheEvict(key = "'id:' + #userDetails.id + '__status:' + 'SALE'", cacheNames = "myGoodsCache")
     public ResponseCode addGoods(GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Account detailsAccount = new Account(userDetails);
         Goods goods = Goods.builder()
@@ -110,7 +111,6 @@ public class GoodsService {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-        plusView(goodsId);
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
         return new DataResponseCode(SUCCESS, goodsResDTO);
     }
@@ -129,7 +129,7 @@ public class GoodsService {
 
     // 게시글 수정
     @Transactional
-    @CachePut(key = "#goodsId", cacheNames = "goodsCache")
+    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
@@ -139,9 +139,9 @@ public class GoodsService {
     }
 
     // 내가 쓴 글 보기
-    @Cacheable(key = "#userDetails.id+#goodsStatus", cacheNames = "myGoodsCache")
+    @Cacheable(key = "'id:' + #userDetails.id + '__status:' + #goodsStatus.name()", cacheNames = "myGoodsCache")
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, GoodsStatus goodsStatus, Pageable pageable) {
-        Page<Goods> goodsList = goodsRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), goodsStatus.name(), pageable);
+        Page<Goods> goodsList = goodsQueryRep.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), goodsStatus.name(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
         return new DataResponseCode(SUCCESS, resultMap);

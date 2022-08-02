@@ -1,17 +1,14 @@
 package com.seven.marketclip.exception;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
-public class HttpResponse {
+public class HttpResponse implements Serializable {
 
     private final LocalDateTime timestamp;
     private final Integer status;

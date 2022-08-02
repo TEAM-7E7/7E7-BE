@@ -11,6 +11,8 @@ public class GoodsDealDto {
     //게시글 아이디
     private Long goodsId;
 
+    private Long sellerId;
+
     //상대 아이디
     private Long buyerId;
 

@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface GoodsRepository extends JpaRepository<Goods, Long> {
 
     // 내가 쓴 글 보기
-    @Query(value = "SELECT * FROM goods where account_id = :accountId and status = :goodsStatus order by created_at desc", nativeQuery = true)
-    PageImpl<Goods> findAllByAccountIdOrderByCreatedAtDesc(Long accountId, String goodsStatus, Pageable pageable);
+//    @Query(value = "SELECT * FROM goods where account_id = :accountId and status = :goodsStatus order by created_at desc", nativeQuery = true)
+//    PageImpl<Goods> findAllByAccountIdOrderByCreatedAtDesc(Long accountId, String goodsStatus, Pageable pageable);
 
     // 조회수 + 1
     @Modifying
