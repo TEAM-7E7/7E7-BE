@@ -1,5 +1,6 @@
 package com.seven.marketclip.comments;
 
+import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.ChatMessageReq;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.comments.domain.GoodsReview;
@@ -33,8 +34,10 @@ public class GoodsReviewService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache")})
+    @Caching(evict = {@CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:SALE'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "#goodsDealDto.goodsId", cacheNames = "goodsCache"),
+            @CacheEvict(key = "#goodsDealDto.buyerId", cacheNames = "myPurchaseCache")})
     public ResponseCode sendReview(UserDetailsImpl userDetails, GoodsDealDto goodsDealDto) {
         System.out.println(goodsDealDto.getGoodsId() + "//" + goodsDealDto.getBuyerId());
         //채팅방에서 판매자가 거래완료 버튼을 누름.
@@ -60,7 +63,8 @@ public class GoodsReviewService {
     @Transactional
     @Caching(evict = {@CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
             @CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "#goodsOkDto.goodsId", cacheNames = "goodsCache")})
+            @CacheEvict(key = "#goodsOkDto.goodsId", cacheNames = "goodsCache"),
+            @CacheEvict(key = "#goodsOkDto.buyerId", cacheNames = "myPurchaseCache")})
     public ResponseCode writeReview(UserDetailsImpl userDetails, GoodsOkDto goodsOkDto) {
         GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getGoodsId()).orElseThrow(
                 () -> new CustomException(GOODS_REVIEW_NOT_FOUND)
@@ -82,6 +86,16 @@ public class GoodsReviewService {
                 .partnerId(goodsOkDto.getBuyerId())
                 .message(status)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                 .build(), goodsOkDto.getChatRoomId());
+        for (ChatRoom cr:goodsReview.getGoods().getChatRooms()) {
+            if(!(cr.getGoods().getAccount().getId() == goodsReview.getGoods().getAccount().getId() &
+                    cr.getAccount().getId() == goodsReview.getAccount().getId())){
+                chatRoomService.sendToPubReview(ChatMessageReq.builder()
+                        .chatRoomId("TRADE_RELOAD")
+                        .partnerId(cr.getAccount().getId())
+                        .message("status")        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                        .build(), cr.getId());
+            }
+        }
         //알림!! (구메자가 판매자에게 후기를 남겼다는 알림)
 
         return SUCCESS;

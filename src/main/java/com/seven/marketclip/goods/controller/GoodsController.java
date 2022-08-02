@@ -75,6 +75,12 @@ public class GoodsController {
         return HttpResponse.toResponseEntity(goodsService.findMyGoods(userDetails, goodsStatus, pageable));
     }
 
+    @ApiOperation(value = "내가 구매한 게시글 조회", notes = "내가 구매한 게시글을 조회하는 api / 페이징")
+    @GetMapping("/my-purchase")
+    public ResponseEntity<HttpResponse> myPurchaseList(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault final Pageable pageable) {
+        return HttpResponse.toResponseEntity(goodsService.findMyPurchase(userDetails, pageable));
+    }
+
     @ApiOperation(value = "내가 즐겨찾기 한 게시글 보기", notes = "내가 즐겨찾기 한 게시글 보기 api / 페이징")
     @GetMapping("/my-wish")
     public ResponseEntity<HttpResponse> myWishFind(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault final Pageable pageable) {

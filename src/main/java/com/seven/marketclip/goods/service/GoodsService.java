@@ -24,6 +24,7 @@ import com.seven.marketclip.wish.repository.WishRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -116,7 +117,10 @@ public class GoodsService {
 
     // 게시글 삭제
     @Transactional
-    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
+    @Caching(evict = { @CacheEvict(key = "#goodsId", cacheNames = "goodsCache"),
+            @CacheEvict(key = "'id:' + #userDetails.id + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #userDetails.id + '__status:SALE'", cacheNames = "myGoodsCache")
+    })
     public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         for (GoodsImage goodsImage : goods.getGoodsImages()) {
@@ -128,7 +132,10 @@ public class GoodsService {
 
     // 게시글 수정
     @Transactional
-    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
+    @Caching(evict = { @CacheEvict(key = "#goodsId", cacheNames = "goodsCache"),
+            @CacheEvict(key = "'id:' + #userDetails.id + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #userDetails.id + '__status:SALE'", cacheNames = "myGoodsCache")
+    })
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
@@ -138,9 +145,18 @@ public class GoodsService {
     }
 
     // 내가 쓴 글 보기
-    @Cacheable(key = "'id:' + #userDetails.id + '__status:' + #goodsStatus.name()", cacheNames = "myGoodsCache")
+    @Cacheable(key = "'id:' + #userDetails.id + '__status:' + #goodsStatus.name()", cacheNames = "myGoodsCache", condition = "#pageable.pageNumber == 0")
     public DataResponseCode findMyGoods(UserDetailsImpl userDetails, GoodsStatus goodsStatus, Pageable pageable) {
         Page<Goods> goodsList = goodsQueryRep.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), goodsStatus.name(), pageable);
+        Map<String, Object> resultMap = pageToMap(goodsList);
+
+        return new DataResponseCode(SUCCESS, resultMap);
+    }
+
+    // 내가 구매한 글 보기
+    @Cacheable(key = "'id:' + #userDetails.id", cacheNames = "myPurchaseCache", condition = "#pageable.pageNumber == 0")
+    public DataResponseCode findMyPurchase(UserDetailsImpl userDetails, Pageable pageable) {
+        Page<Goods> goodsList = goodsRepository.findAllPurchaseByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
 
         return new DataResponseCode(SUCCESS, resultMap);

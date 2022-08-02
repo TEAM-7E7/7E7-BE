@@ -112,7 +112,7 @@ public class GoodsQueryRep {
         if (goodsStatus.equals(SALE.name())) {
             queryResult = queryFactory
                     .selectFrom(goods)
-                    .where(goods.id.eq(accountId)
+                    .where(goods.account.id.eq(accountId)
                             .and(goods.status.eq(SALE)
                                     .or(goods.status.eq(RESERVED)))
                     )
@@ -124,14 +124,17 @@ public class GoodsQueryRep {
             count = queryFactory
                     .select(goods.id)
                     .from(goods)
-                    .where(goods.status.eq(SALE))
+                    .where(goods.account.id.eq(accountId)
+                            .and(goods.status.eq(SALE)
+                                    .or(goods.status.eq(RESERVED)))
+                    )
                     .fetch()
                     .size();
 
         } else if (goodsStatus.equals(SOLD_OUT.name())) {
             queryResult = queryFactory
                     .selectFrom(goods)
-                    .where(goods.id.eq(accountId)
+                    .where(goods.account.id.eq(accountId)
                             .and(goods.status.eq(SOLD_OUT))
                     )
                     .orderBy(goods.createdAt.desc())
@@ -142,8 +145,9 @@ public class GoodsQueryRep {
             count = queryFactory
                     .select(goods.id)
                     .from(goods)
-                    .where(goods.status.eq(RESERVED)
-                            .or(goods.status.eq(SOLD_OUT)))
+                    .where(goods.account.id.eq(accountId)
+                            .and(goods.status.eq(SOLD_OUT))
+                    )
                     .fetch()
                     .size();
         } else {
