@@ -1,12 +1,11 @@
 package com.seven.marketclip.chat.controller;
 
-import com.seven.marketclip.chat.dto.ChatMessageInfo;
-import com.seven.marketclip.chat.dto.ChatMessageReq;
-import com.seven.marketclip.chat.dto.ChatRoomReq;
-import com.seven.marketclip.chat.dto.ChatRoomTwo;
+import com.seven.marketclip.chat.dto.*;
+import com.seven.marketclip.chat.eums.SellStatus;
 import com.seven.marketclip.chat.service.ChatMessageService;
 import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.chat.subpub.RedisPublisher;
+import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ public class ChatMessageController {
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
     private final RedisPublisher redisPublisher;
+    private final GoodsRepository repository; //test
 
     // websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
     @MessageMapping("/chat/message")            //메세지 전송
@@ -43,5 +43,9 @@ public class ChatMessageController {
     public String checkReadModify(@RequestBody ChatMessageInfo roomInfo){
         chatMessageService.modifyCheckRead(roomInfo.getChatRoomId(), roomInfo.getPartnerId());  //로그인한 아이디로 변경
         return "성공";
+    }
+    @PostMapping("/api/testers")
+    public SellStatus findStatus(@RequestBody ChatRoomId roomId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return chatMessageService.findChatStatus(repository.findById(roomId.getGoodsId()).get(), userDetails.getId(), false);
     }
 }
