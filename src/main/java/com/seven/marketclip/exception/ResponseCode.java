@@ -3,10 +3,12 @@ package com.seven.marketclip.exception;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serializable;
+
 import static org.springframework.http.HttpStatus.*;
 
 @Getter
-public enum ResponseCode {
+public enum ResponseCode implements Serializable {
 
     /** ( 200 OK / 201 CREATED ) 요청성공 */
     SUCCESS(OK, "성공!"),
@@ -14,11 +16,6 @@ public enum ResponseCode {
     // 이메일 인증
     EMAIL_VALIDATION_SUCCESS(OK, "이메일 인증이 완료되었습니다."),
     EMAIL_DISPATCH_SUCCESS(OK, "해당 이메일로 인증번호를 발송하였습니다."),
-
-    //수정하기*********************************************************************
-    NICKNAME_UPDATE_SUCCESS(OK, "닉네임 수정이 완료되었습니다."),
-    PROFILE_IMG_UPDATE_SUCCESS(OK, "프로필 사진 수정이 완료되었습니다."),
-    PASSWORD_VALIDATION_SUCCESS(OK, "비밀번호 수정이 완료되었습니다."),
 
     /** 400 BAD_REQUEST 잘못된 요청 */
 
@@ -57,6 +54,10 @@ public enum ResponseCode {
     INVALID_IMAGE_ACCESS(BAD_REQUEST, "해당 사용자가 등록한 이미지가 아닙니다."),
     DUPLICATED_IMAGE_REQ(BAD_REQUEST, "이미 다른 게시글에 등록된 이미지입니다."),
 
+    // 게시글 상태
+    INVALID_GOODS_ORDER(BAD_REQUEST, "게시글 정렬요청이 잘못되었습니다."),
+    INVALID_GOODS_STATUS(BAD_REQUEST, "게시글 상태요청이 잘못되었습니다."),
+
     // 즐겨찾기 토글
     WRONG_WISHLIST_DELETE_REQUEST(BAD_REQUEST, "이미 즐겨찾기가 취소되었습니다."),
     WRONG_WISHLIST_SAVE_REQUEST(BAD_REQUEST, "이미 즐겨찾기에 추가되었습니다."),
@@ -92,7 +93,6 @@ public enum ResponseCode {
 
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 상태입니다 다시 로그인 해주세요."),
     NULL_POINT_EXCEPTION(NOT_FOUND, "Null Point Exception 발생."),
-    ORDER_BY_NOT_FOUND(NOT_FOUND, "약속된 정렬 요청이 아닙니다."),
 
     CHAT_ROOM_NOT_FOUND(NOT_FOUND, "채팅방이 존재하지 않습니다."),
     CHAT_MESSAGE_NOT_FOUND(NOT_FOUND, "채팅방의 메세지가 존재하지 않습니다."),

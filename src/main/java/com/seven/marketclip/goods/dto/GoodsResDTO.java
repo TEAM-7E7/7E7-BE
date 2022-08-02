@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class GoodsResDTO implements Serializable {
     private Long id;
     private Integer viewCount;
+    private Integer chatRoomCount;
     private List<Long> wishIds;
     private Long accountId;
     private String nickname;
@@ -34,9 +35,10 @@ public class GoodsResDTO implements Serializable {
     private LocalDateTime createdAt;
 
     @Builder
-    public GoodsResDTO(Long id, Integer viewCount, List<Long> wishIds, Long accountId, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<Map<String, Object>> imageMapList, GoodsStatus status, LocalDateTime createdAt) {
+    public GoodsResDTO(Long id, Integer viewCount, Integer chatRoomCount, List<Long> wishIds, Long accountId, String nickname, String accountImageUrl, String title, GoodsCategory category, String description, Integer sellPrice, List<Map<String, Object>> imageMapList, GoodsStatus status, LocalDateTime createdAt) {
         this.id = id;
         this.viewCount = viewCount;
+        this.chatRoomCount = chatRoomCount;
         this.wishIds = wishIds;
         this.accountId = accountId;
         this.nickname = nickname;
@@ -62,6 +64,7 @@ public class GoodsResDTO implements Serializable {
 
         this.id = goods.getId();
         this.viewCount = goods.getViewCount();
+        this.chatRoomCount = goods.getChatRooms().size();
         this.wishIds = goods.getWishLists().stream().map(wish -> wish.getAccount().getId()).collect(Collectors.toList());
         this.accountId = goods.getAccount().getId();
         this.nickname = goods.getAccount().getNickname();

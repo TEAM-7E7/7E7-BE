@@ -10,6 +10,8 @@ import com.seven.marketclip.exception.ResponseCode;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import com.seven.marketclip.security.UserDetailsImpl;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,38 +31,43 @@ public class GoodsReviewService {
 
         this.chatRoomService = chatRoomService;
     }
+
     @Transactional
-    public ResponseCode sendReview(UserDetailsImpl userDetails, GoodsDealDto goodsReviewId) {
-        System.out.println(goodsReviewId.getGoodsId() + "//"+ goodsReviewId.getBuyerId());
+    @Caching(evict = {@CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #goodsDealDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache")})
+    public ResponseCode sendReview(UserDetailsImpl userDetails, GoodsDealDto goodsDealDto) {
+        System.out.println(goodsDealDto.getGoodsId() + "//" + goodsDealDto.getBuyerId());
         //채팅방에서 판매자가 거래완료 버튼을 누름.
         //구매자가 수락 -> 할떄 남기거나 안남기거나
-        Goods goods = goodsRepository.findById(goodsReviewId.getGoodsId()).orElseThrow(
-                ()-> new CustomException(GOODS_NOT_FOUND)
+        Goods goods = goodsRepository.findById(goodsDealDto.getGoodsId()).orElseThrow(
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
-        goods.getGoodsReview().reservedReview(goodsReviewId.getBuyerId());
+        goods.getGoodsReview().reservedReview(goodsDealDto.getBuyerId());
         goods.updateStatusReserved();  //굿즈 상태 변화
 
         //알림 보내 벌이기!
         //상대방에게 메시지 보내기.(재호님이) -> 받은 사람이 거래 후기 남기는것,거래 상태 변경
         chatRoomService.sendToPubReview(ChatMessageReq.builder()
-                                    .chatRoomId("TRADE")
-                                    .senderId(userDetails.getId())
-                                    .partnerId(goodsReviewId.getBuyerId())
-                                    .message(goodsReviewId.getChatRoomId())
-                                    .build(), goodsReviewId.getChatRoomId());
+                .chatRoomId("TRADE")
+                .senderId(userDetails.getId())
+                .partnerId(goodsDealDto.getBuyerId())
+                .message(goodsDealDto.getChatRoomId())
+                .build(), goodsDealDto.getChatRoomId());
         return SUCCESS;
     }
 
     @Transactional
+    @Caching(evict = {@CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache")})
     public ResponseCode writeReview(UserDetailsImpl userDetails, GoodsOkDto goodsOkDto) {
         GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getGoodsId()).orElseThrow(
-                ()-> new CustomException(GOODS_REVIEW_NOT_FOUND)
+                () -> new CustomException(GOODS_REVIEW_NOT_FOUND)
         );
         String state = "none";
-        if(goodsOkDto.isStatus()){
+        if (goodsOkDto.isStatus()) {
             goodsReview.writeReview(goodsOkDto);
             goodsReview.getGoods().updateStatusSoldOut();
-        }else{
+        } else {
             goodsReview.cancelReview();
             goodsReview.getGoods().updateStatusSale();
         }

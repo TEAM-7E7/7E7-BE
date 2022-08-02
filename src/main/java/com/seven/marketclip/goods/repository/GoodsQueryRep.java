@@ -3,6 +3,7 @@ package com.seven.marketclip.goods.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.dto.OrderByDTO;
 import com.seven.marketclip.goods.enums.GoodsCategory;
@@ -14,8 +15,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.seven.marketclip.exception.ResponseCode.INVALID_GOODS_ORDER;
+import static com.seven.marketclip.exception.ResponseCode.INVALID_GOODS_STATUS;
 import static com.seven.marketclip.goods.domain.QGoods.goods;
-import static com.seven.marketclip.goods.enums.GoodsOrderBy.ORDER_BY_WISHLIST_COUNT;
+import static com.seven.marketclip.goods.enums.GoodsOrderBy.*;
+import static com.seven.marketclip.goods.enums.GoodsStatus.*;
 import static com.seven.marketclip.wish.domain.QWish.wish;
 
 
@@ -27,7 +31,7 @@ public class GoodsQueryRep {
         this.queryFactory = queryFactory;
     }
 
-    public Page<Goods> pagingGoods(OrderByDTO orderByDTO, Pageable pageable) {
+    public Page<Goods> pagingGoods(OrderByDTO orderByDTO, Pageable pageable) throws CustomException {
         List<GoodsCategory> goodsCategories = orderByDTO.getGoodsCategoryList();
         GoodsOrderBy goodsOrderBy = orderByDTO.getGoodsOrderBy();
 
@@ -55,7 +59,7 @@ public class GoodsQueryRep {
                     .fetch()
                     .size();
 
-        } else {
+        } else if (goodsOrderBy == ORDER_BY_CREATED_AT || goodsOrderBy == ORDER_BY_VIEW_COUNT) {
             queryResult = queryFactory
                     .selectFrom(goods)
                     .where(categoriesToExpression(goodsCategories))
@@ -70,6 +74,8 @@ public class GoodsQueryRep {
                     .where(categoriesToExpression(goodsCategories))
                     .fetch()
                     .size();
+        } else {
+            throw new CustomException(INVALID_GOODS_ORDER);
         }
 
         return new PageImpl<>(queryResult, pageable, count);
@@ -98,5 +104,53 @@ public class GoodsQueryRep {
         }
         return null;
     }
+
+    public Page<Goods> findAllByAccountIdOrderByCreatedAtDesc(Long accountId, String goodsStatus, Pageable pageable) throws CustomException {
+        List<Goods> queryResult;
+        int count;
+
+        if (goodsStatus.equals(SALE.name())) {
+            queryResult = queryFactory
+                    .selectFrom(goods)
+                    .where(goods.id.eq(accountId)
+                            .and(goods.status.eq(SALE)
+                                    .or(goods.status.eq(RESERVED)))
+                    )
+                    .orderBy(goods.createdAt.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+
+            count = queryFactory
+                    .select(goods.id)
+                    .from(goods)
+                    .where(goods.status.eq(SALE))
+                    .fetch()
+                    .size();
+
+        } else if (goodsStatus.equals(SOLD_OUT.name())) {
+            queryResult = queryFactory
+                    .selectFrom(goods)
+                    .where(goods.id.eq(accountId)
+                            .and(goods.status.eq(SOLD_OUT))
+                    )
+                    .orderBy(goods.createdAt.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+
+            count = queryFactory
+                    .select(goods.id)
+                    .from(goods)
+                    .where(goods.status.eq(RESERVED)
+                            .or(goods.status.eq(SOLD_OUT)))
+                    .fetch()
+                    .size();
+        } else {
+            throw new CustomException(INVALID_GOODS_STATUS);
+        }
+        return new PageImpl<>(queryResult, pageable, count);
+    }
+
 
 }
