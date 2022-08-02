@@ -1,6 +1,7 @@
 <p align="center"><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/Untitled.png" /></p>
 <p align="center"><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/222222.png" />
   
+<br />
 # 👥 멤버
 - Front-end: [이덕희](https://github.com/ejz1521), [장산](https://github.com/kyngmn)
 - Back-end: [임선용](https://github.com/sunyounIM), [김재호](https://github.com/KimjaehoLy), [서유리](https://github.com/tlsdnr1135)
