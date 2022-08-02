@@ -32,9 +32,9 @@ https://youtu.be/1j_bk71_Eaw
 # 🗺 ER Diagram
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/markeclip+erd.PNG" width="1200"></center>
   
-<br />
-
-<br />
+<br /><br />
+  
+# 📌 API 명세서
 
 # 🔑 프로젝트 주요 기능
 * Nginx에 HTTPS SSL 적용
@@ -84,24 +84,8 @@ https://youtu.be/1j_bk71_Eaw
 * 게시물 검색 인기순 top 10 
 <br />
 
-# 📌 API 명세서
-<details>
-    <summary>
-        <b>회원</b>
-    </summary>
-해결 : 1초 대의 프레임을 가져와서 썸네일 이미지로 저장한 후, 동영상과 함께 프론트로 전달
-<br><b>자세히 보기 : https://beomin-sd.tistory.com/382</b>
-</details>
 
-<br />
 
-<details>
-    <summary>
-        <b>쇼츠 기능의 동영상 썸네일 처리</b>
-    </summary>
-해결 : 1초 대의 프레임을 가져와서 썸네일 이미지로 저장한 후, 동영상과 함께 프론트로 전달
-<br><b>자세히 보기 : https://beomin-sd.tistory.com/382</b>
-</details>
 
 # 💡 Trouble Shooting
 * 무중단 배포를위해 특정 브랜치에 push 이벤트 발생시 자동 빌드,배포가 진행되는 상황에서 yml파일을 같이 push하면 안되는데 ec2서버 내부에서 yml을 읽어들어야 jar파일 구동이 되는 상황 
