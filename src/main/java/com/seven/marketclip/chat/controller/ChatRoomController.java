@@ -24,7 +24,7 @@ public class ChatRoomController {
     }
     @DeleteMapping ("/api/room")
     public void chatRoomRemove(@RequestBody ChatMessageInfo room, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        chatRoomService.removeChatRoom(room.getChatRoomId(), userDetails.getId());
+        chatRoomService.removeChatRoom(room, userDetails.getId());
     }
 
     @GetMapping("/api/chat-rooms")   //메시지 도착했을때 이 API 호출해주세요 로그인 아이디 넣어주기

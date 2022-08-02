@@ -31,7 +31,7 @@ public class ChatMessageController {
         redisPublisher.publish(chatRoomService.getTopic(message.getChatRoomId()), message);
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
-    public ChatRoomTwo chatMessageList(@RequestBody ChatRoomReq roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ChatRoomTwo chatMessageList(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails, roomInfo.getPartnerId());
     }
     @PostMapping("/api/chat-read-check")       //메세지 읽음 처리
@@ -43,9 +43,5 @@ public class ChatMessageController {
     public String checkReadModify(@RequestBody ChatMessageInfo roomInfo){
         chatMessageService.modifyCheckRead(roomInfo.getChatRoomId(), roomInfo.getPartnerId());  //로그인한 아이디로 변경
         return "성공";
-    }
-    @PostMapping("/api/testers")
-    public SellStatus findStatus(@RequestBody ChatRoomId roomId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return chatMessageService.findChatStatus(repository.findById(roomId.getGoodsId()).get(), userDetails.getId(), false);
     }
 }
