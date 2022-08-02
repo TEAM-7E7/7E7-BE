@@ -44,6 +44,7 @@ public class GoodsReviewService {
         //상대방에게 메시지 보내기.(재호님이) -> 받은 사람이 거래 후기 남기는것,거래 상태 변경
         chatRoomService.sendToPubReview(ChatMessageReq.builder()
                                     .chatRoomId("TRADE")
+                                    .goodsId(goods.getId())
                                     .senderId(goods.getAccount().getId())
                                     .partnerId(goodsReviewId.getBuyerId())
                                     .message("TRADE_CALL")
@@ -68,6 +69,7 @@ public class GoodsReviewService {
         }
         chatRoomService.sendToPubReview(ChatMessageReq.builder()
                 .chatRoomId("TRADE")
+                .goodsId(goodsReview.getGoods().getId())
                 .senderId(goodsReview.getGoods().getAccount().getId())
                 .partnerId(goodsOkDto.getBuyerId())
                 .message(status)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
