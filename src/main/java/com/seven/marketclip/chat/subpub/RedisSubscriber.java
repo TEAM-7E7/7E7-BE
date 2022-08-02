@@ -35,8 +35,22 @@ public class RedisSubscriber implements MessageListener {
             if(roomMessage.getChatRoomId().equals("CHAT_REMOVE")){
                 messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), roomMessage.getMessage() + "_PARTNER_EXIT");
             } else if (roomMessage.getChatRoomId().equals("TRADE")) {
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), roomMessage.getMessage() + "_TRADE");
-                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(), roomMessage.getMessage() + "_TRADE");
+                String messageSeller = "TRADE";
+                String messageBuyer = "TRADE";
+                if(roomMessage.getMessage().equals("TRADE_CALL")){
+                    messageSeller = "TRADE_CALL_SELLER";
+                    messageBuyer = "TRADE_CALL_BUYER";
+                } else if(roomMessage.getMessage().equals("TRADE_SUCCESS")){
+                    messageSeller = "TRADE_SUCCESS_SELLER";
+                    messageBuyer = "TRADE_SUCCESS_BUYER";
+                } else if(roomMessage.getMessage().equals("TRADE_FAIL")){
+                    messageSeller = "TRADE_FAIL_SELLER";
+                    messageBuyer = "TRADE_FAIL_BUYER";
+                }
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(),
+                                                    roomMessage.getGoodsId() + "_" + messageBuyer);
+                messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getSenderId(),
+                                                    roomMessage.getGoodsId() + "_" + messageSeller);
             } else{
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getChatRoomId(), roomMessage);
                 messagingTemplate.convertAndSend("/sub/my-rooms/" + roomMessage.getPartnerId(), "CHAT_RELOAD");
