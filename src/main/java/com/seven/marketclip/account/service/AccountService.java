@@ -165,13 +165,16 @@ public class AccountService {
 
         if (goodsList.isEmpty() && accountImage.getImageUrl().equals("default")) {
             accountRepository.deleteById(accountId);
+            chatRoomService.removeAllChatRoom(accountId);
         } else if (goodsList.isEmpty()) {
             accountRepository.deleteById(accountId);
+            chatRoomService.removeAllChatRoom(accountId);
             fileCloudService.deleteFile(accountImage.getImageUrl());
         } else if (accountImage.getImageUrl().equals("default")) {
             cascadeUrlsList = goodsList.stream().map(Goods::getGoodsImages).collect(Collectors.toList());
             cascadeUrls = cascadeUrlsList.stream().flatMap(List::stream).collect(Collectors.toList());
             accountRepository.deleteById(accountId);
+            chatRoomService.removeAllChatRoom(accountId);
             for (GoodsImage goodsImage : cascadeUrls) {
                 fileCloudService.deleteFile(goodsImage.getImageUrl());
             }
@@ -179,6 +182,7 @@ public class AccountService {
             cascadeUrlsList = goodsList.stream().map(Goods::getGoodsImages).collect(Collectors.toList());
             cascadeUrls = cascadeUrlsList.stream().flatMap(List::stream).collect(Collectors.toList());
             accountRepository.deleteById(accountId);
+            chatRoomService.removeAllChatRoom(accountId);
             fileCloudService.deleteFile(accountImage.getImageUrl());
             for (GoodsImage goodsImage : cascadeUrls) {
                 fileCloudService.deleteFile(goodsImage.getImageUrl());
