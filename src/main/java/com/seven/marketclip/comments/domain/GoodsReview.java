@@ -15,7 +15,6 @@ import javax.persistence.*;
 @Entity
 public class GoodsReview extends Timestamped {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 

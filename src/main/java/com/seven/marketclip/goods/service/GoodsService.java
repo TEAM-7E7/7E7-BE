@@ -23,6 +23,7 @@ import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.wish.repository.WishRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,8 +93,10 @@ public class GoodsService {
                 .category(goodsReqDTO.getCategory())
                 .sellPrice(goodsReqDTO.getSellPrice())
                 .build();
+
+        // 리뷰테이블 생성
         goodsReviewRepository.save(GoodsReview.builder()
-                        .goods(goods)
+                .goods(goods)
                 .build());
         imageService.updateGoodsImageList(goodsReqDTO.getFileIdList(), goods, detailsAccount);
         goodsRepository.save(goods);
@@ -126,7 +129,7 @@ public class GoodsService {
 
     // 게시글 수정
     @Transactional
-    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
+    @CachePut(key = "#goodsId", cacheNames = "goodsCache")
     public ResponseCode updateGoods(Long goodsId, GoodsReqDTO goodsReqDTO, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
         Account detailsAccount = new Account(userDetails);
