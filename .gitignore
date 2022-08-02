@@ -2,6 +2,7 @@ src/main/resources/application.properties
 logs
 
 HELP.md
+README.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
