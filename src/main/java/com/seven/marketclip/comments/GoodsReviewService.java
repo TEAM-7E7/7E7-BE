@@ -48,28 +48,29 @@ public class GoodsReviewService {
         //알림 보내 벌이기!
         //상대방에게 메시지 보내기.(재호님이) -> 받은 사람이 거래 후기 남기는것,거래 상태 변경
         chatRoomService.sendToPubReview(ChatMessageReq.builder()
-                                    .chatRoomId("TRADE")
-                                    .goodsId(goods.getId())
-                                    .senderId(goods.getAccount().getId())
-                                    .partnerId(goodsDealDto.getBuyerId())
-                                    .message("TRADE_CALL")
-                                    .build(), goodsDealDto.getChatRoomId());
+                .chatRoomId("TRADE")
+                .goodsId(goods.getId())
+                .senderId(goods.getAccount().getId())
+                .partnerId(goodsDealDto.getBuyerId())
+                .message("TRADE_CALL")
+                .build(), goodsDealDto.getChatRoomId());
         return SUCCESS;
     }
 
     @Transactional
     @Caching(evict = {@CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SOLD_OUT'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache")})
+            @CacheEvict(key = "'id:' + #goodsOkDto.sellerId + '__status:' + 'SALE'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "#goodsOkDto.goodsId", cacheNames = "goodsCache")})
     public ResponseCode writeReview(UserDetailsImpl userDetails, GoodsOkDto goodsOkDto) {
         GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getGoodsId()).orElseThrow(
                 () -> new CustomException(GOODS_REVIEW_NOT_FOUND)
         );
         String status = "none";
-        if(goodsOkDto.isStatus()){
+        if (goodsOkDto.isStatus()) {
             goodsReview.writeReview(goodsOkDto);
             goodsReview.getGoods().updateStatusSoldOut();
             status = "TRADE_SUCCESS";
-        }else{
+        } else {
             goodsReview.cancelReview();
             goodsReview.getGoods().updateStatusSale();
             status = "TRADE_FAIL";
