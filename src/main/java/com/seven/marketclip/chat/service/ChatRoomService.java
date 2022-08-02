@@ -5,7 +5,6 @@ import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.*;
-import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.chat.subpub.RedisPublisher;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
