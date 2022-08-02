@@ -51,9 +51,9 @@ public class GoodsReviewService {
                                     .chatRoomId("TRADE")
                                     .goodsId(goods.getId())
                                     .senderId(goods.getAccount().getId())
-                                    .partnerId(goodsReviewId.getBuyerId())
+                                    .partnerId(goodsDealDto.getBuyerId())
                                     .message("TRADE_CALL")
-                                    .build(), goodsReviewId.getChatRoomId());
+                                    .build(), goodsDealDto.getChatRoomId());
         return SUCCESS;
     }
 
