@@ -14,6 +14,7 @@ import com.seven.marketclip.chat.subpub.RedisPublisher;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -35,7 +36,6 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageService chatMessageService;
     private final GoodsRepository goodsRepository;
-    private final ChatMessageRepository chatMessageRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -89,11 +89,27 @@ public class ChatRoomService {
                 ()->new CustomException(CHAT_ROOM_NOT_FOUND)
         );
         Long partnerId;
-        if(loginId == room.getAccount().getId()){
+        if(loginId == room.getAccount().getId()){       //로그인 아이디가 구매자 인경우
             partnerId = room.getGoods().getAccount().getId();
+            if(!room.getGoods().getGoodsReview().isEmptyAccount()){
+                if(room.getGoods().getGoodsReview().getAccount().getId() == loginId &
+                                        room.getGoods().getStatus() == GoodsStatus.RESERVED){   //리뷰 써야할 사람이 나가면
+                    room.getGoods().updateStatusSale();
+                    room.getGoods().getGoodsReview().cancelReview();
+                }
+            }
         }else{
             partnerId = room.getAccount().getId();
+            if(!room.getGoods().getGoodsReview().isEmptyAccount()) {
+                if (room.getGoods().getGoodsReview().getAccount().getId() == partnerId &
+                        room.getGoods().getStatus() == GoodsStatus.RESERVED) {   //구매 완료 대기 중 방을 나가면
+                    room.getGoods().updateStatusSale();
+                    room.getGoods().getGoodsReview().cancelReview();
+                }
+            }
         }
+
+
         chatRoomRepository.deleteById(chatRoomId);
         redisPublisher.publish(getTopic(chatRoomId),
                 ChatMessageReq.builder()
