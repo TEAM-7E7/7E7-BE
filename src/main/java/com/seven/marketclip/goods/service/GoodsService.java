@@ -154,7 +154,7 @@ public class GoodsService {
     }
 
     // 내가 구매한 글 보기
-    @Cacheable(key = "'id:' + #userDetails.id", cacheNames = "myPurchaseCache", condition = "#pageable.pageNumber == 0")
+    @Cacheable(key = "#userDetails.id", cacheNames = "myPurchaseCache", condition = "#pageable.pageNumber == 0")
     public DataResponseCode findMyPurchase(UserDetailsImpl userDetails, Pageable pageable) {
         Page<Goods> goodsList = goodsRepository.findAllPurchaseByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Map<String, Object> resultMap = pageToMap(goodsList);
