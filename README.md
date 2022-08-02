@@ -27,15 +27,15 @@
 카풀, 커뮤니티 서비스
 
 <br><br>
-#📣 팀 블로그 📣
+# 📣 팀 블로그 📣
 https://power-bowler-c76.notion.site/8-13-10-0c3ad4dd39b34a2b8501e8bac3c63d19
 
 <br><br>
-#🎞 프로젝트 발표영상 🎞
+# 🎞 프로젝트 발표영상 🎞
 https://www.youtube.com/watch?v=UvTk7JV03cs&t=4s
 
 <br><br>
-#🎞 프로젝트 시연영상 🎞
+# 🎞 프로젝트 시연영상 🎞
 https://youtu.be/1j_bk71_Eaw
 
 <br>
