@@ -65,4 +65,10 @@ public class GoodsReview extends Timestamped {
                 .id(id)
                 .build();
     }
+    public boolean isEmptyAccount(){
+        if(account == null){
+            return true;
+        }
+        return false;
+    }
 }

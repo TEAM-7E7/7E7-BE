@@ -14,6 +14,7 @@ import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.exception.ResponseCode;
 import static com.seven.marketclip.exception.ResponseCode.*;
 
+import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -79,14 +80,8 @@ public class ChatMessageService {
             chatRoomId = "비었습니다.";
         }
 
-        SellStatus status = SellStatus.SOLD_OUT;
         ChatRoomTwo chatRoomTwo;
         if (room.getAccount().getId() == userDetails.getId()) { // 구매자
-            if (room.getGoods().getStatus() == GoodsStatus.SALE) {
-                status = SellStatus.BUYER_WAITING;
-            } else if (room.getGoods().getStatus() == GoodsStatus.RESERVED) {
-                status = SellStatus.BUYER_CHECK_REQUEST;
-            }
             chatRoomTwo = ChatRoomTwo.builder()
                     .chatRoomId(chatRoomId)
                     .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
@@ -96,15 +91,10 @@ public class ChatMessageService {
                     .goodsId(room.getGoods().getId())
                     .sellerId(room.getGoods().getAccount().getId())
                     .buyerId(room.getAccount().getId())
-                    .sellStatus(status)
+                    .sellStatus(findChatStatus(room.getGoods(), userDetails.getId(), false))
                     .messages(result)
                     .build();
         } else {                                                // 판매자
-            if (room.getGoods().getStatus() == GoodsStatus.SALE){
-                status = SellStatus.SELLER_TRY;
-            } else if (room.getGoods().getStatus() == GoodsStatus.RESERVED) {
-                status = SellStatus.TRADE_WAITING;
-            }
             chatRoomTwo = ChatRoomTwo.builder()
                     .chatRoomId(chatRoomId)
                     .goodsTitle(chatMessagesList.get(0).getChatRoomId().getGoods().getTitle())
@@ -114,13 +104,35 @@ public class ChatMessageService {
                     .goodsId(room.getGoods().getId())
                     .sellerId(room.getGoods().getAccount().getId())
                     .buyerId(room.getAccount().getId())
-                    .sellStatus(status)
+                    .sellStatus(findChatStatus(room.getGoods(), userDetails.getId(), true))
                     .messages(result)
                     .build();
         }
         return chatRoomTwo;
+    }
 
+    public SellStatus findChatStatus(Goods goods, Long loginId, boolean seller){
+        SellStatus status = SellStatus.SOLD_OUT;
+        if(seller){             //판매자 일때
+            if (goods.getStatus() == GoodsStatus.SALE){
+                status = SellStatus.SELLER_TRY;
+            }else if (goods.getStatus() == GoodsStatus.RESERVED){
+                status =  SellStatus.TRADE_WAITING;
+            }
+        }else{                  //구매자 일때
+            if (goods.getStatus() == GoodsStatus.SALE){
+                status = SellStatus.BUYER_WAITING;
+            }else if (goods.getStatus() == GoodsStatus.RESERVED){
+                status = SellStatus.BUYER_STANDBY;
+                if (!goods.getGoodsReview().isEmptyAccount()){
+                    if(goods.getGoodsReview().getAccount().getId() == loginId){
+                        status =  SellStatus.BUYER_CHECK_REQUEST;
+                    }
+                }
+            }
+        }
 
+        return status;
     }
     @Transactional
     public Long findCheckReadCnt(String chatRoomId, Long partnerId){   // 안읽은 메시지 개수

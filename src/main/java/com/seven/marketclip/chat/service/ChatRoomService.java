@@ -4,16 +4,14 @@ package com.seven.marketclip.chat.service;
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.domain.ChatMessages;
 import com.seven.marketclip.chat.domain.ChatRoom;
-import com.seven.marketclip.chat.dto.ChatMessageReq;
-import com.seven.marketclip.chat.dto.ChatRoomGoods;
-import com.seven.marketclip.chat.dto.ChatRoomId;
-import com.seven.marketclip.chat.dto.RoomMake;
+import com.seven.marketclip.chat.dto.*;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.chat.subpub.RedisPublisher;
 import com.seven.marketclip.chat.subpub.RedisSubscriber;
 import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
+import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -35,7 +33,6 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageService chatMessageService;
     private final GoodsRepository goodsRepository;
-    private final ChatMessageRepository chatMessageRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomId> opsHashChatRoom;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -84,22 +81,38 @@ public class ChatRoomService {
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeChatRoom(String chatRoomId, Long loginId){
-        ChatRoom room = chatRoomRepository.findById(chatRoomId).orElseThrow(
+    public void removeChatRoom(ChatMessageInfo roomInfo, Long loginId){
+        ChatRoom room = chatRoomRepository.oneRoomFindQuery(roomInfo.getGoodsId(), roomInfo.getBuyerId()).orElseThrow(
                 ()->new CustomException(CHAT_ROOM_NOT_FOUND)
         );
         Long partnerId;
-        if(loginId == room.getAccount().getId()){
+        if(loginId == room.getAccount().getId()){       //로그인 아이디가 구매자 인경우
             partnerId = room.getGoods().getAccount().getId();
+            if(!room.getGoods().getGoodsReview().isEmptyAccount()){
+                if(room.getGoods().getGoodsReview().getAccount().getId() == loginId &
+                                        room.getGoods().getStatus() == GoodsStatus.RESERVED){   //리뷰 써야할 사람이 나가면
+                    room.getGoods().updateStatusSale();
+                    room.getGoods().getGoodsReview().cancelReview();
+                }
+            }
         }else{
             partnerId = room.getAccount().getId();
+            if(!room.getGoods().getGoodsReview().isEmptyAccount()) {
+                if (room.getGoods().getGoodsReview().getAccount().getId() == partnerId &
+                        room.getGoods().getStatus() == GoodsStatus.RESERVED) {   //구매 완료 대기 중 방을 나가면
+                    room.getGoods().updateStatusSale();
+                    room.getGoods().getGoodsReview().cancelReview();
+                }
+            }
         }
-        chatRoomRepository.deleteById(chatRoomId);
-        redisPublisher.publish(getTopic(chatRoomId),
+
+        Long goodsId = room.getGoods().getId();
+        chatRoomRepository.deleteById(room.getId());
+        redisPublisher.publish(getTopic(room.getId()),
                 ChatMessageReq.builder()
                         .chatRoomId("CHAT_REMOVE")
                         .partnerId(partnerId)
-                        .message(chatRoomId)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                        .message(String.valueOf(goodsId))        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                         .build());
     }
 
@@ -113,12 +126,13 @@ public class ChatRoomService {
             }else{
                 partnerId = room.getAccount().getId();
             }
+            Long goodsId = room.getGoods().getId();
             chatRoomRepository.deleteById(room.getId());
             redisPublisher.publish(getTopic(room.getId()),
                     ChatMessageReq.builder()
                             .chatRoomId("CHAT_REMOVE")
                             .partnerId(partnerId)
-                            .message(room.getId())        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                            .message(String.valueOf(goodsId))        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
                             .build());
         }
     }

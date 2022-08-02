@@ -53,7 +53,7 @@ public class GoodsReviewService {
 
     @Transactional
     public ResponseCode writeReview(UserDetailsImpl userDetails, GoodsOkDto goodsOkDto) {
-        GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getReviewId()).orElseThrow(
+        GoodsReview goodsReview = goodsReviewRepository.findById(goodsOkDto.getGoodsId()).orElseThrow(
                 ()-> new CustomException(GOODS_REVIEW_NOT_FOUND)
         );
         String state = "none";
