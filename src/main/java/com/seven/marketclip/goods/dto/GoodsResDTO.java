@@ -1,5 +1,6 @@
 package com.seven.marketclip.goods.dto;
 
+import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsCategory;
 import com.seven.marketclip.goods.enums.GoodsStatus;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.seven.marketclip.exception.ResponseCode.GOODS_IMAGE_NOT_FOUND;
 
 @Getter
 @NoArgsConstructor
@@ -52,13 +55,21 @@ public class GoodsResDTO implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public GoodsResDTO(Goods goods) {
+    public GoodsResDTO(Goods goods) throws CustomException {
         List<Map<String, Object>> mapArrayList = new ArrayList<>();
-        for (GoodsImage goodsImage : goods.getGoodsImages()) {
-            Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("id", goodsImage.getId());
-            tempMap.put("url", goodsImage.getImageUrl());
+        Map<Integer, GoodsImage> goodsImageMap = new HashMap<>();
 
+        List<GoodsImage> goodsImages = goods.getGoodsImages();
+        if(goodsImages.isEmpty()){
+            throw new CustomException(GOODS_IMAGE_NOT_FOUND);
+        }
+        for (GoodsImage goodsImage : goodsImages) {
+            goodsImageMap.put(goodsImage.getSequence(), goodsImage);
+        }
+        for (int i = 1; i < goodsImageMap.size() + 1; i++) {
+            Map<String, Object> tempMap = new HashMap<>();
+            tempMap.put("id", goodsImageMap.get(i).getId());
+            tempMap.put("url", goodsImageMap.get(i).getImageUrl());
             mapArrayList.add(tempMap);
         }
 
