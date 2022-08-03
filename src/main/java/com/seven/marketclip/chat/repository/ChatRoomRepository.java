@@ -31,4 +31,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
             "(c.goods.id = :goodsId and c.account.id = :loginId)")
     Long myRoomFindQuery(String chatRoomId, Long goodsId, Long loginId);
     //1번째 줄 방이름이 같은 경우 2번째 줄 판매 상품에 대한 방이 이미 있는경우
+
+    void deleteAllByGoodsId(Long goodsId);
 }
