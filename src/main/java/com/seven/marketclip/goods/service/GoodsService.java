@@ -1,6 +1,7 @@
 package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.domain.Account;
+import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.comments.GoodsReviewRepository;
@@ -44,14 +45,16 @@ public class GoodsService {
     private final WishRepository wishRepository;
     private final GoodsQueryRep goodsQueryRep;
     private final GoodsReviewRepository goodsReviewRepository;
+    private final ChatRoomService chatRoomService;
 
-    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep, GoodsReviewRepository goodsReviewRepository) {
+    public GoodsService(GoodsRepository goodsRepository, S3CloudServiceImpl s3CloudServiceImpl, ImageService imageService, WishRepository wishRepository, GoodsQueryRep goodsQueryRep, GoodsReviewRepository goodsReviewRepository, ChatRoomService chatRoomService) {
         this.goodsRepository = goodsRepository;
         this.fileCloudService = s3CloudServiceImpl;
         this.imageService = imageService;
         this.wishRepository = wishRepository;
         this.goodsQueryRep = goodsQueryRep;
         this.goodsReviewRepository = goodsReviewRepository;
+        this.chatRoomService = chatRoomService;
     }
 
     // 게시글 전체 조회 -> 동적 쿼리
@@ -123,6 +126,8 @@ public class GoodsService {
     })
     public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
+        // 여기에 붙여주세요
+
         for (GoodsImage goodsImage : goods.getGoodsImages()) {
             fileCloudService.deleteFile(goodsImage.getImageUrl());
         }
