@@ -126,7 +126,10 @@ https://youtu.be/1j_bk71_Eaw
 
 
 # 💡 Trouble Shooting
-* CICD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생
+<details>
+  <summary>
+        <b>CICD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생</b>
+  </summary>
 ```bash
 REPOSITORY=/home/ubuntu/
 cd $REPOSITORY
@@ -148,5 +151,7 @@ else
   sleep 5
 fi
 ```
+### 프로젝트 프로젝트 명 변경으로 인해 kill 명령어가 실행되지 않아서 일어나는 오류
+</details>
 
 
