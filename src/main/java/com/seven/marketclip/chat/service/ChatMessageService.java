@@ -60,10 +60,7 @@ public class ChatMessageService {
         chatMessageRepository.save(cm);
     }
     @Transactional      //채팅방의 메시지 조회 및 내 채팅방의 상대 메시지 읽음 처리
-    public ChatRoomTwo messageList(Long goodsId, UserDetailsImpl userDetails, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정
-        ChatRoom room = chatRoomRepository.roomFindQuery(goodsId, userDetails.getId(), partnerId).orElseThrow(
-                ()->new CustomException(CHAT_ROOM_NOT_FOUND)
-        );
+    public ChatRoomTwo messageList(ChatRoom room, UserDetailsImpl userDetails, Long partnerId) throws CustomException {      //전체 메시지 불러오기   //임시 수정
 
         List<ChatMessages> chatMessagesList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(
                 ChatRoom.builder().id(room.getId()).build());
