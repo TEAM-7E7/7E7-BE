@@ -126,4 +126,27 @@ https://youtu.be/1j_bk71_Eaw
 
 
 # 💡 Trouble Shooting
+* CICD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생
+```bash
+REPOSITORY=/home/ubuntu/
+cd $REPOSITORY
+
+APP_NAME=marketclip
+JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
+JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
+
+CURRENT_PID=$(pgrep -f $APP_NAME)
+
+echo ">현재 구동 중인 애플리케이션 pid: $CURRENT_PID"
+
+if [ -z $CURRENT_PID ]
+then
+  echo ">현재 구동 중인 애플리케이션이 없으므로 종료하지 않습니다."
+else
+  echo "> kill -9 $CURRENT_PID"
+  sudo kill -15 $CURRENT_PID
+  sleep 5
+fi
+```
+
 
