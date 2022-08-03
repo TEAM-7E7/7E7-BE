@@ -128,7 +128,7 @@ https://youtu.be/1j_bk71_Eaw
 # 💡 Trouble Shooting
 <details>
   <summary>
-        <b> ### CICD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생</b>
+    ### CICD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생
   </summary>
   
 ```bash
