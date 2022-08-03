@@ -80,8 +80,8 @@ https://youtu.be/1j_bk71_Eaw
   - 로그인 시 JWT 토큰, Refresh 토큰 발행
   - google, kakao 소셜 로그인 가능.
   
-* 채팅쪽
-  - 
+* 채팅
+  - 허ㅗㅎ
 
 * querydsl
   - querydsl로 동적쿼리 사용.
