@@ -70,7 +70,7 @@ https://youtu.be/1j_bk71_Eaw
 </div>  
 
 # 🖼 아키텍쳐
-<center><img src="https://user-images.githubusercontent.com/25544668/150839035-c1d3a7d3-ca79-49fd-ba8c-c50079d29c5f.png" width:"800"></center>
+<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90+marketclip.PNG" width:"1200"></center>
 
 <br />
 
