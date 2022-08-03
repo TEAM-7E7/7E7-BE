@@ -160,6 +160,7 @@ fi
   <summary>
     <b> 스프링 시큐리티 예외처리 </b>
   </summary>
+  
 ### 스프링 시큐리티는 서블릿 필터에서 발생하는 오류라
 ControllerAdvice에서 잡지 못한다.
   
