@@ -83,16 +83,18 @@ public class GoodsReviewService {
                 .goodsId(goodsReview.getGoods().getId())
                 .senderId(goodsReview.getGoods().getAccount().getId())
                 .partnerId(goodsOkDto.getBuyerId())
-                .message(status)        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                .message(status)
                 .build(), goodsOkDto.getChatRoomId());
         for (ChatRoom cr:goodsReview.getGoods().getChatRooms()) {
-            if(!(cr.getGoods().getAccount().getId() == goodsReview.getGoods().getAccount().getId() &
-                    cr.getAccount().getId() == goodsReview.getAccount().getId())){
-                chatRoomService.sendToPubReview(ChatMessageReq.builder()
-                        .chatRoomId("TRADE_RELOAD")
-                        .partnerId(cr.getAccount().getId())
-                        .message("status")        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
-                        .build(), cr.getId());
+            if(goodsReview.getAccount() != null){
+                if(!(cr.getGoods().getAccount().getId() == goodsReview.getGoods().getAccount().getId() &
+                        cr.getAccount().getId() == goodsReview.getAccount().getId())){
+                    chatRoomService.sendToPubReview(ChatMessageReq.builder()
+                            .chatRoomId("TRADE_RELOAD")
+                            .partnerId(cr.getAccount().getId())
+                            .message("status")        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                            .build(), cr.getId());
+                }
             }
         }
         //알림!! (구메자가 판매자에게 후기를 남겼다는 알림)
