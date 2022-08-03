@@ -23,7 +23,6 @@ public class ChatMessageController {
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
     private final RedisPublisher redisPublisher;
-    private final GoodsRepository repository; //test
 
     // websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
     @MessageMapping("/chat/message")            //메세지 전송
@@ -32,8 +31,14 @@ public class ChatMessageController {
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
     public ChatRoomTwo chatMessageList(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        redisPublisher.publish(chatRoomService.getTopic(roomInfo.getChatRoomId()), ChatMessageReq.builder()
+                                                                                    .chatRoomId("CHAT_READ_RELOAD")
+                                                                                    .partnerId(roomInfo.getPartnerId())
+                                                                                    .build());
         return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails, roomInfo.getPartnerId());
     }
+
+
     @PostMapping("/api/chat-read-check")       //메세지 읽음 처리
     public String chatReadModify(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         chatMessageService.modifyCheckRead(roomInfo.getChatRoomId(), userDetails.getId());
