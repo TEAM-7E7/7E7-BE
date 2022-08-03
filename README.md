@@ -34,7 +34,9 @@ https://youtu.be/1j_bk71_Eaw
   
 <br /><br />
 https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%84.png
+  https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%84.png
 # 📌 API 명세서
+<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%84.png" width:"1200"></center>
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%84.png" width:"1200"></center>
 <br /><br />
   
