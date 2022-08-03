@@ -54,7 +54,7 @@ public class Goods extends Timestamped {
     @OneToMany(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoom> chatRooms;
 
-    @OneToOne(mappedBy = "goods")
+    @OneToOne(mappedBy = "goods", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private GoodsReview goodsReview;
 
     @Builder
