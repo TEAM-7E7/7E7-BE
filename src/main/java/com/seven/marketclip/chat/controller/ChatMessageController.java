@@ -1,5 +1,6 @@
 package com.seven.marketclip.chat.controller;
 
+import com.seven.marketclip.chat.domain.ChatRoom;
 import com.seven.marketclip.chat.dto.*;
 import com.seven.marketclip.chat.eums.SellStatus;
 import com.seven.marketclip.chat.service.ChatMessageService;
@@ -31,11 +32,12 @@ public class ChatMessageController {
     }
     @PostMapping("/api/chat-message-list")       //메세지 전체 내역 불러오기 및 읽음 처리
     public ChatRoomTwo chatMessageList(@RequestBody ChatMessageInfo roomInfo, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        redisPublisher.publish(chatRoomService.getTopic(roomInfo.getChatRoomId()), ChatMessageReq.builder()
+        ChatRoom cr = chatRoomService.findRoom(roomInfo.getGoodsId(), userDetails, roomInfo.getPartnerId());
+        redisPublisher.publish(chatRoomService.getTopic(cr.getId()), ChatMessageReq.builder()
                                                                                     .chatRoomId("CHAT_READ_RELOAD")
                                                                                     .partnerId(roomInfo.getPartnerId())
                                                                                     .build());
-        return chatMessageService.messageList(roomInfo.getGoodsId(), userDetails, roomInfo.getPartnerId());
+        return chatMessageService.messageList(cr, userDetails, roomInfo.getPartnerId());
     }
 
 

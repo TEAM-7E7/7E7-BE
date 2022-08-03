@@ -12,6 +12,7 @@ import com.seven.marketclip.exception.CustomException;
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.goods.repository.GoodsRepository;
+import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.HashOperations;
@@ -188,6 +189,13 @@ public class ChatRoomService {
 
     public void sendToPubReview(ChatMessageReq message, String chatRoomId) {
         redisPublisher.publish(getTopic(chatRoomId), message);
+    }
+
+    public ChatRoom findRoom(Long goodsId, UserDetailsImpl userDetails, Long partnerId){
+        ChatRoom room = chatRoomRepository.roomFindQuery(goodsId, userDetails.getId(), partnerId).orElseThrow(
+                ()->new CustomException(CHAT_ROOM_NOT_FOUND)
+        );
+        return room;
     }
 
     public void enterChatRoom(String chatRoomId) {
