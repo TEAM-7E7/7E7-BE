@@ -45,22 +45,23 @@ public class ChatRoomService {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
         List<ChatRoom> list = chatRoomRepository.findAll();
-        for (ChatRoom chat:list) {
+        for (ChatRoom chat : list) {
             enterChatRoom(chat.getId());
         }
     }
+
     @Transactional      //채팅방 생성
     @CacheEvict(key = "#roomMake.goodsId", cacheNames = "goodsCache")
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
         Goods goods = goodsRepository.findById(roomMake.getGoodsId()).orElseThrow(
-                ()->new CustomException(GOODS_NOT_FOUND)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
-        if(goods.getStatus() == GoodsStatus.SOLD_OUT){
+        if (goods.getStatus() == GoodsStatus.SOLD_OUT) {
             throw new CustomException(SOLD_OUT_GOODS);
         }
         Long room = chatRoomRepository.myRoomFindQuery(
                 roomMake.getId(), roomMake.getGoodsId(), loginId);
-        if(room != 0L || goods.getAccount().getId() == loginId){// 위 쿼리문 조건 + 내가 나의 채팅방을 만든경우
+        if (room != 0L || goods.getAccount().getId() == loginId) {// 위 쿼리문 조건 + 내가 나의 채팅방을 만든경우
             throw new CustomException(CHAT_ROOM_NOT_SAVE);
         }
         Account ac = Account.builder()
@@ -85,23 +86,23 @@ public class ChatRoomService {
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeChatRoom(ChatMessageInfo roomInfo, Long loginId){
+    public void removeChatRoom(ChatMessageInfo roomInfo, Long loginId) {
         ChatRoom room = chatRoomRepository.oneRoomFindQuery(roomInfo.getGoodsId(), roomInfo.getBuyerId()).orElseThrow(
-                ()->new CustomException(CHAT_ROOM_NOT_FOUND)
+                () -> new CustomException(CHAT_ROOM_NOT_FOUND)
         );
         Long partnerId;
-        if(loginId == room.getAccount().getId()){       //로그인 아이디가 구매자 인경우
+        if (loginId == room.getAccount().getId()) {       //로그인 아이디가 구매자 인경우
             partnerId = room.getGoods().getAccount().getId();
-            if(!room.getGoods().getGoodsReview().isEmptyAccount()){
-                if(room.getGoods().getGoodsReview().getAccount().getId() == loginId &
-                                        room.getGoods().getStatus() == GoodsStatus.RESERVED){   //리뷰 써야할 사람이 나가면
+            if (!room.getGoods().getGoodsReview().isEmptyAccount()) {
+                if (room.getGoods().getGoodsReview().getAccount().getId() == loginId &
+                        room.getGoods().getStatus() == GoodsStatus.RESERVED) {   //리뷰 써야할 사람이 나가면
                     room.getGoods().updateStatusSale();
                     room.getGoods().getGoodsReview().cancelReview();
                 }
             }
-        }else{
+        } else {
             partnerId = room.getAccount().getId();
-            if(!room.getGoods().getGoodsReview().isEmptyAccount()) {
+            if (!room.getGoods().getGoodsReview().isEmptyAccount()) {
                 if (room.getGoods().getGoodsReview().getAccount().getId() == partnerId &
                         room.getGoods().getStatus() == GoodsStatus.RESERVED) {   //구매 완료 대기 중 방을 나가면
                     room.getGoods().updateStatusSale();
@@ -121,50 +122,53 @@ public class ChatRoomService {
     }
 
     @Transactional  //채팅방 check box 삭제 API 4번
-    public void removeAllChatRoom(Long loginId){
+    public void removeAllChatRoom(Long loginId) {
         List<ChatRoom> rooms = chatRoomRepository.roomsFindQuery(loginId);
-        Long partnerId;
-        for(ChatRoom room:rooms){
-            if(loginId == room.getAccount().getId()){
-                partnerId = room.getGoods().getAccount().getId();
-            }else{
-                partnerId = room.getAccount().getId();
+        if (!rooms.isEmpty()) {
+            Long partnerId;
+            for (ChatRoom room : rooms) {
+                if (loginId == room.getAccount().getId()) {
+                    partnerId = room.getGoods().getAccount().getId();
+                } else {
+                    partnerId = room.getAccount().getId();
+                }
+                Long goodsId = room.getGoods().getId();
+                chatRoomRepository.deleteById(room.getId());
+                redisPublisher.publish(getTopic(room.getId()),
+                        ChatMessageReq.builder()
+                                .chatRoomId("CHAT_REMOVE")
+                                .partnerId(partnerId)
+                                .message(String.valueOf(goodsId))        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
+                                .build());
             }
-            Long goodsId = room.getGoods().getId();
-            chatRoomRepository.deleteById(room.getId());
-            redisPublisher.publish(getTopic(room.getId()),
-                    ChatMessageReq.builder()
-                            .chatRoomId("CHAT_REMOVE")
-                            .partnerId(partnerId)
-                            .message(String.valueOf(goodsId))        //유저가 '삭제된 채팅방' 메시지를 칠 수 있기 때문에
-                            .build());
         }
+
     }
 
     @Transactional
-    public List<ChatRoomGoods> findChatRooms(Long loginId){
+    public List<ChatRoomGoods> findChatRooms(Long loginId) {
         List<ChatRoom> chatRoomList = chatRoomRepository.roomsFindQuery(loginId);
-        if(chatRoomList.isEmpty()){
+        if (chatRoomList.isEmpty()) {
             return new ArrayList<>();
         }
         List<ChatRoomGoods> respRoomList = new ArrayList<>();
-        for (ChatRoom room:chatRoomList) {
+        for (ChatRoom room : chatRoomList) {
             Long partnerId;
-            if(room.getAccount().getId() != loginId){
+            if (room.getAccount().getId() != loginId) {
                 partnerId = room.getAccount().getId();
-            }else{
+            } else {
                 partnerId = room.getGoods().getAccount().getId();
             }
             ChatMessages message = chatMessageService.findLastMessage(room.getId());
             ChatRoomGoods chatRoomGoods;
-            if(message == null){
+            if (message == null) {
                 chatRoomGoods = ChatRoomGoods
                         .builder()
                         .chatRoom(room)
                         .loginId(loginId)
                         .checkReadCnt(0L)
                         .build();
-            }else{
+            } else {
                 chatRoomGoods = ChatRoomGoods
                         .builder()
                         .chatRoom(room)
@@ -181,7 +185,8 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
         return list;
     }
-    public void sendToPubReview(ChatMessageReq message, String chatRoomId){
+
+    public void sendToPubReview(ChatMessageReq message, String chatRoomId) {
         redisPublisher.publish(getTopic(chatRoomId), message);
     }
 
@@ -195,5 +200,7 @@ public class ChatRoomService {
         }
     }
 
-    public ChannelTopic getTopic(String roomId) {return topics.get(roomId);}
+    public ChannelTopic getTopic(String roomId) {
+        return topics.get(roomId);
+    }
 }
