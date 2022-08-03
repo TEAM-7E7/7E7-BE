@@ -43,51 +43,75 @@ https://youtu.be/1j_bk71_Eaw
 ### Front-End
 
 <div>
-  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
-  <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black">
-  <img src="https://img.shields.io/badge/html-E34F26?style=for-the-badge&logo=html5&logoColor=white">
-  <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white">
-  <img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=black">
-  <img src="https://img.shields.io/badge/aws-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">  
+<img src="http://img.shields.io/badge/-JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white" />
+<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+<img src="http://img.shields.io/badge/-HTML5-E34F26?style=for-the-badge&logo=HTML5&logoColor=white" />
+<img src="http://img.shields.io/badge/-CSS3-1572B6?style=for-the-badge&logo=CSS3&logoColor=white" />
+<img src="https://img.shields.io/badge/Typescript-3178C6?style=for-the-badge&logo=Typescript&logoColor=white">
+<img src="http://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=Python&logoColor=white" />
 </div>
-<br />  
+<div>
+<img src="https://img.shields.io/badge/Redux-764ABC?style=for-the-badge&logo=Redux&logoColor=white">
+<img src="https://img.shields.io/badge/Recoil-673AB8?style=for-the-badge&logo=Recoil&logoColor=white">
+<img src="https://img.shields.io/badge/React Query-FF4154?style=for-the-badge&logo=React Query&logoColor=white">
+</div>
+<div>
+<img src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=NGINX&logoColor=white">
+<img src="http://img.shields.io/badge/-Amazon AWS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white" />
+<img src="http://img.shields.io/badge/-Amazon S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white" />
+<img src="http://img.shields.io/badge/-Amazon EC2-FF4F8B?style=for-the-badge&logo=Amazon EC2&logoColor=white" />
+<img src="http://img.shields.io/badge/-GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white" />
+  <img src="http://img.shields.io/badge/-Cloud Front-512BD4?style=for-the-badge&logo=&logoColor=white" />
+</div>  
 
 ### Back-End
 
 <div>
-  <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
-  <img src="https://img.shields.io/badge/Springboot-6DB33F?style=for-the-badge&logo=Springboot&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=SpringDataJPA&logoColor=white">
-  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
-  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black">
-  <img src="https://img.shields.io/badge/aws-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-  
+  <img alt="Java" src ="https://img.shields.io/badge/Java-007396.svg?&style=for-the-badge&logo=Java&logoColor=white"/>
+  <img alt="Spring Boot" src ="https://img.shields.io/badge/Spring Boot-6DB33F.svg?&style=for-the-badge&logo=Spring Boot&logoColor=white"/>
+  <img alt="SonarLint" src ="https://img.shields.io/badge/SonarLint-CB2029.svg?&style=for-the-badge&logo=SonarLint&logoColor=white"/>
+  <img alt="Gradle" src ="https://img.shields.io/badge/Gradle-02303A.svg?&style=for-the-badge&logo=Gradle&logoColor=white"/>
+  <img alt="Spring Security" src ="https://img.shields.io/badge/Spring Security-6DB33F.svg?&style=for-the-badge&logo=Spring Security&logoColor=white"/>
+</div>
+<div>
+  <img alt="Amazon RDS" src="https://img.shields.io/badge/Amazon RDS-527FFF?style=for-the-badge&logo=Amazon RDS&logoColor=white"/>
+  <img alt="MySQL" src ="https://img.shields.io/badge/MySQL-4479A1.svg?&style=for-the-badge&logo=MySQL&logoColor=white"/>
+  <img alt="Hibernate" src ="https://img.shields.io/badge/Hibernate-59666C.svg?&style=for-the-badge&logo=Hibernate&logoColor=white"/>
+  <img alt="Amazon S3" src="https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white"/>
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"/>
+</div>
+<div>
+  <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white"/>
+  <img alt="Amazon AWS" src="https://img.shields.io/badge/Amazon AWS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white"/>
+  <img alt="Amazon EC2" src="https://img.shields.io/badge/Amazon EC2-FF4F8B?style=for-the-badge&logo=Amazon EC2&logoColor=white"/>
+  <img alt="NGINX" src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=NGINX&logoColor=white">
+  <img alt="Swagger" src="https://img.shields.io/badge/Swagger-59666C?style=for-the-badge&logo=Swagger&logoColor=white"/>
+</div>
 
-</div>  
+<br />  
+
+
 
 # 🖼 아키텍쳐
-<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90+marketclip.PNG" width:"1200"></center>
+<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%BC%93%ED%81%B4%EB%A6%BD+%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.PNG" width:"1200"></center>
 
 <br />
 
-# 🔑 프로젝트 주요 기능
+# 🔑 프로젝트 백엔드 주요 기능
   
 * 로그인, 소셜 로그인 
   - 로그인 시 JWT 토큰, Refresh 토큰 발행
   - google, kakao 소셜 로그인 가능.
   
 * 채팅
-  - 허ㅗㅎ
+  - 채팅 기능에 redis 의 pub/sub 자체 기능을 적용 시킴.
 
 * querydsl
   - querydsl로 동적쿼리 사용.
 
 * redis 캐시 
   - 캐시 기능을 사용해 좀더 빨리 데이터를 불러올 수 있음.
+  
 <br />
 
 
@@ -96,7 +120,7 @@ https://youtu.be/1j_bk71_Eaw
 # 💡 Trouble Shooting
 <details>
   <summary>
-    <b> CICD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생 </b>
+    <b> CI/CD 작업 이후 프로젝트 명 변경으로 인한 서버 에러 발생 </b>
   </summary>
   
 ```bash
@@ -142,27 +166,26 @@ fi
     <b> 게시글 작성 시 이미지 순서 문제 </b>
   </summary>
   
-* ###### 게시글을 작성 시 여러개의 사진을 올릴 수 있는데 첫번째 사진만 미리보기 사진으로 등록이 됨.
-* ###### 선용님 저희가 왜 이미지를 리스트로 안받고 url을 받았나요??
+* ###### 게시글을 작성 시 여러개의 사진을 올릴 수 있는데 순서가 중요함.
+* ###### 수정을 할 때 새로운 이미지와 기존에 있던 이미지를 순서대로 받기가 힘듬.(다른 타입의 변수를 하나의 객체로)
   
 ###### 해결
+* ###### 이미지를 Url로 변환시켜주는 (S3에 저장하는) api를 따로 만들었다.
+* ###### FE에서 이미지를 업로드 하는 동시에 위의 api를 호출하면 MultipartFile이 아닌 String 타입의 url이 return 되고,
+* ###### 해당 url을 가지고 게시글 수정 api를 호출하는 로직으로 변경하였다
+* ###### 하지만, 이 해결법에는 S3 서버의 데이터 누수가 있을 수 있기 때문에 scheduler의 관리가 필요하다
+  
+</details>
+
+<details>
+  <summary>
+    <b> 서버 재시작 시 ChannelTopic이  사라짐</b>
+  </summary>
+  
+* ###### 서버가 재시작 되면 메모리 저장소에 남아있는 ChannelTopic이 사라지게 되어 채팅이 비활성화 됨.
+  
+###### 해결 
+* ###### 서버 시작시 DB에 담겨있는 채팅방 아이디를 불러와서 ChannelTopic 에 담아줌
 </details>
 
 <br />
-
-ppt 구성
-1. 소개(2분)
-  - 서비스 계획 배경(30초) : 중고나라에는 택배로 많이 거래하는데 사기가 많다.
-  - 보다 안전한 거래를 위해 파는 물건을 영상으로 올려서 사기를 방지한다.
-  - 시연 영상(1분 30초) : 로그인 + 게시글 작성 + 구매자가 대화신청 + 판매자가 대화 받고 + 거래 요청 함 + 구매자 수락!
-2. 아키텍쳐(1~2분)
-  - DB -> S3 -> EC2 -> 레디스 -> CI/CD -> 로드 밸런서 -> 라우트 53 -> https -> 프론트
-3. 프론트엔드(2분)
-  - 
-4. 백엔드(2분)
-  - 주요기술 1분. 
-  - 트러블 슈팅 1분. 
-5. 피드백(1분)
-  - 
-6. 앞으로의 계획?(30초)
-  - 
