@@ -127,7 +127,6 @@ public class GoodsService {
     })
     public ResponseCode deleteGoods(Long goodsId, UserDetailsImpl userDetails) throws CustomException {
         Goods goods = goodsAccountCheck(goodsId, userDetails);
-        // 여기에 붙여주세요
         chatRoomRepository.deleteAllByGoodsId(goodsId);
         for (GoodsImage goodsImage : goods.getGoodsImages()) {
             fileCloudService.deleteFile(goodsImage.getImageUrl());
@@ -189,7 +188,7 @@ public class GoodsService {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
                 () -> new CustomException(GOODS_NOT_FOUND)
         );
-        if (!Objects.equals(goods.getAccount().getId(), userDetails.getId())) {
+        if (goods.getAccount().getId() != userDetails.getId()) {
             throw new CustomException(NOT_AUTHORED);
         }
         return goods;
