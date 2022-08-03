@@ -42,6 +42,10 @@ https://youtu.be/1j_bk71_Eaw
   
 ### Front-End
 
+
+
+### Back-End
+
 <div>
   <img alt="Java" src ="https://img.shields.io/badge/Java-007396.svg?&style=for-the-badge&logo=Java&logoColor=white"/>
   <img alt="Spring Boot" src ="https://img.shields.io/badge/Spring Boot-6DB33F.svg?&style=for-the-badge&logo=Spring Boot&logoColor=white"/>
@@ -63,23 +67,10 @@ https://youtu.be/1j_bk71_Eaw
   <img alt="NGINX" src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=NGINX&logoColor=white">
   <img alt="Swagger" src="https://img.shields.io/badge/Swagger-59666C?style=for-the-badge&logo=Swagger&logoColor=white"/>
 </div>
+
 <br />  
 
-### Back-End
 
-<div>
-  <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
-  <img src="https://img.shields.io/badge/Springboot-6DB33F?style=for-the-badge&logo=Springboot&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=SpringDataJPA&logoColor=white">
-  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
-  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black">
-  <img src="https://img.shields.io/badge/aws-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-  
-
-</div>  
 
 # 🖼 아키텍쳐
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%BC%93%ED%81%B4%EB%A6%BD+%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.PNG" width:"1200"></center>
