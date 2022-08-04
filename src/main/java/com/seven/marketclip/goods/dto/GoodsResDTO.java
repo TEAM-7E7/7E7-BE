@@ -63,6 +63,7 @@ public class GoodsResDTO implements Serializable {
         if(goodsImages.isEmpty()){
             throw new CustomException(GOODS_IMAGE_NOT_FOUND);
         }
+
         for (GoodsImage goodsImage : goodsImages) {
             goodsImageMap.put(goodsImage.getSequence(), goodsImage);
         }

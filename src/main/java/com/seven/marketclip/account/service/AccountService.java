@@ -25,6 +25,8 @@ import com.seven.marketclip.security.FormLoginSuccessHandler;
 import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.security.jwt.HeaderTokenExtractor;
 import com.seven.marketclip.security.jwt.JwtTokenUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -155,6 +157,11 @@ public class AccountService {
 
     // 회원 탈퇴
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "'id:' + #accountId + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "'id:' + #accountId + '__status:SALE'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "#accountId", cacheNames = "myWishCache")
+    })
     public ResponseCode deleteUser(Long accountId) {
         Account account = accountVerification.checkAccount(accountId);
         List<Goods> goodsList = account.getGoodsList();
