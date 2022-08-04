@@ -14,8 +14,8 @@ import javax.validation.constraints.Pattern;
 public class AccountReqDTO {
 
     @NotBlank
-    @Length(min = 2, max = 10)
-    @Pattern(regexp = "^[0-9가-힣a-zA-Z]{2,10}$")
+    @Length(min = 2, max = 11)
+    @Pattern(regexp = "^[0-9가-힣a-zA-Z]{2,11}$")
     private String nickname;
 
     @Email
