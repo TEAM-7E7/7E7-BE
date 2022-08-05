@@ -1,8 +1,9 @@
 # MarketClip
+<h2>https://marketclip.kr/</h2>
 
 ### 😎요즘은 짧은 영상이 대세! 쇼핑에도 영상을 보는 즐거움이 있는 마켓클립!
 <p align="center"><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/222222.png" />
-  
+
 
 <br />
 <br />
@@ -21,11 +22,11 @@
 
 <br><br>
 # 🎞 프로젝트 발표영상 🎞
-https://www.youtube.com/watch?v=UvTk7JV03cs&t=4s
+https://www.youtube.com/watch?v=sQ2qn1elfGQ
 
 <br><br>
 # 🎞 프로젝트 시연영상 🎞
-https://youtu.be/1j_bk71_Eaw
+https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
 
 <br>
 
@@ -34,7 +35,7 @@ https://youtu.be/1j_bk71_Eaw
   
 <br /><br />
 # 📌 API 명세서
-<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%841.png" width:"1200"></center>
+<center><img src="https://user-images.githubusercontent.com/91590293/182981843-124a76a6-b7e7-4718-83a2-2ec0c72532e4.png" width:"1200"></center>
 
 <br /><br />
   
@@ -110,9 +111,9 @@ https://youtu.be/1j_bk71_Eaw
   - 채팅 기능에 redis 의 pub/sub 자체 기능을 적용 시킴.
 
 * 게시글
-  - 원하는 카테고리를 중복 선택하여 게시글을 조회 가능
-  - querydsl로 동적쿼리 사용하여 게시글을 불러옴
-  - 마이페이지의 판매목록 구매목록에서 페이징
+  - 원하는 카테고리를 다수 선택하여 게시글 조회 가능
+  - querydsl 동적쿼리를 사용하여 게시글을 불러옴
+  - 메인화면, 마이페이지의 판매목록/구매목록/저장목록 페이징처리
 
 * 거래하기
   - 판매자가 구매자들중 한명에게 거래 신청을 함.
@@ -122,7 +123,9 @@ https://youtu.be/1j_bk71_Eaw
   - 거절) 거절 시 게시글이 '판매중' 상태로 바뀜
 
 * redis 캐시 
-  - 캐시 기능을 사용해 좀더 빨리 데이터를 불러올 수 있음.
+  - 수정과 삭제가 잦지 않은 데이터에 캐시 기능을 적용해 서버 응답속도 개선
+  - 게시글 상세페이지, 내가 쓴 글 보기, 내가 구매한 글 보기 적용
+  - 채팅방에도 적용 했었으나, 채팅이 생길 때 마다 최신순으로 채팅방을 정렬해 주는 기능이 있어서 삭제함
   
 <br />
 
