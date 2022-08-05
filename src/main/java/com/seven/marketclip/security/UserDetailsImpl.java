@@ -45,31 +45,6 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
         this.profileImgUrl = profileImgUrl;
     }
 
-    //로그인 할 때, 필요한
-//    public UserDetailsImpl(Long id, String password, String nickname,String email,String profileImgUrl,AccountRoleEnum role){
-//        this.id = id;
-//        this.email = email;
-//        this.nickname = nickname;
-//        this.password = password;
-//        this.role = role;
-//        this.profileImgUrl = profileImgUrl;
-//    }
-
-    //JWT 토큰 암호화, 복호화 때 필요한.
-//    public UserDetailsImpl(Long id, String email,String profileImgUrl,String nickname, AccountRoleEnum role){
-//        this.id = id;
-//        this.email = email;
-//        this.nickname = nickname;
-//        this.role = role;
-//        this.profileImgUrl = profileImgUrl;
-//    }
-
-    //카카오 로그인때 필요한.
-//    public UserDetailsImpl(String email,String nickname,AccountRoleEnum role){
-//        this.email = email;
-//        this.nickname = nickname;
-//        this.role = role;
-//    }
 
     public Long getId() {
         return this.id;

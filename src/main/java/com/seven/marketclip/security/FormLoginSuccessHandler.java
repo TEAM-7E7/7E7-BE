@@ -23,26 +23,24 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) {
-//        System.out.println("로그인 필터 7");
+
         final UserDetailsImpl userDetails = ((UserDetailsImpl) authentication.getPrincipal());
 
         // Token 생성
         final String token = JwtTokenUtils.generateJwtToken(userDetails);
         // refresh 토큰 생성
         final String refresh = JwtTokenUtils.generateRefreshToken(userDetails);
-//        System.out.println("유저 아이디"+userDetails.getId());
+
 
         Account account = accountRepository.findById(userDetails.getId()).orElseThrow(
                 ()-> new IllegalArgumentException("찾는 아이디가 없습니다.")
         );
         account.changeRefreshToken(refresh);
 
-//        System.out.println(token);
 
         response.addHeader(JWT_HEADER, TOKEN_TYPE + " " + token);
         response.addHeader(REFRESH_HEADER, TOKEN_TYPE + " " + refresh);
 
-//        System.out.println(response.getHeader(JWT_HEADER));
     }
 
 }
