@@ -25,13 +25,9 @@ public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        System.out.println("소셜 로그인 성공했을 때");
+
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl)authentication.getPrincipal();
-        System.out.println(userDetailsImpl);
-        System.out.println(userDetailsImpl.getUsername());
-        System.out.println(userDetailsImpl.getId());
-//        UserDetailsImpl userDetailsImpl = new UserDetailsImpl(account.getId(), account.getEmail(), account.getRole());
-//        UserDetails userDetails = userDetailsImpl;
+
         authentication = new UsernamePasswordAuthenticationToken(userDetailsImpl, null, userDetailsImpl.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -40,22 +36,12 @@ public class OauthHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 
         Account account = accountRepository.findByEmail(userDetailsImpl.getUsername()).orElseThrow(
-                () -> new IllegalArgumentException("sdsfdhtm 오스 핸들러ㅜ  아읻 업음")
+                () -> new IllegalArgumentException("아이디 존재하지 않음")
         );
 
         account.changeRefreshToken(refresh);
 
-//        RedirectAttributes re;
-//        re.addAllAttributes("","");
-
-//        response.addHeader(FormLoginSuccessHandler.JWT_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + token);
-//        response.addHeader(FormLoginSuccessHandler.REFRESH_HEADER, FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
-//        response.sendRedirect("http://localhost:3000?X-ACCESS-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
         response.sendRedirect("https://marketclip.kr?X-ACCESS-TOKEN="+ FormLoginSuccessHandler.TOKEN_TYPE + " " + token+"&"+"X-REFRESH-TOKEN="+FormLoginSuccessHandler.TOKEN_TYPE + " " + refresh);
-
-//        getRedirectStrategy().sendRedirect(request,response,"http://localhost:3000");
-//        RedirectAttributes redirectAttributes = new
-//        getR
 
     }
 }
