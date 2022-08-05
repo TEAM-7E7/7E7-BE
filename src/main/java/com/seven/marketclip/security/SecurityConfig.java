@@ -215,10 +215,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/swagger-resources/**");
 
 
-//            skipPathList.add("GET,/");
-//            skipPathList.add("GET,/basic.js");
-//
-//            skipPathList.add("GET,/favicon.ico");
+
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
