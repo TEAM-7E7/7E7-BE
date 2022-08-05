@@ -13,6 +13,10 @@
 - Back-end: [임선용](https://github.com/sunyongIM), [김재호](https://github.com/KimjaehoLy), [남신욱](https://github.com/tlsdnr1135)
 - Designer: 이수진, 안수현
 - [\[Front-End Github\]](https://github.com/TEAM-7E7/7E7-FE)
+- [\[Marketclip Notion\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
+https://www.notion.so/BackEnd-3646a509dede404184b9128ec99c66b8
+- [\[Marketclip Notion(BE)\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
+  
   
 <br />
 
@@ -193,7 +197,6 @@ fi
 </details>
 
 
-
 <details>
   <summary>
     <b> 서버 재시작 시 ChannelTopic이  사라짐</b>
@@ -206,3 +209,17 @@ fi
 </details>
 
 <br />
+
+# Team MPNP - Backend
+
+<br>
+
+팀 멍판냥판 백엔드 개발진들🧡
+
+
+| [임선용🔰](https://github.com/sunyongIM) | [김재호](https://github.com/KimjaehoLy) | [남신욱](https://github.com/tlsdnr1135) |                                                                                                            
+| :---------------------------------: | :----------------------------------: | :-----------------------------: |
+| <img src="https://user-images.githubusercontent.com/90380269/181727981-603a62e6-bc9d-4b69-ae87-5bf876bbc1c8.png" alt="임선용" width="200px"/> |  <img src="https://user-images.githubusercontent.com/90380269/181737024-7c476a43-c276-4d99-b756-8bfc14d189a1.jpeg" alt="김재호" width="200px"/> | <img src="https://user-images.githubusercontent.com/90380269/181737602-f12730e5-9997-4063-acb6-47d2d3c9f696.png" alt="남신욱" width="200px" /> |
+| `백엔드 CI/CD` `이메일 인증` `자체 회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기 기능` `마이페이지` <br> `queryDsl 동적쿼리` `Scheduler` `Redis 캐싱` | `Spring Batch` `Scheduler` <br> `리뷰 작성, 삭제, 수정, 조회` <br> `북마크 및 북마크 폴더 생성, 삭제` <br> `최근 등록한 북마크 조회` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인`|
+
+
