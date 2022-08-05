@@ -117,9 +117,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .type(oAuth2UserInfo.getRole())
                     .role(roleEnum)
                     .build();
+            accountRepository.save(account);
             account.encodePassword(bCryptPasswordEncoder);
             account.changeNickname(randomNickname + account.getId());
-            accountRepository.save(account);
+
 
 
             Account account1 = accountRepository.findByEmail(oAuth2UserInfo.getEmail()).orElseThrow(
