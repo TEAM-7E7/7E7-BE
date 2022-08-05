@@ -97,6 +97,7 @@ https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
 
 
 
+
 # 🖼 아키텍쳐
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%BC%93%ED%81%B4%EB%A6%BD+%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.PNG" width:"1200"></center>
 
@@ -210,16 +211,16 @@ fi
 
 <br />
 
-# Team MPNP - Backend
+# Team Marketclip - Backend
 
 <br>
 
-팀 멍판냥판 백엔드 개발진들🧡
+마켓클립 백엔드 개발진들🧡
 
 
 | [임선용🔰](https://github.com/sunyongIM) | [김재호](https://github.com/KimjaehoLy) | [남신욱](https://github.com/tlsdnr1135) |                                                                                                            
 | :---------------------------------: | :----------------------------------: | :-----------------------------: |
-| <img src="https://user-images.githubusercontent.com/90380269/181727981-603a62e6-bc9d-4b69-ae87-5bf876bbc1c8.png" alt="임선용" width="200px"/> |  <img src="https://user-images.githubusercontent.com/90380269/181737024-7c476a43-c276-4d99-b756-8bfc14d189a1.jpeg" alt="김재호" width="200px"/> | <img src="https://user-images.githubusercontent.com/90380269/181737602-f12730e5-9997-4063-acb6-47d2d3c9f696.png" alt="남신욱" width="200px" /> |
-| `백엔드 CI/CD` `이메일 인증` `자체 회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기 기능` `마이페이지` <br> `queryDsl 동적쿼리` `Scheduler` `Redis 캐싱` | `Spring Batch` `Scheduler` <br> `리뷰 작성, 삭제, 수정, 조회` <br> `북마크 및 북마크 폴더 생성, 삭제` <br> `최근 등록한 북마크 조회` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인`|
+| <img src="https://user-images.githubusercontent.com/91590293/182991861-78a60df8-2de4-4a64-b20e-fb6c930e4d68.jpg" alt="임선용" width="200px"/> |  <img src="" alt="김재호" width="200px"/> | <img src="" alt="남신욱" width="200px" /> |
+| `백엔드 CI/CD` `이메일 인증` `회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기` `마이페이지` <br> `queryDsl 동적쿼리` `Redis - 캐싱, 분산락` <br> `Scheduler - Mysql, S3 스토리지 관리` | `Spring Batch` `Scheduler` <br> `리뷰 작성, 삭제, 수정, 조회` <br> `북마크 및 북마크 폴더 생성, 삭제` <br> `최근 등록한 북마크 조회` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인`|
 
 
