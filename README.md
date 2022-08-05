@@ -13,6 +13,10 @@
 - Back-end: [임선용](https://github.com/sunyongIM), [김재호](https://github.com/KimjaehoLy), [남신욱](https://github.com/tlsdnr1135)
 - Designer: 이수진, 안수현
 - [\[Front-End Github\]](https://github.com/TEAM-7E7/7E7-FE)
+- [\[Marketclip Notion\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
+https://www.notion.so/BackEnd-3646a509dede404184b9128ec99c66b8
+- [\[Marketclip Notion(BE)\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
+  
   
 <br />
 
@@ -90,6 +94,7 @@ https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
 </div>
 
 <br />  
+
 
 
 
@@ -184,14 +189,14 @@ fi
 * ###### 게시글을 작성 시 여러개의 사진을 올릴 수 있는데 순서가 중요함.
 * ###### 수정을 할 때 새로운 이미지와 기존에 있던 이미지를 순서대로 받기가 힘듬.(다른 타입의 변수를 하나의 객체로)
   
-###### 해결
+###### 해결![베짱이](https://user-images.githubusercontent.com/68206513/182992929-09e4a00b-8e45-4cba-b279-822c08784c8d.png)
+
 * ###### 이미지를 Url로 변환시켜주는 (S3에 저장하는) api를 따로 만들었다.
 * ###### FE에서 이미지를 업로드 하는 동시에 위의 api를 호출하면 MultipartFile이 아닌 String 타입의 url이 return 되고,
 * ###### 해당 url을 가지고 게시글 수정 api를 호출하는 로직으로 변경하였다
 * ###### 하지만, 이 해결법에는 S3 서버의 데이터 누수가 있을 수 있기 때문에 scheduler의 관리가 필요하다
   
 </details>
-
 
 
 <details>
@@ -206,3 +211,17 @@ fi
 </details>
 
 <br />
+
+# Team Marketclip - Backend
+
+<br>
+
+마켓클립 백엔드 개발진들🧡
+
+
+| [임선용🔰](https://github.com/sunyongIM) | [김재호](https://github.com/KimjaehoLy) | [남신욱](https://github.com/tlsdnr1135) |                                                                                                            
+| :---------------------------------: | :----------------------------------: | :-----------------------------: |
+| <img src="https://user-images.githubusercontent.com/91590293/182991861-78a60df8-2de4-4a64-b20e-fb6c930e4d68.jpg" alt="임선용" width="200px"/> |  <img src="https://user-images.githubusercontent.com/68206513/182992939-620a49cc-e9d3-4d96-867a-e97477fda85a.png" alt="김재호" width="200px"/> | <img src="" alt="남신욱" width="200px" /> |
+| `백엔드 CI/CD` `이메일 인증` `회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기` `마이페이지` <br> `queryDsl 동적쿼리` `Redis - 캐싱, 분산락` <br> `Scheduler - Mysql, S3 스토리지 관리` | `WebSocket` `Redis Pub/Sub` <br> `채팅방 생성` <br> `실시간 채팅` <br> `거래 기능` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인`|
+
+
