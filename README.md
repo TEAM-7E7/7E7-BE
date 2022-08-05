@@ -189,7 +189,8 @@ fi
 * ###### 게시글을 작성 시 여러개의 사진을 올릴 수 있는데 순서가 중요함.
 * ###### 수정을 할 때 새로운 이미지와 기존에 있던 이미지를 순서대로 받기가 힘듬.(다른 타입의 변수를 하나의 객체로)
   
-###### 해결
+###### 해결![베짱이](https://user-images.githubusercontent.com/68206513/182992929-09e4a00b-8e45-4cba-b279-822c08784c8d.png)
+
 * ###### 이미지를 Url로 변환시켜주는 (S3에 저장하는) api를 따로 만들었다.
 * ###### FE에서 이미지를 업로드 하는 동시에 위의 api를 호출하면 MultipartFile이 아닌 String 타입의 url이 return 되고,
 * ###### 해당 url을 가지고 게시글 수정 api를 호출하는 로직으로 변경하였다
@@ -220,7 +221,7 @@ fi
 
 | [임선용🔰](https://github.com/sunyongIM) | [김재호](https://github.com/KimjaehoLy) | [남신욱](https://github.com/tlsdnr1135) |                                                                                                            
 | :---------------------------------: | :----------------------------------: | :-----------------------------: |
-| <img src="https://user-images.githubusercontent.com/91590293/182991861-78a60df8-2de4-4a64-b20e-fb6c930e4d68.jpg" alt="임선용" width="200px"/> |  <img src="" alt="김재호" width="200px"/> | <img src="" alt="남신욱" width="200px" /> |
+| <img src="https://user-images.githubusercontent.com/91590293/182991861-78a60df8-2de4-4a64-b20e-fb6c930e4d68.jpg" alt="임선용" width="200px"/> |  <img src="https://user-images.githubusercontent.com/68206513/182992939-620a49cc-e9d3-4d96-867a-e97477fda85a.png" alt="김재호" width="200px"/> | <img src="" alt="남신욱" width="200px" /> |
 | `백엔드 CI/CD` `이메일 인증` `회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기` `마이페이지` <br> `queryDsl 동적쿼리` `Redis - 캐싱, 분산락` <br> `Scheduler - Mysql, S3 스토리지 관리` | `Spring Batch` `Scheduler` <br> `리뷰 작성, 삭제, 수정, 조회` <br> `북마크 및 북마크 폴더 생성, 삭제` <br> `최근 등록한 북마크 조회` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인`|
 
 
