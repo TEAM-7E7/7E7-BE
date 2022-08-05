@@ -102,6 +102,169 @@ https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%BC%93%ED%81%B4%EB%A6%BD+%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.PNG" width:"1200"></center>
 
 <br />
+<hr/>
+
+## 프로젝트 주요 기능 
+  ### ➀ 로그인/회원가입 
+  - URL: /sign-in, /sign-up
+  #### 1. 소셜 로그인 및 플랫폼 자체 회원가입 + 보안
+  - 소셜 로그인은 카카오/구글의 로그인 api를 이용해서 구현.
+    <details>
+    <summary><h4>소셜로그인</h4></summary>
+    <div markdown="1">
+    <img src="https://user-images.githubusercontent.com/55455103/182719213-22d011f5-8bb5-45a9-b360-6f7174f7b185.gif"/>
+    </div>
+    </details>
+  #### 2. 플랫폼 자체 회원가입/로그인
+  - 플랫폼 자체 회원가입은 이메일 인증과 닉네임 중복체크를 진행해야 하며 formik과 yup으로 form의 validation 및 state를 관리함.
+    <details>
+    <summary><h4>회원가입 이메일 인증</h4></summary>
+    <div markdown="1">
+    <img src="https://user-images.githubusercontent.com/55455103/182720016-af4be124-5ea7-4013-9c83-643ea5b0a712.gif"/>
+    </div>
+    </details>
+    <details>
+    <summary><h4>닉네임 중복확인 및 form 유효성 검증</h4></summary>
+    <div markdown="1">
+    <img src="https://user-images.githubusercontent.com/55455103/182720339-ab1b3004-73d9-4351-b05c-cbb5777a9b5e.gif"/>
+    </div>
+    </details>
+  #### 3. JWT(refresh + access) / Axios Interceptor / PrivateRoute 
+  - 로그인 후 서버에서 받은 refresh token과 access token을 각각 cookie와 webstorage에 저장해서 csrf와 xss 공격에 대응.
+  - axios interceptor를 구현해 api 요청을 가로채서 refresh token과 access token을 넣어주고 만약 access token이 만료되었다면 refresh token으로 access token을 재발급 받은 후 refresh token과 access token을 넣어서 원래 api 호출.
+  - 만약 refresh token이 만료되었다면 로그인 페이지로 리다이렉트 시킨다.
+  - Private Route를 구현해서 인증이 된 사용자만 접근할 수 있는 페이지를 구현한다. 만약 인증이 되지 않은 사용자가 접근 시 alert를 띄우고 접근을 막음.
+     <details>
+      <summary><h4>PrivateRoute</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182728855-de871baf-8313-4bc3-b298-c939ae6f30cb.gif"/>
+      </div>
+    </details>
+
+
+  ### ➁ 게시물 등록 → drag and drop
+  - URL: /add-board
+  #### 1. 게시물 등록
+  - yup + formik을 이용해 게시물 등록 form의 validation 검증 및 state 관리.
+  - 게시물의 이미지/비디오 갯수는 최대 5개까지 허용(초과하면 valdation schema에서 에러 메시지를 보내줌)하고 동영상의 길이는 16초 이상이면 alert를 띄워주고 form의 state에 반영되지 않음.
+  - drag and drop으로 서버에 올라갈 이미지/비디오의 순서를 바꿀 수 있고 맨 앞에 있는 이미지/비디오가 썸네일이 된다.
+    <details>
+      <summary><h4>게시물 등록 drag and drop</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182722073-05672738-8a51-4f03-bde2-187532fa5662.gif"/>
+      </div>
+    </details>
+    <details>
+      <summary><h4>게시물 등록</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182722363-123c7ae0-3127-4145-91fb-04c1558cd385.gif"/>
+      </div>
+    </details>
+  ### ➂ 게시물 전체보기(홈 화면 → shots 영상 클립 / 카테고리,정렬 기준 선택) 
+  - URL: /
+  #### 1. shorts 영상 클립
+  - scroll snap을 이용해 뷰포트에 한 게시물만 들어오도록 구현.
+  - 뷰포트에서 게시물이 보일 맨 위,아래 y좌표를 계산하고 scroll event를 추가하여 scroll snap된 게시물의 가운데 좌표가 그 사이에 들어가면 동영상을 자동으로 재생시키도록 video 태그를 조작.
+    <details>
+      <summary><h4>뷰포트 y좌표 계산 예시</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182722838-6ecc2df5-7937-45ca-bf89-9dd7e90b1266.png"/>
+      </div>
+    </details>
+  
+  - 위의 구현을 기반으로 게시물의 썸네일이 동영상일 경우 youtube shorts처럼 자동 재생
+    <details>
+      <summary><h4>홈 화면 shots 영상 클립</h4></summary>
+      <div markdown="1">
+        <p align="center"><img src="https://user-images.githubusercontent.com/55455103/182723126-84ef1001-38d8-4ac9-affb-0c43f0fc4d9f.gif"/></p>
+      </div>
+    </details>
+  
+  #### 2. infinite scroll / 카테고리, 정렬 기준 선택
+  - 무한스크롤은 리액트의 useState를 사용해서 페이지에 해당하는 데이터를 이어나가는 방식이 아닌 react-query의 useInfiniteQuery 훅을 이용해서 페이지의 마지막 게시물이 보이면 자동으로 다음 페이지를 fetching하는 방식을 이용.
+  -  react query의 캐싱 기능을 이용해게시물 전체보기 화면에서 카테고리 및 정렬 기준 선택 시 useInfiniteQuery의 refetch 기능을 이용해서 카테고리나 정렬 기준이 변경되면 자동으로 변경된 카테고리와 정렬 기준이 반영된 api를 첫 페이지부터 호출하는데 사용.
+  -  카테고리와, 정렬 기준은 recoil-persist를 이용해 전역 상태의 저장소를 로컬 스토리지로 사용해서 즐겨찾기 기능처럼 페이지를 새로고침하거나 종료해도 남아있다.
+    <details>
+      <summary><h4>inifinite scroll + 카테고리 선택</h4></summary>
+      <div markdown="1">
+        <img src="https://user-images.githubusercontent.com/55455103/182724905-197f514e-c3a7-4dbc-8231-0b5821abe234.gif"/>
+      </div>
+  
+  ### ➃ 게시물 상세보기 (이미지,비디오 carousel / 저장하기 / 사용자별 메뉴)
+  - URL: /board/:board_id
+  - dynamic routing으로 board_id에 해당하는 게시물을 api 요청을 통해 가져온다.
+  #### 1. 이미지,비디오 carousel
+  - 사용자가 등록한 이미지,비디오는 carousel로 보여준다. 
+  - 뷰포트에 보이는 동영상일 경우 shorts 클립 영상처럼 자동재생시킨다.
+    <details>
+      <summary><h4>이미지,비디오 carousel / shorts 클립 영상</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182731237-ee64bc11-397f-4cea-a1a2-8a6afc1ac1ab.gif"/>
+      </div>
+    </details>
+  #### 2. 저장하기
+  - 로그인한 사용자만 이용할 수 있는 메뉴
+  - jwt payload에 들어있는 사용자의 id와 db에 저장된 저장하기를 누른 사람의 id 리스트를 비교하면서 구현
+  - react-query의 useQuery 훅과 useMutation 훅을 이용해서 저장하기 버튼 클릭 시 즉시 query cache를 초기화해서 저장하기가 적용된 게시물을 서버에서 불러온 후 화면에 렌더링한다.
+  - 저장하기가 눌린 게시물은 노란색 북마크 버튼이 생긴다!
+    <details>
+      <summary><h4>저장하기 예시</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182732367-dd231645-4379-458f-8408-7a450ac36de1.gif"/>
+      </div>
+    </details>
+  #### 3. 사용자별 메뉴
+  - 로그인하지 않은 사용자는 저장하기, 1:1 채팅 보내기 메뉴가 보이지만 클릭하면 로그인을 요청하는 alert가 보임.
+  - 로그인한 사용자는 저장하기, 1:1 채팅 보내기 메뉴가 사용 가능함.
+  - 게시물의 작성자는 저장하기, 1:1 채팅 보내기 메뉴 대신 수정하기, 삭제하기 버튼이 보임!
+    <details>
+      <summary><h4>게시물 작성자가 보이는 메뉴</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182734352-b3c251eb-571b-4489-b455-a189133821c6.png"/>
+      </div>
+    </details>
+  
+  ### ⑤ 게시물 수정/삭제
+  - URL: /edit_board/:board_id, 삭제는 별도의 URL 없음
+  1. 게시물 수정/삭제
+  - 게시물 수정은 작성자가 이전에 작성한 글의 상태를 그대로 가져와서 보여준 후 수정할 수 있게 한다.
+  - 게시물 수정/삭제는 마이페이지에서 케밥 메뉴로 빠르게 수정/삭제할 수 있고 상세보기의 수정 삭제 버튼으로도 수정/삭제를 할 수 있다.
+    <details>
+      <summary><h4>게시물 수정/삭제</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182991651-37939d91-fb33-4b2f-872e-b98db2b34041.gif"/>
+      </div>
+    </details>
+  ### ⑥ 채팅/거래 기능 (StompJS/SockJS)
+  - URL: /chatting?board_id=:board_id&user_id=:user_id
+  - 채팅/거래기능은 stateful한 상태에서 상대방의 행동에 따라 각각 다른 반응을 보여야 하므로 websocket을 이용.
+  - pub/sub 구조로 실시간 채팅 및 채팅 내역 및 미 열람 채팅 수 확인
+  1. 채팅 기능
+  - 로그인한 사용자만 사용이 가능하며, 게시물 상세보기 페이지에서 1:1 채팅 보내기 버튼으로 이용할 수 있다.
+  - 카카오톡과 유사하게 채팅을 받는 사람은 실시간으로 미열람 메시지 갯수가 증가한다.
+    <details>
+      <summary><h4>채팅기능</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182992992-2b4506f5-aa8c-44e2-abdb-7b3b4c4c2caa.gif"/>
+      </div>
+    </details>
+  2. 거래 기능
+  - 판매자가 거래요청 시 게시물의 상태가 거래중으로 변경되며 구매자에게 알람을 보여주고 구매자에게 알람과 메세지가 보여짐과 동시에 수락/취소 버튼이 보여짐
+  - 거래중인 게시물은 수정이 불가능하며 판매자가 다른 구매자에게 거래요청을 보낼 수 없음
+  - 구매자가 수락/취소 버튼을 클릭 시 구매자에게 알맞은 알람과 메세지 보여주고 거래가 완료된 게시물에는 더이상 채팅을 보낼 수 없게 구현.
+  - 거래가 완료되면 게시물의 상태가 거래 완료로 바뀌고 구매자의 마이페이지에서 거래목록에서 게시물을 확인할 수 있고 판매자의 마이페이지에서 판매목록에서 게시물을 확인할 수 있다.
+    <details>
+      <summary><h4>거래 취소</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182996023-12d226f0-f855-4958-9b6c-f7b0af990941.gif"/>
+      </div>
+    </details>
+    <details>
+      <summary><h4>거래 수락</h4></summary>
+      <div markdown="1">
+      <img src="https://user-images.githubusercontent.com/55455103/182996813-d72325d3-930e-48df-86c5-3e1bede8d066.gif"/>
+      </div>
+    </details>
 
 # 🔑 프로젝트 백엔드 주요 기능
   
