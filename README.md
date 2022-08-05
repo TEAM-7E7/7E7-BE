@@ -31,11 +31,11 @@ https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
 <br>
 
 # 🗺 ER Diagram
-<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/markeclip+erd.PNG" width="1200"></center>
+<center><img src="https://user-images.githubusercontent.com/91590293/182981843-124a76a6-b7e7-4718-83a2-2ec0c72532e4.png" width:"1200"></center>
   
 <br /><br />
 # 📌 API 명세서
-<center><img src="https://user-images.githubusercontent.com/91590293/182981843-124a76a6-b7e7-4718-83a2-2ec0c72532e4.png" width:"1200"></center>
+<center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%841.png" width:"1200"></center>
 
 <br /><br />
   
@@ -191,6 +191,8 @@ fi
 * ###### 하지만, 이 해결법에는 S3 서버의 데이터 누수가 있을 수 있기 때문에 scheduler의 관리가 필요하다
   
 </details>
+
+
 
 <details>
   <summary>
