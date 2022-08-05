@@ -10,7 +10,6 @@ import com.seven.marketclip.image.repository.AccountImageRepository;
 import com.seven.marketclip.image.service.ImageService;
 import com.seven.marketclip.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -49,20 +48,26 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         // Attribute를 파싱해서 공통 객체로 묶는다. 관리가 편함.
         OAuth2UserInfo oAuth2UserInfo = null;
+        String randomNickname = null;
+        //        String randomNickname = RandomStringUtils.random(11, true, true);
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
             GoogleUserInfo sad = (GoogleUserInfo) oAuth2UserInfo;
+            randomNickname = "구글 ";
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            randomNickname = "네이버 ";
             oAuth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
+            randomNickname = "카카오 ";
             oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
             KakaoUserInfo sad = (KakaoUserInfo) oAuth2UserInfo;
         } else {
             System.out.println("우리는 구글과 네이버만 지원");
         }
+
         //각각의 소셜ID 함수에 앞에 카카오인지
 
-        String randomNickname = RandomStringUtils.random(11, true, true);
+
         Optional<Account> accountOptEmail = accountRepository.findByEmail(oAuth2UserInfo.getEmail());
         Optional<Account> accountOptNickname = accountRepository.findByNickname(randomNickname);
 
@@ -106,13 +111,14 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             String uuidPassword = String.valueOf(UUID.randomUUID());
             AccountRoleEnum roleEnum = AccountRoleEnum.USER;
             Account account = Account.builder()
-                    .nickname(randomNickname)
+                    .nickname(null)
                     .email(oAuth2UserInfo.getEmail())
                     .password(uuidPassword)
                     .type(oAuth2UserInfo.getRole())
                     .role(roleEnum)
                     .build();
             account.encodePassword(bCryptPasswordEncoder);
+            account.changeNickname(randomNickname + account.getId());
             accountRepository.save(account);
 
 
