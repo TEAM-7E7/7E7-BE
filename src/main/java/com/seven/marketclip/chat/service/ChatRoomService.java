@@ -45,10 +45,10 @@ public class ChatRoomService {
     private void init() {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
-        List<ChatRoom> list = chatRoomRepository.findAll();
-        for (ChatRoom chat : list) {
-            enterChatRoom(chat.getId());
-        }
+//        List<ChatRoom> list = chatRoomRepository.findAll();
+//        for (ChatRoom chat : list) {
+//            enterChatRoom(chat.getId());
+//        }
     }
 
     @Transactional      //채팅방 생성
