@@ -11,9 +11,6 @@ import com.seven.marketclip.chat.eums.SellStatus;
 import com.seven.marketclip.chat.repository.ChatMessageRepository;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
 import com.seven.marketclip.exception.CustomException;
-import com.seven.marketclip.exception.ResponseCode;
-import static com.seven.marketclip.exception.ResponseCode.*;
-
 import com.seven.marketclip.goods.domain.Goods;
 import com.seven.marketclip.goods.enums.GoodsStatus;
 import com.seven.marketclip.security.UserDetailsImpl;
@@ -24,6 +21,8 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.seven.marketclip.exception.ResponseCode.CHAT_MESSAGE_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service

@@ -91,7 +91,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             AccountRoleEnum role = account.getRole();
             String nickname = account.getNickname();
             String imgUrl = account.getProfileImgUrl().getImageUrl();
-            System.out.println(imgUrl);
             return UserDetailsImpl.builder()
                     .id(id)
                     .email(email)

@@ -20,12 +20,9 @@ public class OauthFailHandler extends SimpleUrlAuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException authentication) throws IOException {
-        System.out.println("실패한 소셜 로그인 쪽");
         response.getWriter().print("SOCIAL_LOGIN_FAIL-EMAIL_ALREADY_EXIST");
         response.setStatus(400);
         response.sendRedirect("https://marketclip.kr?social=EMAIL_ALREADY_EXIST");
-        //
-        return;
     }
 
     @Override
