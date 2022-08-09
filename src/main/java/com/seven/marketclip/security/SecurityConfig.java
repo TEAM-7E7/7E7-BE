@@ -203,6 +203,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("PUT,/api/user/password-search");
 
 
+        skipPathList.add("GET,/slack");
+
         //소셜 콜백 주소
         //KAKAO
         skipPathList.add("GET,/login/oauth2/code/kakao");
