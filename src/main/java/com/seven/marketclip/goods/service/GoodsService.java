@@ -2,7 +2,6 @@ package com.seven.marketclip.goods.service;
 
 import com.seven.marketclip.account.domain.Account;
 import com.seven.marketclip.chat.repository.ChatRoomRepository;
-import com.seven.marketclip.chat.service.ChatRoomService;
 import com.seven.marketclip.cloud_server.service.FileCloudService;
 import com.seven.marketclip.cloud_server.service.S3CloudServiceImpl;
 import com.seven.marketclip.comments.GoodsReviewRepository;
@@ -33,7 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.seven.marketclip.exception.ResponseCode.*;
 

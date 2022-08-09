@@ -6,17 +6,23 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>
+                [%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}:%-3relative][%thread] %-5level %logger{35} -
+                %msg%n
+            </pattern>
         </encoder>
     </appender>
 
     <appender name="DAILY_ROLLING_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS_PATH}/logback.log</file>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}:%-3relative][%thread] %-5level
+                %logger{35} - %msg%n
+            </pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOGS_PATH}/logback.%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOGS_PATH}/logback.%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.%i.log.gz
+            </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 100MB -->
                 <maxFileSize>5MB</maxFileSize>
@@ -26,11 +32,39 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+        <!-- Slack incoming webhook uri. Uncomment the lines below to use incoming webhook uri instead of API token. -->
+        <webhookUri>${{secrets.SLACK_WEBHOOK_URL}}</webhookUri>
+        <!-- Channel that you want to post - default is #general -->
+        <channel>#error_alert</channel>
+        <!-- Formatting (you can use Slack formatting - URL links, code formatting, etc.) -->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] --- [%thread] %logger{35} : %msg %n</pattern>
+        </layout>
+        <!-- Username of the messages sender -->
+        <username>${HOSTNAME}</username>
+        <!-- Emoji to be used for messages -->
+        <iconEmoji>:poop:</iconEmoji>
+        <!-- If color coding of log levels should be used -->
+        <colorCoding>true</colorCoding>
+    </appender>
+    <!-- Currently recommended way of using Slack appender -->
+    <appender name="ASYNC_SLACK" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="SLACK"/>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <logger name="com.seven.marketclip.slack" level="WARN">
+        <appender-ref ref="ASYNC_SLACK"/>
+    </logger>
+
     <logger name="com.seven.marketclip" level="INFO">
-        <appender-ref ref="DAILY_ROLLING_FILE_APPENDER" />
+        <appender-ref ref="DAILY_ROLLING_FILE_APPENDER"/>
     </logger>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

@@ -15,11 +15,11 @@ public class GoogleUserInfo implements OAuth2UserInfo {
         this.attributes = attributes;
     }
 
-    public void printAttribute(){
-        attributes.forEach((key, value) -> {
-            System.out.println(key + " : " + value);
-        });
-    }
+//    public void printAttribute(){
+//        attributes.forEach((key, value) -> {
+//            System.out.println(key + " : " + value);
+//        });
+//    }
 
     @Override
     public String getSocialId() {
