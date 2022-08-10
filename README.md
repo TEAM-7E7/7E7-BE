@@ -13,8 +13,6 @@
 - Back-end: [임선용](https://github.com/sunyongIM), [김재호](https://github.com/KimjaehoLy), [남신욱](https://github.com/tlsdnr1135)
 - Designer: 이수진, 안수현
 - [\[Front-End Github\]](https://github.com/TEAM-7E7/7E7-FE)
-- [\[Marketclip Notion\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
-https://www.notion.so/BackEnd-3646a509dede404184b9128ec99c66b8
 - [\[Marketclip Notion(BE)\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
   
   
