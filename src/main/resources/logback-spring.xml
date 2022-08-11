@@ -34,7 +34,7 @@
 
     <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
         <!-- Slack incoming webhook uri. Uncomment the lines below to use incoming webhook uri instead of API token. -->
-        <webhookUri>${SLACK_WEBHOOK_URL}</webhookUri>
+        <webhookUri>"${SLACK_WEBHOOK_URL}"</webhookUri>
 
         <!-- Channel that you want to post - default is #general -->
         <channel>#error_alert</channel>
