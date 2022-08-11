@@ -28,11 +28,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-//        registry.enableSimpleBroker( "/sub")
-//                .setHeartbeatValue(new long[] {10000, 20000})
-//                .setTaskScheduler(this.messageBrokerTaskScheduler);
-//        registry.setApplicationDestinationPrefixes("/pub");
-
+        registry.enableSimpleBroker( "/sub")
+                .setHeartbeatValue(new long[] {10000, 20000})
+                .setTaskScheduler(this.messageBrokerTaskScheduler);
+        registry.setApplicationDestinationPrefixes("/pub");
     }
 
 }

@@ -115,7 +115,7 @@ public class GoodsService {
     @Cacheable(key = "#goodsId", cacheNames = "goodsCache")
     public DataResponseCode findGoodsDetail(Long goodsId) throws CustomException {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(EMAIL_CHECK_NOT_FOUND)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
         return new DataResponseCode(SUCCESS, goodsResDTO);
