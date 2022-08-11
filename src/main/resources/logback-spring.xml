@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
     <!--로그 파일 저장 위치-->
     <property name="LOGS_PATH" value="./logs"/>
+    <springProperty name="SLACK_WEBHOOK_URL" source="logging.slack.webhook-uri"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

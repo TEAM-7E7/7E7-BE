@@ -31,7 +31,7 @@ public class WishService {
     public ResponseCode doWishList(Long goodsId, UserDetailsImpl userDetails, String httpMethod) throws CustomException {
         Account account = new Account(userDetails);
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
+                () -> new CustomException(EMAIL_ALREADY_EXPIRED)
         );
         Wish wish = wishRepository.findByGoodsAndAccount(goods, account).orElse(null);
         if (wish != null) {
