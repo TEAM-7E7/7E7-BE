@@ -42,7 +42,7 @@ public class GoodsReviewService {
         //채팅방에서 판매자가 거래완료 버튼을 누름.
         //구매자가 수락 -> 할떄 남기거나 안남기거나
         Goods goods = goodsRepository.findById(goodsDealDto.getGoodsId()).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
+                () -> new CustomException(REVIEW_MAKE_GOODS_NOT_FOUND)
         );
         goods.getGoodsReview().reservedReview(goodsDealDto.getBuyerId());
         goods.updateStatusReserved();  //굿즈 상태 변화

@@ -55,7 +55,7 @@ public class ChatRoomService {
     @CacheEvict(key = "#roomMake.goodsId", cacheNames = "goodsCache")
     public String saveChatRoom(RoomMake roomMake, Long loginId) {
         Goods goods = goodsRepository.findById(roomMake.getGoodsId()).orElseThrow(
-                () -> new CustomException(GOODS_NOT_FOUND)
+                () -> new CustomException(CHAT_MAKE_GOODS_NOT_FOUND)
         );
         if (goods.getStatus() == GoodsStatus.SOLD_OUT) {
             throw new CustomException(SOLD_OUT_GOODS);
