@@ -40,7 +40,7 @@
         <channel>#error_alert</channel>
         <!-- Formatting (you can use Slack formatting - URL links, code formatting, etc.) -->
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] --- [%thread] %logger{35} : %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] --- %logger{35} : %msg %n</pattern>
         </layout>
         <!-- Username of the messages sender -->
         <username>${HOSTNAME}</username>

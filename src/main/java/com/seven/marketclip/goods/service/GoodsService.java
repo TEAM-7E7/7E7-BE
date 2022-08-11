@@ -188,7 +188,7 @@ public class GoodsService {
     // 게시글 수정 & 삭제 - 상품 게시판 존재 여부/ 작성자 아이디와 접속한 아이디 비교/ 둘 다 true 시 Goods 반환
     private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl userDetails) {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(EMAIL_ALREADY_EXISTS)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
         if (goods.getAccount().getId() != userDetails.getId()) {
             throw new CustomException(NOT_AUTHORED);
