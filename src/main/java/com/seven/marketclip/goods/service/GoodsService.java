@@ -123,7 +123,7 @@ public class GoodsService {
 
     // 게시글 삭제
     @Transactional
-    @Caching(evict = { @CacheEvict(key = "#goodsId", cacheNames = "goodsCache"),
+    @Caching(evict = {@CacheEvict(key = "#goodsId", cacheNames = "goodsCache"),
             @CacheEvict(key = "'id:' + #userDetails.id + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
             @CacheEvict(key = "'id:' + #userDetails.id + '__status:SALE'", cacheNames = "myGoodsCache")
     })
@@ -139,7 +139,7 @@ public class GoodsService {
 
     // 게시글 수정
     @Transactional
-    @Caching(evict = { @CacheEvict(key = "#goodsId", cacheNames = "goodsCache"),
+    @Caching(evict = {@CacheEvict(key = "#goodsId", cacheNames = "goodsCache"),
             @CacheEvict(key = "'id:' + #userDetails.id + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
             @CacheEvict(key = "'id:' + #userDetails.id + '__status:SALE'", cacheNames = "myGoodsCache")
     })
@@ -170,7 +170,7 @@ public class GoodsService {
     }
 
     // 내가 즐겨찾기 한 글 보기
-    @Cacheable(key = "#userDetails.id", cacheNames = "myWishCache")
+//    @Cacheable(key = "#userDetails.id", cacheNames = "myWishCache")
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
         Page<Wish> wishList = wishRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Page<Goods> goodsList = wishList.map(Wish::getGoods);

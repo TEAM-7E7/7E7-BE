@@ -38,7 +38,6 @@ public class GoodsReviewService {
             @CacheEvict(key = "#goodsDealDto.goodsId", cacheNames = "goodsCache"),
             @CacheEvict(key = "#goodsDealDto.buyerId", cacheNames = "myPurchaseCache")})
     public ResponseCode sendReview(UserDetailsImpl userDetails, GoodsDealDto goodsDealDto) {
-        System.out.println(goodsDealDto.getGoodsId() + "//" + goodsDealDto.getBuyerId());
         //채팅방에서 판매자가 거래완료 버튼을 누름.
         //구매자가 수락 -> 할떄 남기거나 안남기거나
         Goods goods = goodsRepository.findById(goodsDealDto.getGoodsId()).orElseThrow(

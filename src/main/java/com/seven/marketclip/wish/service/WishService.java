@@ -9,7 +9,6 @@ import com.seven.marketclip.security.UserDetailsImpl;
 import com.seven.marketclip.wish.domain.Wish;
 import com.seven.marketclip.wish.repository.WishRepository;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,8 +26,8 @@ public class WishService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(key = "#userDetails.id", cacheNames = "myWishCache"),
-            @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")})
+//    @Caching(evict = { @CacheEvict(key = "#userDetails.id", cacheNames = "myWishCache"), @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")})
+    @CacheEvict(key = "#goodsId", cacheNames = "goodsCache")
     public ResponseCode doWishList(Long goodsId, UserDetailsImpl userDetails, String httpMethod) throws CustomException {
         Account account = new Account(userDetails);
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
