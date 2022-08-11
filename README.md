@@ -13,8 +13,6 @@
 - Back-end: [임선용](https://github.com/sunyongIM), [김재호](https://github.com/KimjaehoLy), [남신욱](https://github.com/tlsdnr1135)
 - Designer: 이수진, 안수현
 - [\[Front-End Github\]](https://github.com/TEAM-7E7/7E7-FE)
-- [\[Marketclip Notion\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
-https://www.notion.so/BackEnd-3646a509dede404184b9128ec99c66b8
 - [\[Marketclip Notion(BE)\]](https://www.notion.so/Market-Clip-b0feee01a3454f85962915faa7047410)
   
   
@@ -39,6 +37,7 @@ https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
   
 <br /><br />
 # 📌 API 명세서
+https://tryaz.shop/swagger/swagger-ui/
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%841.png" width:"1200"></center>
 
 <br /><br />
@@ -385,6 +384,6 @@ fi
 | [임선용🔰](https://github.com/sunyongIM) | [김재호](https://github.com/KimjaehoLy) | [남신욱](https://github.com/tlsdnr1135) |                                                                                                            
 | :---------------------------------: | :----------------------------------: | :-----------------------------: |
 | <img src="https://user-images.githubusercontent.com/91590293/182991861-78a60df8-2de4-4a64-b20e-fb6c930e4d68.jpg" alt="임선용" width="200px"/> |  <img src="https://user-images.githubusercontent.com/68206513/182992939-620a49cc-e9d3-4d96-867a-e97477fda85a.png" alt="김재호" width="200px"/> | <img src="" alt="남신욱" width="200px" /> |
-| `백엔드 CI/CD` `이메일 인증` `회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기` `마이페이지` <br> `queryDsl 동적쿼리` `Redis - 캐싱, 분산락` <br> `Scheduler - Mysql, S3 스토리지 관리` | `WebSocket` `Redis Pub/Sub` <br> `채팅방 생성` <br> `실시간 채팅` <br> `거래 기능` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인` <br> `Jmeter` `validation`|
+| `백엔드 CI/CD` `이메일 인증` `회원정보 CRUD` <br> `게시글 CRUD` `즐겨찾기` `마이페이지` <br> `queryDsl 동적쿼리` `Redis - 캐싱, 분산락` <br> `Logging - LogBack 사용 / Slack전송` <br> `Scheduler - Mysql, S3 스토리지 관리` | `WebSocket` `Redis Pub/Sub` <br> `채팅방 생성` <br> `실시간 채팅` <br> `거래 기능` | `Spring Security` `JWT` <br> `OAuth2.0` `소셜 로그인` <br> `Jmeter` `validation`|
 
 

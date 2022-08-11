@@ -159,8 +159,8 @@ public class AccountService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(key = "'id:' + #accountId + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "'id:' + #accountId + '__status:SALE'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "#accountId", cacheNames = "myWishCache")
+            @CacheEvict(key = "'id:' + #accountId + '__status:SALE'", cacheNames = "myGoodsCache")
+//            , @CacheEvict(key = "#accountId", cacheNames = "myWishCache")
     })
     public ResponseCode deleteUser(Long accountId) {
         Account account = accountVerification.checkAccount(accountId);
