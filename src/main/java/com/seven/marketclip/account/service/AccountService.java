@@ -96,7 +96,8 @@ public class AccountService {
 
     // 유저 프로필 S3 업로드
     @Transactional
-    public DataResponseCode addS3UserImage(MultipartFile multipartFile, Long accountId) throws CustomException {
+    @CacheEvict(key = "#email", cacheNames = "accountCache")
+    public DataResponseCode addS3UserImage(MultipartFile multipartFile, Long accountId, String email) throws CustomException {
         String profileUrl = fileCloudService.uploadFile(multipartFile);
         Map<String, Object> idUrlMap = new HashMap<>();
         idUrlMap.put("id", accountId);
@@ -112,7 +113,8 @@ public class AccountService {
 
     //프로필 이미지 삭제
     @Transactional
-    public ResponseCode profileImgDelete(Long accountId) throws CustomException {
+    @CacheEvict(key = "#email", cacheNames = "accountCache")
+    public ResponseCode profileImgDelete(Long accountId, String email) throws CustomException {
         AccountImage accountImage = imageService.findAccountImage(accountId);
 
         if (accountImage.getImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
@@ -126,7 +128,8 @@ public class AccountService {
 
     // 닉네임 변경
     @Transactional
-    public ResponseCode updateNickname(Long id, String nickname) {
+    @CacheEvict(key = "#email", cacheNames = "accountCache")
+    public ResponseCode updateNickname(Long id, String nickname, String email) {
         Account account = accountVerification.checkAccount(id);
         accountVerification.checkNickname(nickname);
         account.changeNickname(nickname);
@@ -159,10 +162,10 @@ public class AccountService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(key = "'id:' + #accountId + '__status:SOLD_OUT'", cacheNames = "myGoodsCache"),
-            @CacheEvict(key = "'id:' + #accountId + '__status:SALE'", cacheNames = "myGoodsCache")
-//            , @CacheEvict(key = "#accountId", cacheNames = "myWishCache")
+            @CacheEvict(key = "'id:' + #accountId + '__status:SALE'", cacheNames = "myGoodsCache"),
+            @CacheEvict(key = "#email", cacheNames = "accountCache")
     })
-    public ResponseCode deleteUser(Long accountId) {
+    public ResponseCode deleteUser(Long accountId, String email) {
         Account account = accountVerification.checkAccount(accountId);
         List<Goods> goodsList = account.getGoodsList();
         AccountImage accountImage = account.getProfileImgUrl();
@@ -207,7 +210,6 @@ public class AccountService {
         //TODO Decoder에 있는거 같은 함수로 빼기
         //올바른 토큰인지 확인
         refresh = headerTokenExtractor.extract(refresh, request, response);
-
 
         //만료된 토큰인지 확인 -> JWT필터에서도 해줘야함.
 //        Long id = jwtDecoder.decodeUserId(refresh); //여기 안에서 만료됐는지 확인.

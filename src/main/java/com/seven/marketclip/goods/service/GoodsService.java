@@ -30,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +169,6 @@ public class GoodsService {
     }
 
     // 내가 즐겨찾기 한 글 보기
-//    @Cacheable(key = "#userDetails.id", cacheNames = "myWishCache")
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
         Page<Wish> wishList = wishRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Page<Goods> goodsList = wishList.map(Wish::getGoods);
