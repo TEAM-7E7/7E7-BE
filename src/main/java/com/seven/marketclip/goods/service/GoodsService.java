@@ -30,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,7 +114,7 @@ public class GoodsService {
     @Cacheable(key = "#goodsId", cacheNames = "goodsCache")
     public DataResponseCode findGoodsDetail(Long goodsId) throws CustomException {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(EMAIL_CHECK_NOT_FOUND)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
         GoodsResDTO goodsResDTO = new GoodsResDTO(goods);
         return new DataResponseCode(SUCCESS, goodsResDTO);
@@ -170,7 +169,6 @@ public class GoodsService {
     }
 
     // 내가 즐겨찾기 한 글 보기
-//    @Cacheable(key = "#userDetails.id", cacheNames = "myWishCache")
     public DataResponseCode findMyWish(UserDetailsImpl userDetails, Pageable pageable) {
         Page<Wish> wishList = wishRepository.findAllByAccountIdOrderByCreatedAtDesc(userDetails.getId(), pageable);
         Page<Goods> goodsList = wishList.map(Wish::getGoods);
@@ -188,7 +186,7 @@ public class GoodsService {
     // 게시글 수정 & 삭제 - 상품 게시판 존재 여부/ 작성자 아이디와 접속한 아이디 비교/ 둘 다 true 시 Goods 반환
     private Goods goodsAccountCheck(Long goodsId, UserDetailsImpl userDetails) {
         Goods goods = goodsRepository.findById(goodsId).orElseThrow(
-                () -> new CustomException(EMAIL_ALREADY_EXISTS)
+                () -> new CustomException(GOODS_NOT_FOUND)
         );
         if (goods.getAccount().getId() != userDetails.getId()) {
             throw new CustomException(NOT_AUTHORED);

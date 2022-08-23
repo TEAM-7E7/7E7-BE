@@ -32,7 +32,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setHeartbeatValue(new long[] {10000, 20000})
                 .setTaskScheduler(this.messageBrokerTaskScheduler);
         registry.setApplicationDestinationPrefixes("/pub");
-
     }
 
 }
