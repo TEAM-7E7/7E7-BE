@@ -17,12 +17,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-public class Account extends Timestamped {
+public class Account extends Timestamped implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

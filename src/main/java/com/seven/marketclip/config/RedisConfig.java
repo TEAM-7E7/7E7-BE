@@ -49,6 +49,8 @@ public class RedisConfig {
 
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
+        cacheConfigurations.put("accountCache",RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("goodsCache",RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("myPurchaseCache",RedisCacheConfiguration.defaultCacheConfig()

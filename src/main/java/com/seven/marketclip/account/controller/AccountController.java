@@ -52,13 +52,13 @@ public class AccountController {
     @ApiOperation(value = "프로필 이미지 파일 S3 업로드", notes = "")
     @PostMapping(value = "/profile-img", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpResponse> s3AddUserImage(@RequestParam("userProfile") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId()));
+        return HttpResponse.toResponseEntity(accountService.addS3UserImage(multipartFile, userDetails.getId(), userDetails.getUsername()));
     }
 
     @ApiOperation(value = "프로필 이미지 삭제", notes = "물리적 삭제 X 논리적 삭제 O")
     @DeleteMapping("/profile-img")
     public ResponseEntity<HttpResponse> deleteProfileImg(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return HttpResponse.toResponseEntity(accountService.profileImgDelete(userDetails.getId()));
+        return HttpResponse.toResponseEntity(accountService.profileImgDelete(userDetails.getId(), userDetails.getUsername()));
     }
 
     // 닉네임 수정
@@ -70,7 +70,7 @@ public class AccountController {
 //            System.out.println("Sd");
 //            return HttpResponse.toResponseEntity(VALIDATION_FAIL);
 //        }
-        return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname));
+        return HttpResponse.toResponseEntity(accountService.updateNickname(userDetails.getId(), nickname, userDetails.getUsername()));
     }
 
     // 비밀번호 변경 (이메일)
@@ -90,7 +90,7 @@ public class AccountController {
     @ApiOperation(value = "회원 탈퇴", notes = "")
     @DeleteMapping("/sign-out")
     public ResponseEntity<HttpResponse> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return HttpResponse.toResponseEntity(accountService.deleteUser(userDetails.getId()));
+        return HttpResponse.toResponseEntity(accountService.deleteUser(userDetails.getId(), userDetails.getUsername()));
     }
 
     @ApiOperation(value = "리프레쉬 토큰 재발급", notes = "리프레쉬 토큰 재발급")
