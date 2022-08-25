@@ -37,7 +37,7 @@ https://www.youtube.com/watch?v=GsA8UhmQMKo&t=1s
   
 <br /><br />
 # 📌 API 명세서
-https://tryaz.shop/swagger/swagger-ui/
+https://tryaz.shop/swagger-ui/
 <center><img src="https://wook-bucket.s3.ap-northeast-2.amazonaws.com/API+%EC%9A%94%EC%95%BD+%EC%82%AC%EC%A7%841.png" width:"1200"></center>
 
 <br /><br />
